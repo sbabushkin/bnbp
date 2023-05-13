@@ -1,0 +1,37 @@
+version: "3.4"
+services:
+  # api:
+  #   build:
+  #     context: ../
+  #     target: test
+  #   depends_on:
+  #     - postgres
+  #   networks:
+  #     - main
+  #   ports:
+  #     - "3000:3000"
+  #     - "9229:9229"
+  #   environment:
+  #     PG_HOST: postgres
+  #     PG_PORT: 5432
+  #     PG_USER: postgres
+  #     PG_PWD: 1
+  #     DB_NAME: b2b_test
+  #     DISABLE_SSL: "false"
+  #     CI: "true" # for jest not in watch mode
+  #   command: "yarn run test:ci"
+
+  postgres:
+    image: kartoza/postgis:12.4
+    # networks:
+    #   - main
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: b2b_test
+      POSTGRES_USER: postgres
+      POSTGRES_PASS: 1
+
+# networks:
+#   main:
+#     driver: bridge

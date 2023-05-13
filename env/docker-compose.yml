@@ -1,0 +1,49 @@
+version: '3.4'
+
+services:
+#  zookeeper:
+#    image: zookeeper:3.4.13
+#    restart: unless-stopped
+#    hostname: zookeeper
+#    ports:
+#      - "2181:2181"
+#    environment:
+#      ZOO_PORT: 2181
+#      ZOO_SERVERS: server.1=zookeeper:2888:3888
+#
+#  # File convertion service
+#  conv:
+#    image: gotenberg/gotenberg:7
+#    ports:
+#      - "3005:3000"
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 1G
+#          cpus: '0.2'
+#        reservations:
+#          memory: 1G
+
+  # Redis cache service
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+
+#  kafka:
+#    image: confluentinc/cp-enterprise-kafka:5.4.0
+#    hostname: kafka
+#    ports:
+#      - "9092:9092"
+#    environment:
+#      KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka:19092,LISTENER_DOCKER_EXTERNAL://localhost:9092
+#      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_INTERNAL:PLAINTEXT,LISTENER_DOCKER_EXTERNAL:PLAINTEXT
+#      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL
+#      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+#      KAFKA_BROKER_ID: 1
+#      KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
+#      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+#      KAFKA_CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: "kafka:19092"
+#      KAFKA_CONFLUENT_METRICS_REPORTER_ZOOKEEPER_CONNECT: "zookeeper:2181"
+#    depends_on:
+#      - zookeeper

@@ -1,0 +1,125 @@
+import { parse } from 'node-html-parser';
+import axios from 'axios';
+import { Property } from "../entities/property.entity";
+import { v4 } from 'uuid';
+import { parseNumeric } from "../../helpers/common.helper";
+import { ParserService } from "../parser.service";
+
+
+export class BalitreasurepropertiesService extends ParserService {
+
+  public async parse() {
+
+    let page = 1;
+
+    while (true) {
+      const listUrl = `https://balitreasureproperties.com/properties/freehold-leasehold-villa-for-sale/?cpage=${page}`;
+      // const listUrl = `https://balitreasureproperties.com/freehold-villas-for-sale/?cpage=${page}`;
+      const listResp = await axios.get(listUrl);
+      const parsedContentList = parse(listResp.data);
+      const propertiesClass = 'a.view_details';
+      const propertiesUrlArr = parsedContentList
+        .querySelectorAll(propertiesClass)
+        .filter(item => item.text === 'View Details')
+        .map(item => item.getAttribute('href'));
+
+      console.log(listUrl, propertiesUrlArr.length);
+
+      if (!propertiesUrlArr.length) break;
+
+      // const url = 'https://bali-home-immo.com/realestate-property/for-rent/villa/monthly/seminyak/5-bedroom-villa-for-rent-and-sale-in-bali-seminyak-ff039'
+      const url = propertiesUrlArr[2]
+      // const data: any = await this.parseItem(url);
+
+      const data: any = await Promise.all(propertiesUrlArr.map(url => this.parseItem(url)));
+      // await Property.query().insert(data);
+      await this.loadToSheets(data);
+
+      // console.log(data); break;
+      page += 1;
+    }
+    return 'ok';
+  }
+
+  private async parseItem(itemUrl) {
+    const respItem = await axios.get(itemUrl);
+    const parsedContent = parse(respItem.data);
+
+    // get name
+    const propertyNameSelector = 'h1';
+    const listingName = parsedContent.querySelector(propertyNameSelector)?.text;
+
+    const info = parsedContent
+      .querySelectorAll('.property-description p')
+      .reduce((arr, item) => {
+        const keyVal = item.text.split(':');
+        if (keyVal[0] && keyVal[1]) {
+          arr[keyVal[0].trim()] = keyVal[1].trim();
+        }
+        return arr;
+      }, {});
+
+
+    const pricePartHtml = parsedContent.querySelector('div.price_part');
+    const leaseHoldText = pricePartHtml.querySelectorAll('span.show_type_Lease')[2]?.text;
+
+    // get bedrooms
+    const bedroomsSelector = 'img[src*="icon-bedroom.png"]';
+    const bedrooms = parsedContent.querySelector(bedroomsSelector)
+      ?.parentNode.querySelector('div').text;
+
+    // get landSize
+    const landSizeSelector = 'img[src*="icon-building.png"]';
+    const landSize = parsedContent.querySelector(landSizeSelector)
+      ?.parentNode.querySelector('div').text;
+
+    // get bathrooms
+    const bathroomsSelector  = 'img[src*="icon-bathroom.png"]';
+    const bathrooms = parsedContent.querySelector(bathroomsSelector)
+      ?.parentNode.querySelector('div').text;
+
+    // get price IDR
+    const priceIdrSelector = `.price span.show_type_${leaseHoldText ? 'Lease' : 'Sale'}`;
+    const priceIdr = parsedContent.querySelector(priceIdrSelector)?.text;
+
+    // get price USD
+    const priceUsdSelector = 'span.show_curency_USD';
+    const priceUsd = parsedContent.querySelector(priceUsdSelector)?.text;
+
+    //
+    // // get pool
+    // const poolSelector = 'span.swim-icon';
+    // const poolExists = parsedContent.querySelector(poolSelector);
+    //
+    // get location
+    const propertyLocationSelector = 'span.area strong';
+    const location = parsedContent.querySelectorAll(propertyLocationSelector)[1]?.text.trim();
+
+    // const itemUrlId =  itemUrl.slice(0, -1).split('/').pop();
+    //
+    // const imgArr = parsedContent.querySelectorAll('.slides img')
+    //   .map(item => item.getAttribute('src'));
+
+    const propertyObj = {};
+
+    propertyObj['id'] = v4();
+    // propertyObj['externalId'] = itemUrlId;
+    propertyObj['name'] = listingName;
+    propertyObj['location'] = location;
+    propertyObj['ownership'] = leaseHoldText ? 'leasehold' : 'freehold';
+    propertyObj['buildingSize'] = parseNumeric(info['Building size']); // TODO: // hard to parse
+    propertyObj['landSize'] = parseNumeric(landSize);
+    propertyObj['leaseYearsLeft'] = leaseHoldText && parseNumeric(leaseHoldText);
+    propertyObj['propertyType'] = 'Villa'; // TODO: ask about it
+    propertyObj['bedroomsCount'] = parseNumeric(bedrooms);
+    propertyObj['bathroomsCount'] = parseNumeric(bathrooms);
+    propertyObj['pool'] = 'Yes';
+    propertyObj['priceUSD'] = parseNumeric(priceUsd);
+    propertyObj['priceIDR'] = parseNumeric(priceIdr);
+    propertyObj['url'] = itemUrl;
+    propertyObj['source'] = 'balitreasureproperties.com';
+    // propertyObj['photos'] = imgArr[0];
+    return propertyObj;
+  }
+
+}
