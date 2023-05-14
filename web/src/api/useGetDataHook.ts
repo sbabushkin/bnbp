@@ -29,12 +29,11 @@ export const propertiesQuery = gql`
 const useGetDataHook = () => {
   const [data, setData] = useState<IData[]>([])
   useEffect(() => {
-    console.log('happend')
     const fetchData = async () => {
-      let data = await apolloQuery<any, any>({query: propertiesQuery});
-      if(!data?.properties?.length) {
-        data = mockData
-      }
+      const data = await apolloQuery<any, any>({query: propertiesQuery});
+      // if(!data?.properties?.length) {
+      //   data = mockData
+      // }
 
       setData(data.properties)
     }
