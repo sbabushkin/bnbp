@@ -44,10 +44,10 @@ where rp.id is null;
 ```
 ### Web
 ```bash
- cd packages/web
+ cd web
 ```
 ```bash
- yarn start:dev
+ yarn dev
 ```
 # Миграции
 ### Создать миграцию
