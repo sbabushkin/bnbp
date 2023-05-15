@@ -20,7 +20,7 @@ type RangeSlideProps = {
 
 export default function RangeSlide({ max, title, value, setValue }: RangeSlideProps) {
   const handleChange = (
-    event: Event,
+    _: Event,
     newValue: number | number[],
     activeThumb: number,
   ) => {

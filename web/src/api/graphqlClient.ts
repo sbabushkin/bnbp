@@ -7,7 +7,7 @@ import {
   OperationVariables,
   split,
 } from '@apollo/client';
-import { setContext } from '@apollo/client/link/context';
+// import { setContext } from '@apollo/client/link/context';
 import { onError } from '@apollo/client/link/error';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { createUploadLink } from 'apollo-upload-client';
@@ -63,11 +63,6 @@ const buildWSUri = () => {
   return `ws${useWss ? 's' : ''}://${window.location.host}/graphql`;
 };
 
-// Auth middleware for request
-const authMiddlewareLink = setContext(async (_, previousContext) => {
-  return previousContext;
-});
-
 const errorAfterWareLink = onError(
   ({
     operation,
@@ -107,7 +102,6 @@ const successAfterWareLink = new ApolloLink((operation, forward) => forward(oper
     const {
       error,
       displayNotification,
-      redirectTo,
       successMessage = 'Сохранено',
     } = operation.getContext() as GraphqlContext;
 
@@ -146,7 +140,6 @@ const transportLink = split(
 const link = ApolloLink.from([
   successAfterWareLink,
   errorAfterWareLink,
-  // authMiddlewareLink,
   transportLink,
 ]);
 

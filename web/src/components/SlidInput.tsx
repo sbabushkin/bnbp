@@ -13,7 +13,7 @@ type SlidInputProps = {
 }
 export default function SlidInput({ max, title, value, onChange }: SlidInputProps) {
 
-  const handleSliderChange = React.useCallback((event: Event, newValue: number | number[]) => {
+  const handleSliderChange = React.useCallback((_: Event, newValue: number | number[]) => {
     onChange(Array.isArray(newValue) ? newValue[0] : newValue)
   }, [onChange]);
 
