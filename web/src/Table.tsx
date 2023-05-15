@@ -11,11 +11,10 @@ import TableSortLabel from '@mui/material/TableSortLabel';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
 import { visuallyHidden } from '@mui/utils';
 import useGetDataHook from './api/useGetDataHook';
 import { headCells, IData } from './helpers/constants'
+import TemporaryDrawer from './components/Drawer';
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -102,11 +101,7 @@ function EnhancedTableToolbar() {
         Properties
       </Typography>
 
-      {/* <Tooltip title="Filter list">
-        <IconButton>
-          Filters
-        </IconButton>
-      </Tooltip> */}
+      <TemporaryDrawer />
     </Toolbar>
   );
 }
@@ -133,7 +128,12 @@ export default function EnhancedTable() {
     setPage(0);
   };
 
-  const data = useGetDataHook();
+  const {data, fetchData} = useGetDataHook();
+
+  React.useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
 
   const visibleRows = React.useMemo(() =>

@@ -1,48 +1,89 @@
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { apolloQuery } from "./graphqlClient";
 import { gql } from '@apollo/client';
-import { mockData } from "../helpers/mock";
+// import { mockData } from "../helpers/mock";
 import { IData } from "../helpers/constants";
 
+export interface FilterType {
+  type?: Array<'villa' | 'apartment' | 'house' | 'land'>;
+  location?: string;
+  bedroomsCount?: number;
+  bathroomsCount?: number;
+  priceUsd?: [number, number];
+}
+
+interface MaxValues {
+  bedroomsCount?: number;
+  bathroomsCount?: number;
+  priceUsd?: number;
+}
+
 export const propertiesQuery = gql`
-  query GetProperties {
-    properties {
-      id
-      name
-      source
-      propertyType
-      bedroomsSize
-      bedroomsCount
-      priceIdr
-      priceUsd
-      propertyPrices {
+  query GetProperties($filters: PropertyFilter) {
+    propertiesConnection(filter: $filters) {
+      aggregates {
+        max {
+          bedroomsCount
+          bathroomsCount
+          priceUsd
+        }
+      }
+      nodes {
         id
+        name
+        source
+        propertyType
+        bedroomsSize
+        bedroomsCount
         priceIdr
         priceUsd
-        created
       }
     }
   }
 `;
 
 
+
 const useGetDataHook = () => {
   const [data, setData] = useState<IData[]>([])
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await apolloQuery<any, any>({query: propertiesQuery});
-      // if(!data?.properties?.length) {
-      //   data = mockData
-      // }
+  const [max, setMax] = useState<MaxValues>({})
+  const [filters, setFilters] = useState<FilterType>({
+    type: ['villa', 'apartment', 'house', 'land']
+  })
+  console.log(filters)
+  const fetchData = useCallback(async () => {
+    const queryFilter: any = {}
 
-      setData(data.properties)
+    console.log(filters)
+    if(filters.type?.length) {
+      queryFilter.propertyType = { in: filters.type };
     }
 
-    fetchData().catch(console.error);
+    if(filters.location) {
+      queryFilter.location = { includesInsensitive: filters.location };
+    }
 
-  }, [])
+    if(filters.bedroomsCount) {
+      queryFilter.bedroomsCount = { greaterThanOrEqualTo: filters.bedroomsCount }
+    }
 
-  return data
+    if(filters.bathroomsCount) {
+      queryFilter.bathroomsCount = { greaterThanOrEqualTo: filters.bathroomsCount }
+    }
+
+    if(filters.priceUsd) {
+      queryFilter.priceUsd = {
+        lessThanOrEqualTo: filters.priceUsd[0],
+        greaterThanOrEqualTo: filters.priceUsd[1],
+      }
+    }
+
+    const data = await apolloQuery<any, any>({ query: propertiesQuery, variables: queryFilter });
+    setMax(data?.propertiesConnection?.aggregates?.max ?? {})
+    setData(data?.propertiesConnection?.nodes ?? [])
+  }, [filters])
+
+  return { max, data, fetchData, setFilters, filters }
 }
 
 export default useGetDataHook
