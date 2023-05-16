@@ -50,11 +50,10 @@ const useGetDataHook = () => {
   const [filters, setFilters] = useState<FilterType>({
     type: ['villa', 'apartment', 'house', 'land']
   })
-  console.log(filters)
+
   const fetchData = useCallback(async () => {
     const queryFilter: any = {}
 
-    console.log(filters)
     if(filters.type?.length) {
       queryFilter.propertyType = { in: filters.type };
     }
@@ -78,7 +77,7 @@ const useGetDataHook = () => {
       }
     }
 
-    const data = await apolloQuery<any, any>({ query: propertiesQuery, variables: queryFilter });
+    const data = await apolloQuery<any, any>({ query: propertiesQuery, variables: {filter: queryFilter} });
     setMax(data?.propertiesConnection?.aggregates?.max ?? {})
     setData(data?.propertiesConnection?.nodes ?? [])
   }, [filters])
