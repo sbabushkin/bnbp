@@ -90,7 +90,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   );
 }
 
-function EnhancedTableToolbar() {
+function EnhancedTableToolbar({fetchData, setFilters, max, filters}: any) {
   return (
     <Toolbar sx={{ pl: { sm: 2 }, pr: { xs: 1, sm: 1 } }}>
       <Typography
@@ -101,7 +101,12 @@ function EnhancedTableToolbar() {
         Properties
       </Typography>
 
-      <TemporaryDrawer />
+      <TemporaryDrawer
+        setFilters={setFilters}
+        max={max}
+        filters={filters}
+        fetchData={fetchData}
+      />
     </Toolbar>
   );
 }
@@ -128,11 +133,15 @@ export default function EnhancedTable() {
     setPage(0);
   };
 
-  const {data, fetchData} = useGetDataHook();
+  const {data, fetchData, max, setFilters, filters} = useGetDataHook();
 
   React.useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    fetchData(filters);
+  }, []);
+
+  const handleFetchData = React.useCallback(() => {
+    fetchData(filters)
+  }, [filters, fetchData])
 
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
 
@@ -145,7 +154,12 @@ export default function EnhancedTable() {
   return (
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 2 }}>
-        <EnhancedTableToolbar />
+        <EnhancedTableToolbar
+          setFilters={setFilters}
+          max={max}
+          filters={filters}
+          fetchData={handleFetchData}
+         />
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}

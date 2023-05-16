@@ -12,9 +12,9 @@ import Divider from '@mui/material/Divider';
 import SlidInput from './SlidInput';
 import RangeSlide from './RangeSlide';
 import Stack from '@mui/material/Stack';
-import useGetDataHook, { FilterType } from '../api/useGetDataHook';
+import { FilterType } from '../api/useGetDataHook';
 
-export default function TemporaryDrawer() {
+export default function TemporaryDrawer({fetchData, setFilters, max, filters}: any) {
   const [state, setState] = React.useState(false);
 
   const toggleDrawer = (event: React.KeyboardEvent | React.MouseEvent) => {
@@ -29,8 +29,6 @@ export default function TemporaryDrawer() {
     setState((prev) => !prev);
   };
 
-  const {fetchData, setFilters, max, filters} = useGetDataHook()
-
   const handleApply = React.useCallback(() => {
     fetchData()
     setState((prev) => !prev);
@@ -42,38 +40,38 @@ export default function TemporaryDrawer() {
   }, [setFilters])
 
   const useHandleTypeChange = (typeName: string) => React.useCallback((_: any, val: boolean) => {
-    setFilters((prev) => {
+    setFilters((prev: any) => {
       if(val) {
         return {...prev, type: prev.type ? [...prev.type, typeName] : []} as FilterType
       } else {
-        return { ...prev, type: prev.type ? prev.type.filter((s) => s !== typeName) : []}
+        return { ...prev, type: prev.type ? prev.type.filter((s: string) => s !== typeName) : []}
       }
     })
   }, [typeName])
 
   const handleChangeLocation = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    setFilters((prev) => ({
+    setFilters((prev: any) => ({
       ...prev,
       location: event.target.value,
     }))
   }, [setFilters])
 
   const handleChangeBedroomsCount = React.useCallback((value: number) => {
-    setFilters((prev) => ({
+    setFilters((prev: any) => ({
       ...prev,
       bedroomsCount: value,
     }))
   }, [setFilters])
 
   const handleChangeBathroomsCount = React.useCallback((value: number) => {
-    setFilters((prev) => ({
+    setFilters((prev: any) => ({
       ...prev,
       bathroomsCount: value,
     }))
   }, [setFilters])
 
   const handleChangePrice = React.useCallback((value: [number, number]) => {
-    setFilters((prev) => ({
+    setFilters((prev: any) => ({
       ...prev,
       priceUsd: value,
     }))

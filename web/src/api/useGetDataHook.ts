@@ -51,36 +51,36 @@ const useGetDataHook = () => {
     type: ['villa', 'apartment', 'house', 'land']
   })
 
-  const fetchData = useCallback(async () => {
+  const fetchData = useCallback(async (newFilters: any) => {
     const queryFilter: any = {}
 
-    if(filters.type?.length) {
-      queryFilter.propertyType = { in: filters.type };
+    if(newFilters.type?.length) {
+      queryFilter.propertyType = { in: newFilters.type };
     }
 
-    if(filters.location) {
-      queryFilter.location = { includesInsensitive: filters.location };
+    if(newFilters.location) {
+      queryFilter.location = { includesInsensitive: newFilters.location };
     }
 
-    if(filters.bedroomsCount) {
-      queryFilter.bedroomsCount = { greaterThanOrEqualTo: filters.bedroomsCount }
+    if(newFilters.bedroomsCount) {
+      queryFilter.bedroomsCount = { greaterThanOrEqualTo: newFilters.bedroomsCount }
     }
 
-    if(filters.bathroomsCount) {
-      queryFilter.bathroomsCount = { greaterThanOrEqualTo: filters.bathroomsCount }
+    if(newFilters.bathroomsCount) {
+      queryFilter.bathroomsCount = { greaterThanOrEqualTo: newFilters.bathroomsCount }
     }
 
-    if(filters.priceUsd) {
+    if(newFilters.priceUsd) {
       queryFilter.priceUsd = {
-        lessThanOrEqualTo: filters.priceUsd[0],
-        greaterThanOrEqualTo: filters.priceUsd[1],
+        lessThanOrEqualTo: newFilters.priceUsd[0],
+        greaterThanOrEqualTo: newFilters.priceUsd[1],
       }
     }
 
     const data = await apolloQuery<any, any>({ query: propertiesQuery, variables: {filter: queryFilter} });
     setMax(data?.propertiesConnection?.aggregates?.max ?? {})
     setData(data?.propertiesConnection?.nodes ?? [])
-  }, [filters])
+  }, [])
 
   return { max, data, fetchData, setFilters, filters }
 }
