@@ -36,8 +36,9 @@ export default function TemporaryDrawer({fetchData, setFilters, max, filters}: a
 
   const handleReset = React.useCallback(() => {
     setFilters({})
+    fetchData()
     setState((prev) => !prev);
-  }, [setFilters])
+  }, [setFilters, fetchData])
 
   const useHandleTypeChange = (typeName: string) => React.useCallback((_: any, val: boolean) => {
     setFilters((prev: any) => {
