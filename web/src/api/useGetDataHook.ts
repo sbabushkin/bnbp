@@ -19,8 +19,8 @@ interface MaxValues {
 }
 
 export const propertiesQuery = gql`
-  query GetProperties($filters: PropertyFilter) {
-    propertiesConnection(filter: $filters) {
+  query GetProperties($filter: PropertyFilter) {
+    propertiesConnection(filter: $filter) {
       aggregates {
         max {
           bedroomsCount
