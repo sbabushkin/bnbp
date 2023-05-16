@@ -139,9 +139,18 @@ export default function EnhancedTable() {
     fetchData(filters);
   }, []);
 
-  const handleFetchData = React.useCallback(() => {
-    fetchData(filters)
-  }, [filters, fetchData])
+  const handleFetchData = React.useCallback((isReset?: boolean) => {
+    if(isReset) {
+      setFilters({
+        type: ['villa', 'apartment', 'house', 'land']
+      })
+      fetchData({
+        type: ['villa', 'apartment', 'house', 'land']
+      })
+    } else {
+      fetchData(filters)
+    }
+  }, [filters, fetchData, setFilters])
 
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
 
