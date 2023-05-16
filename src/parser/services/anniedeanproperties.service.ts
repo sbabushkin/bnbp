@@ -3,6 +3,8 @@ import axios from "axios";
 import { parseNumeric } from "../../helpers/common.helper";
 import parse from "node-html-parser";
 import { v4 } from 'uuid';
+import {Property} from "../entities/property.entity";
+import {PropertyPrice} from "../entities/property_price.entity";
 
 export class AnniedeanpropertiesService extends ParserService {
 
@@ -29,7 +31,41 @@ export class AnniedeanpropertiesService extends ParserService {
 			data.push(item);
 		}
 
+		const bindings = data.map(item => ([item.source, item.externalId]));
+
+		const existedRows = await Property.query().whereIn(
+			['source', 'external_id'],
+			bindings
+		);
+
+		const existedRowsMap = existedRows.reduce((map, item) => {
+			map[item.externalId] = item;
+			return map;
+		}, {});
+
+		const insertData = data
+			.filter(item => !existedRowsMap[item.externalId])
+			.map(item => {
+				item.prices = [{
+					priceIdr: item.priceIDR,
+					priceUsd: item.priceUSD,
+				}]
+				return item;
+			});
+
+		await Property.query().insertGraph(insertData);
+		await PropertyPrice.query().insert(
+			data
+				.filter(item => existedRowsMap[item.externalId])
+				.map(item => ({
+					propertyId: existedRowsMap[item.externalId].id,
+					priceIdr: item.priceIDR,
+					priceUsd: item.priceUSD,
+				}))
+		);
+
 		await this.loadToSheets(data);
+
 		return 'ok';
 	}
 
