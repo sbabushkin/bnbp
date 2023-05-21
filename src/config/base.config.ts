@@ -23,7 +23,7 @@ export const config = (): MainConfig => ({
     host: process.env.PG_HOST || 'localhost',
     port: parseInt(process.env.PG_PORT, 10) || 6432,
     user: process.env.PG_USER || 'bnbp',
-    pwd: process.env.PG_PWD || '1',
+    pwd: process.env.PG_PWD || 'bnbpPgAdmin123!',
     dbName: process.env.DB_NAME || 'bnbp',
     logDbName: `${process.env.DB_NAME || 'bnbp'}_logs`,
     disableSsl: process.env.DISABLE_SSL ? (process.env.DISABLE_SSL === 'true') : true,
