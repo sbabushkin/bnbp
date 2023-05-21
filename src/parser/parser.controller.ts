@@ -19,6 +19,7 @@ import { RajavillapropertyService } from "./services/rajavillaproperty.service";
 import { LazudiService } from "./services/lazudi.service";
 import { BalicoconutlivingService } from "./services/balicoconutliving.service";
 import { RumahService } from "./services/rumah.service";
+import {AnniedeanpropertiesService} from "./services/anniedeanproperties.service";
 
 @Controller('')
 export class ParserController {
@@ -40,6 +41,7 @@ export class ParserController {
     private readonly lazudiService: LazudiService,
     private readonly balicoconutlivingService: BalicoconutlivingService,
     private readonly rumahService: RumahService,
+    private readonly anniedeanpropertiesService: AnniedeanpropertiesService,
   ) {}
 
   @Post('parse/:source')
@@ -98,7 +100,9 @@ export class ParserController {
       case 'rumah':
         data = await this.rumahService.parse();
         break;
-
+      case 'anniedeanproperties':
+        data = await this.anniedeanpropertiesService.parse();
+        break;
     }
     res.send(data);
   }
