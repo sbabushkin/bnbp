@@ -6,7 +6,7 @@ import { v4 } from 'uuid';
 import {Property} from "../entities/property.entity";
 import {PropertyPrice} from "../entities/property_price.entity";
 
-export class AnniedeanpropertiesService extends ParserService {
+export class AnniedeanpropertiesService extends ParserService { // TODO: resourse doesnt work properly
 
 	public async parse() {
 		const categories = ['leasehold', 'freehold', 'rental'];
