@@ -30,6 +30,19 @@ services:
     ports:
       - "6379:6379"
 
+
+  postgresql:
+    image: hub.infra.sxl.bet/postgres:13.4
+    ports:
+      - 6432:5432
+    volumes:
+      - ./docker/postgresql/init.sh:/docker-entrypoint-initdb.d/init.sh
+      - ./docker/postgresql/reset-db.sh:/reset-db.sh
+    command: postgres -c 'max_connections=3000'
+    environment:
+      - POSTGRES_PASSWORD=bnbpPgAdmin123!
+      - POSTGRES_USER=bnbp
+      - POSTGRES_DB=bnbp
 #  kafka:
 #    image: confluentinc/cp-enterprise-kafka:5.4.0
 #    hostname: kafka
