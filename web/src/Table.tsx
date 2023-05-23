@@ -189,10 +189,14 @@ export default function EnhancedTable() {
                   sx={{ cursor: 'pointer' }}
                 >
                   <TableCell><a href={row.source} target='_blank'>{row.name}</a></TableCell>
+                  <TableCell>{row.source}</TableCell>
+                  <TableCell>{row.ownership}</TableCell>
                   <TableCell>{row.propertyType}</TableCell>
-                  <TableCell>{row.bedroomsSize}</TableCell>
+                  <TableCell>{row.location}</TableCell>
                   <TableCell>{row.bedroomsCount}</TableCell>
                   <TableCell>{row.bathroomsCount}</TableCell>
+                  <TableCell>{row.landSize}</TableCell>
+                  <TableCell>{row.buildingSize}</TableCell>
                   <TableCell>{row.priceIdr}</TableCell>
                   <TableCell>{row.priceUsd}</TableCell>
                 </TableRow>

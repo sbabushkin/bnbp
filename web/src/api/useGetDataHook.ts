@@ -33,8 +33,12 @@ export const propertiesQuery = gql`
         name
         source
         propertyType
-        bedroomsSize
+        ownership
+        location
+        bathroomsCount
         bedroomsCount
+        landSize
+        buildingSize
         priceIdr
         priceUsd
       }
