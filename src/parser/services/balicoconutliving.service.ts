@@ -44,9 +44,7 @@ export class BalicoconutlivingService extends ParserService {
         data.push(item);
       }
 
-      // await Property.query().insert(data);
-      await this.loadToSheets(data);
-      // console.log(data); break;
+      await this.loadToDb(data);
       page += 1;
     }
     return 'ok';
@@ -106,8 +104,8 @@ export class BalicoconutlivingService extends ParserService {
     propertyObj['bedroomsCount'] = parseNumeric(info['Bedroom(s):']);
     propertyObj['bathroomsCount'] = parseNumeric(info['Bathroom(s):']);
     propertyObj['pool'] = info['Swimming Pool:'] ? 'Yes' : 'No';
-    // propertyObj['priceUSD'] = priceUsd;
-    propertyObj['priceIDR'] = parseNumeric(priceIdr);
+    // propertyObj['priceUsd'] = priceUsd;
+    propertyObj['priceIdr'] = parseNumeric(priceIdr);
     propertyObj['url'] = itemUrl;
     propertyObj['source'] = 'balicoconutliving.com';
     // propertyObj['photos'] = imgArr[0];

@@ -1,6 +1,5 @@
 import { parse } from 'node-html-parser';
 import axios from 'axios';
-import { Property } from "../entities/property.entity";
 import { v4 } from 'uuid';
 import { parseNumeric, parseSquare, parseText } from "../../helpers/common.helper";
 import { ParserService } from "../parser.service";
@@ -25,14 +24,14 @@ export class PpbaliService extends ParserService {
 
       if (!propertiesUrlArr.length) break;
 
-      // const url = 'https://ppbali.com/property/modern-5-bedroom-freehold-villa-in-canggu/';
-      // const url = propertiesUrlArr[1]
-      // const data: any = await this.parseItem(url);
+      // const data: any = await Promise.all(propertiesUrlArr.map(url => this.parseItem(url)));
+      const data = [];
 
-      const data: any = await Promise.all(propertiesUrlArr.map(url => this.parseItem(url)));
-      // await Property.query().insert(data);
-      await this.loadToSheets(data);
-      // console.log(data); break;
+      for (const url of propertiesUrlArr) {
+        const item = await this.parseItem(url);
+        data.push(item);
+      }
+      await this.loadToDb(data);
       page += 1;
     }
     return 'ok';
@@ -100,8 +99,8 @@ export class PpbaliService extends ParserService {
     propertyObj['bedroomsCount'] = parseNumeric(bedrooms);
     propertyObj['bathroomsCount'] = parseNumeric(bathrooms);
     propertyObj['pool'] = poolExists ? 'Yes' : 'No';
-    propertyObj['priceUSD'] = parseNumeric(priceUsd);
-    propertyObj['priceIDR'] = parseNumeric(priceIdr);
+    propertyObj['priceUsd'] = parseNumeric(priceUsd);
+    propertyObj['priceIdr'] = parseNumeric(priceIdr);
     propertyObj['url'] = itemUrl;
     propertyObj['source'] = 'ppbali.com';
     // propertyObj['photos'] = imgArr[0];

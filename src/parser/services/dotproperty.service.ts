@@ -1,6 +1,5 @@
 import { parse } from 'node-html-parser';
 import axios from 'axios';
-import { Property } from "../entities/property.entity";
 import { v4 } from 'uuid';
 import { parseNumeric, parseSquare } from "../../helpers/common.helper";
 import { ParserService } from "../parser.service";
@@ -10,7 +9,7 @@ export class DotpropertyService extends ParserService {
 
   public async parse() {
 
-    let page = 46;
+    let page = 1;
 
     while (true) {
       const listUrl = `https://www.dotproperty.id/en/villas-for-sale/bali?page=${page}`;
@@ -25,30 +24,14 @@ export class DotpropertyService extends ParserService {
 
       if (!propertiesUrlArr.length) break;
 
-      // const url = 'https://bali-home-immo.com/realestate-property/for-rent/villa/monthly/seminyak/5-bedroom-villa-for-rent-and-sale-in-bali-seminyak-ff039'
-      // const url = propertiesUrlArr[0]
-      // const data: any = await this.parseItem(url);
-
       const data = [];
-      let buffer = [];
-      const bufferSize = 3;
 
-      for (const url of propertiesUrlArr) { // TODO: have to use buffer bcs of 503 error
+      for (const url of propertiesUrlArr) {
         const item = await this.parseItem(url);
         data.push(item);
-        // buffer.push(url);
-        // if (buffer.length === bufferSize || propertiesUrlArr.indexOf(url) === propertiesUrlArr.length) {
-        //   const items = await Promise.all(buffer.map(url => this.parseItem(url)));
-        //   data.push(...items);
-        //   buffer = []
-        // }
       }
 
-      // const data: any = await Promise.all(propertiesUrlArr.map(url => this.parseItem(url)));
-      // await Property.query().insert(data);
-      await this.loadToSheets(data);
-      // console.log(data.length, propertiesUrlArr.length);
-      // break;
+      await this.loadToDb(data);
       page += 1;
     }
     return 'ok';
@@ -111,8 +94,8 @@ export class DotpropertyService extends ParserService {
     propertyObj['bedroomsCount'] = parseNumeric(infoObj['Beds'] || infoObj['Bed']);
     propertyObj['bathroomsCount'] = parseNumeric(infoObj['Baths'] || infoObj['Bath']);
     propertyObj['pool'] = poolExists ? 'Yes' : 'No';
-    // propertyObj['priceUSD'] = priceUsd;
-    propertyObj['priceIDR'] = priceIdr.indexOf('billion') >= 0
+    // propertyObj['priceUsd'] = priceUsd;
+    propertyObj['priceIdr'] = priceIdr.indexOf('billion') >= 0
       ? parseSquare(priceIdr) * 1000000000 : parseNumeric(priceIdr);
     propertyObj['url'] = itemUrl;
     propertyObj['source'] = 'dotproperty.id';

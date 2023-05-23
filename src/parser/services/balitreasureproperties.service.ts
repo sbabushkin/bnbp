@@ -14,7 +14,6 @@ export class BalitreasurepropertiesService extends ParserService {
 
     while (true) {
       const listUrl = `https://balitreasureproperties.com/properties/freehold-leasehold-villa-for-sale/?cpage=${page}`;
-      // const listUrl = `https://balitreasureproperties.com/freehold-villas-for-sale/?cpage=${page}`;
       const listResp = await axios.get(listUrl);
       const parsedContentList = parse(listResp.data);
       const propertiesClass = 'a.view_details';
@@ -27,15 +26,14 @@ export class BalitreasurepropertiesService extends ParserService {
 
       if (!propertiesUrlArr.length) break;
 
-      // const url = 'https://bali-home-immo.com/realestate-property/for-rent/villa/monthly/seminyak/5-bedroom-villa-for-rent-and-sale-in-bali-seminyak-ff039'
-      const url = propertiesUrlArr[2]
-      // const data: any = await this.parseItem(url);
+      // const data: any = await Promise.all(propertiesUrlArr.map(url => this.parseItem(url)));
+      const data = [];
 
-      const data: any = await Promise.all(propertiesUrlArr.map(url => this.parseItem(url)));
-      // await Property.query().insert(data);
-      await this.loadToSheets(data);
-
-      // console.log(data); break;
+      for (const url of propertiesUrlArr) {
+        const item = await this.parseItem(url);
+        data.push(item);
+      }
+      await this.loadToDb(data);
       page += 1;
     }
     return 'ok';
@@ -114,8 +112,8 @@ export class BalitreasurepropertiesService extends ParserService {
     propertyObj['bedroomsCount'] = parseNumeric(bedrooms);
     propertyObj['bathroomsCount'] = parseNumeric(bathrooms);
     propertyObj['pool'] = 'Yes';
-    propertyObj['priceUSD'] = parseNumeric(priceUsd);
-    propertyObj['priceIDR'] = parseNumeric(priceIdr);
+    propertyObj['priceUsd'] = parseNumeric(priceUsd);
+    propertyObj['priceIdr'] = parseNumeric(priceIdr);
     propertyObj['url'] = itemUrl;
     propertyObj['source'] = 'balitreasureproperties.com';
     // propertyObj['photos'] = imgArr[0];

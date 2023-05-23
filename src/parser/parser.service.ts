@@ -6,6 +6,7 @@ import { authenticate } from '@google-cloud/local-auth';
 import { google } from 'googleapis';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import { PropertyPrice } from "./entities/property_price.entity";
 
 // TODO: move to config
 const spreadsheetId = '1VdNUg64ef3HFnsy4A9q_RimC75L6AjCSBdLEZMeQJxE';
@@ -23,7 +24,40 @@ export class ParserService {
     this.sheets = {}; //google.sheets({version: 'v4', auth});
   }
 
-  // protected async loadToDb(items: Property[]) {}
+  protected async loadToDb(data: Property[]) {
+    const bindings = data.map(item => ([item.source, item.externalId]));
+
+    const existedRows = await Property.query().whereIn(
+      ['source', 'external_id'],
+      bindings
+    );
+
+    const existedRowsMap = existedRows.reduce((map, item) => {
+      map[item.externalId] = item;
+      return map;
+    }, {});
+
+    const insertData = data
+      .filter(item => !existedRowsMap[item.externalId])
+      .map(item => {
+        item.prices = [{
+          priceIdr: item.priceIdr,
+          priceUsd: item.priceUsd,
+        }]
+        return item;
+      });
+
+    await Property.query().insertGraph(insertData);
+    await PropertyPrice.query().insert(
+      data
+        .filter(item => existedRowsMap[item.externalId])
+        .map(item => ({
+          propertyId: existedRowsMap[item.externalId].id,
+          priceIdr: item.priceIdr,
+          priceUsd: item.priceUsd,
+        }))
+    );
+  }
 
   protected async loadToSheets(items: Property[]) {
     const resource = {
@@ -39,8 +73,8 @@ export class ParserService {
         item.buildingSize && item.buildingSize.toString().replace('.',','),
         item.bedroomsCount,
         item.bathroomsCount,
-        item.priceIDR,
-        item.priceUSD,
+        item.priceIdr,
+        item.priceUsd,
         null, // Villa Price per sqm
         null, // Price per sqm per year, Leasehold
         null, // Land price per are Freehold, USD

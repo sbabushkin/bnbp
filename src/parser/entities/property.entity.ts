@@ -36,9 +36,9 @@ export class Property extends BaseModel {
 
   bathroomsCount: number;
 
-  priceIDR: number;
+  priceIdr: number;
 
-  priceUSD: number;
+  priceUsd: number;
 
   leaseExpiryYear: number;
 
@@ -51,6 +51,8 @@ export class Property extends BaseModel {
   pool: string;
 
   notes: string;
+
+  prices: Partial<PropertyPrice>[];
 
   static get relationMappings() {
     return {

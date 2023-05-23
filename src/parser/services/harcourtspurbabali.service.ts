@@ -1,6 +1,5 @@
 import { parse } from 'node-html-parser';
 import axios from 'axios';
-import { Property } from "../entities/property.entity";
 import { v4 } from 'uuid';
 import { parseNumeric, parsePrice, parseSquare } from "../../helpers/common.helper";
 import { ParserService } from "../parser.service";
@@ -25,14 +24,14 @@ export class HarcourtspurbabaliService extends ParserService {
 
       if (!propertiesUrlArr.length) break;
 
-      // const url = 'https://bali-home-immo.com/realestate-property/for-rent/villa/monthly/seminyak/5-bedroom-villa-for-rent-and-sale-in-bali-seminyak-ff039'
-      // const url = propertiesUrlArr[2]
-      // const data: any = await this.parseItem(url);
+      // const data: any = await Promise.all(propertiesUrlArr.map(url => this.parseItem(url)));
+      const data = [];
 
-      const data: any = await Promise.all(propertiesUrlArr.map(url => this.parseItem(url)));
-      // await Property.query().insert(data);
-      await this.loadToSheets(data);
-      // console.log(data); break;
+      for (const url of propertiesUrlArr) {
+        const item = await this.parseItem(url);
+        data.push(item);
+      }
+      await this.loadToDb(data);
       page += 1;
     }
     return 'ok';
@@ -79,8 +78,8 @@ export class HarcourtspurbabaliService extends ParserService {
     propertyObj['bedroomsCount'] = parseNumeric(details['Bedrooms:']);
     propertyObj['bathroomsCount'] = parseNumeric(details['Bathrooms:']);
     propertyObj['pool'] = details['Pool Details:'] ? 'Yes' : 'No';
-    // propertyObj['priceUSD'] = priceUsd;
-    propertyObj['priceIDR'] = parsePrice(details['Price:']);
+    // propertyObj['priceUsd'] = priceUsd;
+    propertyObj['priceIdr'] = parsePrice(details['Price:']);
     propertyObj['url'] = itemUrl;
     propertyObj['source'] = 'harcourtspurbabali.com';
     propertyObj['photos'] = imgArr[0];

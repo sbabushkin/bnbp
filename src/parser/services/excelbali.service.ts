@@ -1,6 +1,5 @@
 import { parse } from 'node-html-parser';
 import axios from 'axios';
-import { Property } from "../entities/property.entity";
 import { v4 } from 'uuid';
 import { parseNumeric, parsePrice, parseSquare } from "../../helpers/common.helper";
 import { ParserService } from "../parser.service";
@@ -25,13 +24,14 @@ export class ExcelbaliService extends ParserService {
 
       if (!propertiesUrlArr.length) break;
 
-      // const url = 'https://bali-home-immo.com/realestate-property/for-rent/villa/monthly/seminyak/5-bedroom-villa-for-rent-and-sale-in-bali-seminyak-ff039'
-      // const url = propertiesUrlArr[0]
-      // const data: any = await this.parseItem(url);
+      // const data: any = await Promise.all(propertiesUrlArr.map(url => this.parseItem(url)));
+      const data = [];
 
-      const data: any = await Promise.all(propertiesUrlArr.map(url => this.parseItem(url)));
-      // await Property.query().insert(data);
-      await this.loadToSheets(data);
+      for (const url of propertiesUrlArr) {
+        const item = await this.parseItem(url);
+        data.push(item);
+      }
+      await this.loadToDb(data);
       // console.log(data); break;
       page += 1;
     }
@@ -92,8 +92,8 @@ export class ExcelbaliService extends ParserService {
     propertyObj['bedroomsCount'] = parseNumeric(info['Bedrooms']);
     propertyObj['bathroomsCount'] = parseNumeric(info['Bathrooms']);
     propertyObj['pool'] = poolExists ? 'Yes' : 'No';
-    propertyObj['priceUSD'] = info['Price'].indexOf('USD') >= 0 ? parsePrice(info['Price']) : 0;
-    propertyObj['priceIDR'] = info['Price'].indexOf('IDR') >= 0 ? parsePrice(info['Price']) : 0;
+    propertyObj['priceUsd'] = info['Price'].indexOf('USD') >= 0 ? parsePrice(info['Price']) : 0;
+    propertyObj['priceIdr'] = info['Price'].indexOf('IDR') >= 0 ? parsePrice(info['Price']) : 0;
     propertyObj['url'] = itemUrl;
     propertyObj['source'] = 'excelbali.com';
     propertyObj['photos'] = imgArr.length && imgArr[0];

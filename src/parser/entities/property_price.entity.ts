@@ -13,9 +13,9 @@ export class PropertyPrice extends BaseModel {
 
   propertyId: string;
 
-  priceIDR: number;
+  priceIdr: number;
 
-  priceUSD: number;
+  priceUsd: number;
 
   created: string;
 

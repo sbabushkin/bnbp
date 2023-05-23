@@ -30,16 +30,14 @@ export class BalirealtyService extends ParserService {
         .querySelectorAll(propertiesClass)
         .map(item => item.getAttribute('href'));
 
-      // console.log(listUrl, propertiesUrlArr.length);
+      // const data: any = await Promise.all(propertiesUrlArr.map(url => this.parseItem(url)));
+      const data = [];
 
-      // const data: any = await this.parseItem(propertiesUrlArr[0]);
-      const data: any = await Promise.all(propertiesUrlArr.map(url => this.parseItem(url)));
-
-      // console.log(data.length);
-      // await Property.query().insert(data);
-      await this.loadToSheets(data);
-      // console.log(data); break;
-
+      for (const url of propertiesUrlArr) {
+        const item = await this.parseItem(url);
+        data.push(item);
+      }
+      await this.loadToDb(data);
       page += 1;
     }
 
@@ -104,8 +102,8 @@ export class BalirealtyService extends ParserService {
     propertyObj['name'] = listingName;
     propertyObj['ownership'] = propertyObj['status'].indexOf('Freehold') >= 0 ? 'freehold' : 'leasehold';
     propertyObj['pool'] = poolExists ? 'Yes' : 'No';
-    propertyObj['priceUSD'] = currency === 'USD' ? propertyObj['price'] : 0;
-    propertyObj['priceIDR'] = currency === 'IDR' ? propertyObj['price'] : 0;
+    propertyObj['priceUsd'] = currency === 'USD' ? propertyObj['price'] : 0;
+    propertyObj['priceIdr'] = currency === 'IDR' ? propertyObj['price'] : 0;
     propertyObj['url'] = itemUrl;
     // propertyObj['leaseYearsLeft'] = ''; // TODO: doesnt work
     propertyObj['source'] = 'balirealty.com';

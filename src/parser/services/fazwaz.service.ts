@@ -25,22 +25,14 @@ export class FazwazService extends ParserService {
 
       if (!propertiesUrlArr.length) break;
 
-      // const url = 'https://bali-home-immo.com/realestate-property/for-rent/villa/monthly/seminyak/5-bedroom-villa-for-rent-and-sale-in-bali-seminyak-ff039'
-      // const url = propertiesUrlArr[0]
-      // const data: any = await this.parseItem(url);
-
       const data = [];
 
-      for (const url of propertiesUrlArr) { // TODO: have to use buffer bcs of 503 error
+      for (const url of propertiesUrlArr) {
         const item = await this.parseItem(url);
         data.push(item);
       }
 
-      // const data: any = await Promise.all(propertiesUrlArr.map(url => this.parseItem(url)));
-      // await Property.query().insert(data);
-
-      await this.loadToSheets(data);
-      // console.log(data); break;
+      await this.loadToDb(data);
       page += 1;
     }
     return 'ok';
@@ -122,8 +114,8 @@ export class FazwazService extends ParserService {
     propertyObj['bedroomsCount'] = parseSquare(info['Bedrooms'] || info['Bedroom']) ;
     propertyObj['bathroomsCount'] = parseSquare(info['Bathrooms'] || info['Bathroom']);
     propertyObj['pool'] = poolExists ? 'Yes' : 'No';
-    // propertyObj['priceUSD'] = priceUsd;
-    propertyObj['priceIDR'] = parseNumeric(priceIdr);
+    // propertyObj['priceUsd'] = priceUsd;
+    propertyObj['priceIdr'] = parseNumeric(priceIdr);
     propertyObj['url'] = itemUrl;
     propertyObj['source'] = 'fazwaz.id';
     // propertyObj['photos'] = imgArr[0];

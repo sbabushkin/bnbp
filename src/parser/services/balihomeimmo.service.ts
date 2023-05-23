@@ -22,49 +22,16 @@ export class BaliHomeImmoService extends ParserService {
         .querySelectorAll(propertiesClass)
         .map(item => item.getAttribute('href'));
 
-      // console.log(listUrl, propertiesUrlArr);
-
       if (!propertiesUrlArr.length) break;
 
-      // const url = 'https://bali-home-immo.com/realestate-property/for-rent/villa/monthly/seminyak/5-bedroom-villa-for-rent-and-sale-in-bali-seminyak-ff039'
-      // const url = propertiesUrlArr[0]
+      // const data: any = await Promise.all(propertiesUrlArr.map(url => this.parseItem(url)));
+      const data = [];
 
-      // const data: any = await this.parseItem(url);
-      const data: any = await Promise.all(propertiesUrlArr.map(url => this.parseItem(url)));
-      const bindings = data.map(item => ([item.source, item.externalId]));
-
-      const existedRows = await Property.query().whereIn(
-        ['source', 'external_id'],
-        bindings
-      );
-
-      const existedRowsMap = existedRows.reduce((map, item) => {
-        map[item.externalId] = item;
-        return map;
-      }, {});
-
-      const insertData = data
-        .filter(item => !existedRowsMap[item.externalId])
-        .map(item => {
-          item.prices = [{
-            priceIdr: item.priceIDR,
-            priceUsd: item.priceUSD,
-          }]
-          return item;
-        });
-
-      await Property.query().insertGraph(insertData);
-      await PropertyPrice.query().insert(
-        data
-          .filter(item => existedRowsMap[item.externalId])
-          .map(item => ({
-            propertyId: existedRowsMap[item.externalId].id,
-            priceIdr: item.priceIDR,
-            priceUsd: item.priceUSD,
-          }))
-      );
-
-      break;
+      for (const url of propertiesUrlArr) {
+        const item = await this.parseItem(url);
+        data.push(item);
+      }
+      await this.loadToDb(data);
       page += 1;
     }
     return 'ok';
@@ -148,8 +115,8 @@ export class BaliHomeImmoService extends ParserService {
     propertyObj['bedroomsCount'] = parseNumeric(indoorObj['Bedroom']);
     propertyObj['bathroomsCount'] = parseNumeric(indoorObj['Bathroom'] || indoorObj['Ensuite Bathroom']);
     propertyObj['pool'] = (outdoorObj['Swimming Pool'] && outdoorObj['Swimming Pool'].indexOf('Yes')) ? 'Yes' : 'No';
-    propertyObj['priceUSD'] = parseNumeric(priceUsd.toString());
-    propertyObj['priceIDR'] = parseNumeric(priceIdr.toString());
+    propertyObj['priceUsd'] = parseNumeric(priceUsd.toString());
+    propertyObj['priceIdr'] = parseNumeric(priceIdr.toString());
     propertyObj['url'] = itemUrl;
     propertyObj['source'] = 'bali-home-immo.com';
     propertyObj['photos'] = imgArr[0];

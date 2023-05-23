@@ -25,15 +25,14 @@ export class UnikbalivillaService extends ParserService {
 
       if (!propertiesUrlArr.length) break;
 
-      // const url = 'https://bali-home-immo.com/realestate-property/for-rent/villa/monthly/seminyak/5-bedroom-villa-for-rent-and-sale-in-bali-seminyak-ff039'
-      // const url = propertiesUrlArr[0]
-      // const data: any = await this.parseItem(url);
+      const data = [];
 
-      const data: any = await Promise.all(propertiesUrlArr.map(url => this.parseItem(url)));
-      // await Property.query().insert(data);
-      await this.loadToSheets(data);
+      for (const url of propertiesUrlArr) {
+        const item = await this.parseItem(url);
+        data.push(item);
+      }
 
-      // console.log(data); break;
+      await this.loadToDb(data);
       page += 1;
     }
     return 'ok';
@@ -75,7 +74,7 @@ export class UnikbalivillaService extends ParserService {
     propertyObj['bedroomsCount'] = parseNumeric(info['Number of bedroom(s)']);
     propertyObj['bathroomsCount'] = parseNumeric(info['Number of bathroom(s)']);
     propertyObj['pool'] = info['Pool'];
-    propertyObj['priceUSD'] = info['Price'];
+    propertyObj['priceUsd'] = info['Price'];
     // propertyObj['priceIDR'] = priceIdr;
     propertyObj['url'] = itemUrl;
     propertyObj['source'] = 'balivillasales.com';

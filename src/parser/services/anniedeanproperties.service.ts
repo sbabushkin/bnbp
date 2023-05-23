@@ -31,40 +31,7 @@ export class AnniedeanpropertiesService extends ParserService { // TODO: resours
 			data.push(item);
 		}
 
-		const bindings = data.map(item => ([item.source, item.externalId]));
-
-		const existedRows = await Property.query().whereIn(
-			['source', 'external_id'],
-			bindings
-		);
-
-		const existedRowsMap = existedRows.reduce((map, item) => {
-			map[item.externalId] = item;
-			return map;
-		}, {});
-
-		const insertData = data
-			.filter(item => !existedRowsMap[item.externalId])
-			.map(item => {
-				item.prices = [{
-					priceIdr: item.priceIDR,
-					priceUsd: item.priceUSD,
-				}]
-				return item;
-			});
-
-		await Property.query().insertGraph(insertData);
-		await PropertyPrice.query().insert(
-			data
-				.filter(item => existedRowsMap[item.externalId])
-				.map(item => ({
-					propertyId: existedRowsMap[item.externalId].id,
-					priceIdr: item.priceIDR,
-					priceUsd: item.priceUSD,
-				}))
-		);
-
-		await this.loadToSheets(data);
+		await this.loadToDb(data);
 
 		return 'ok';
 	}
@@ -119,8 +86,8 @@ export class AnniedeanpropertiesService extends ParserService { // TODO: resours
 		propertyObj['bedroomsCount'] = parseNumeric(infoObj['bedrooms']);
 		propertyObj['bathroomsCount'] = parseNumeric(infoObj['bathrooms']);
 		propertyObj['pool'] = Number(infoObj['pool']) > 0 ? 'Yes' : 'No' ;
-		propertyObj['priceUSD'] = parseNumeric(priceUsd);
-		propertyObj['priceIDR'] = parseNumeric(priceIdr);
+		propertyObj['priceUsd'] = parseNumeric(priceUsd);
+		propertyObj['priceIdr'] = parseNumeric(priceIdr);
 		propertyObj['url'] = itemUrl;
 		propertyObj['source'] = 'anniedeanproperties.com';
 		propertyObj['photos'] = imgArr[0];

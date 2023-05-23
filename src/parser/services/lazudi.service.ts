@@ -1,6 +1,5 @@
 import { parse } from 'node-html-parser';
 import axios from 'axios';
-import { Property } from "../entities/property.entity";
 import { v4 } from 'uuid';
 import { parseNumeric } from "../../helpers/common.helper";
 import { ParserService } from "../parser.service";
@@ -25,14 +24,14 @@ export class LazudiService extends ParserService {
 
       if (!propertiesUrlArr.length) break;
 
-      // const url = 'https://bali-home-immo.com/realestate-property/for-rent/villa/monthly/seminyak/5-bedroom-villa-for-rent-and-sale-in-bali-seminyak-ff039'
-      // const url = propertiesUrlArr[0]
-      // const data: any = await this.parseItem(url);
+      // const data: any = await Promise.all(propertiesUrlArr.map(url => this.parseItem(url)));
+      const data = [];
 
-      const data: any = await Promise.all(propertiesUrlArr.map(url => this.parseItem(url)));
-      // await Property.query().insert(data);
-      await this.loadToSheets(data);
-      // console.log(data); break;
+      for (const url of propertiesUrlArr) {
+        const item = await this.parseItem(url);
+        data.push(item);
+      }
+      await this.loadToDb(data);
       page += 1;
     }
     return 'ok';
@@ -81,7 +80,7 @@ export class LazudiService extends ParserService {
     propertyObj['bathroomsCount'] = parseNumeric(info[3]);
     propertyObj['pool'] = poolExists ? 'Yes' : 'No';
     // propertyObj['priceUSD'] = priceUsd;
-    propertyObj['priceIDR'] = parseNumeric(priceIdr);
+    propertyObj['priceIdr'] = parseNumeric(priceIdr);
     propertyObj['url'] = itemUrl;
     propertyObj['source'] = 'lazudi.com';
     // propertyObj['photos'] = imgArr[0];

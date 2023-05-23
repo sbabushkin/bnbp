@@ -1,6 +1,5 @@
 import { parse } from 'node-html-parser';
 import axios from 'axios';
-import { Property } from "../entities/property.entity";
 import { v4 } from 'uuid';
 import { parseNumeric } from "../../helpers/common.helper";
 import { ParserService } from "../parser.service";
@@ -24,14 +23,15 @@ export class RajavillapropertyService extends ParserService {
       console.log(listUrl, propertiesUrlArr.length);
 
       if (!propertiesUrlArr.length) break;
-
-      // const url = 'https://bali-home-immo.com/realestate-property/for-rent/villa/monthly/seminyak/5-bedroom-villa-for-rent-and-sale-in-bali-seminyak-ff039'
-      // const url = propertiesUrlArr[0]
-      // const data: any = await this.parseItem(url);
-
       // const data: any = await Promise.all(propertiesUrlArr.map(url => this.parseItem(url)));
-      // await Property.query().insert(data);
-      // await this.loadToSheets(data);
+
+      const data = [];
+
+      for (const url of propertiesUrlArr) {
+        const item = await this.parseItem(url);
+        data.push(item);
+      }
+      await this.loadToDb(data);
       page += 1;
     }
     return 'ok';
@@ -98,8 +98,8 @@ export class RajavillapropertyService extends ParserService {
     propertyObj['bedroomsCount'] = parseNumeric(bedrooms);
     propertyObj['bathroomsCount'] = parseNumeric(bathrooms);
     propertyObj['pool'] = poolExists ? 'Yes' : 'No';
-    propertyObj['priceUSD'] = priceUsd;
-    propertyObj['priceIDR'] = priceIdr;
+    propertyObj['priceUsd'] = priceUsd;
+    propertyObj['priceIdr'] = priceIdr;
     propertyObj['url'] = itemUrl;
     propertyObj['source'] = 'balivillasales.com';
     propertyObj['photos'] = imgArr[0];
