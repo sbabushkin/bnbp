@@ -56,7 +56,7 @@ interface ServerError extends GraphQLError {
 // eslint-disable-next-line prefer-const
 let graphQlClient: ApolloClient<NormalizedCacheObject>;
 
-const graphqlHttpUri = '/graphql';
+const graphqlHttpUri = 'http://139.180.157.113:3005/graphql'; // TODO: remove hard code
 
 const buildWSUri = () => {
   const useWss = window.location.protocol === 'https:';
