@@ -10,6 +10,7 @@ export interface FilterType {
   bedroomsCount?: number;
   bathroomsCount?: number;
   priceUsd?: [number, number];
+  ownership?: 'leasehold' | 'freehold';
 }
 
 interface MaxValues {
@@ -26,6 +27,9 @@ export const propertiesQuery = gql`
           bedroomsCount
           bathroomsCount
           priceUsd
+        }
+        average {
+          pricePerSqm
         }
       }
       nodes {
@@ -51,8 +55,10 @@ export const propertiesQuery = gql`
 const useGetDataHook = () => {
   const [data, setData] = useState<IData[]>([])
   const [max, setMax] = useState<MaxValues>({})
+  const [pricePerSqm, setPricePerSqm] = useState<number | null>(null)
   const [filters, setFilters] = useState<FilterType>({
-    type: ['villa', 'apartment', 'house', 'land']
+    type: ['villa', 'apartment', 'house', 'land'],
+    ownership: 'leasehold',
   })
 
   const fetchData = useCallback(async (newFilters: any) => {
@@ -81,12 +87,17 @@ const useGetDataHook = () => {
       }
     }
 
+    if(newFilters.ownership) {
+      queryFilter.ownership = { equalTo: newFilters.ownership }
+    }
+
     const data = await apolloQuery<any, any>({ query: propertiesQuery, variables: {filter: queryFilter} });
     setMax(data?.propertiesConnection?.aggregates?.max ?? {})
     setData(data?.propertiesConnection?.nodes ?? [])
+    setPricePerSqm(data?.propertiesConnection?.aggregates?.average?.pricePerSqm ?? null)
   }, [])
 
-  return { max, data, fetchData, setFilters, filters }
+  return { max, data, fetchData, setFilters, filters, pricePerSqm }
 }
 
 export default useGetDataHook

@@ -69,7 +69,11 @@ function EnhancedTableHead(props: EnhancedTableProps) {
           <TableCell
             key={headCell.id}
             sortDirection={orderBy === headCell.id ? order : false}
-            sx={{ minWidth: '105px' }}
+            sx={{
+              width: headCell.id === 'name' ? '220px' : 'auto',
+              minWidth: '60px',
+              whiteSpace: 'nowrap',
+            }}
           >
             <TableSortLabel
               active={orderBy === headCell.id}
@@ -90,7 +94,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   );
 }
 
-function EnhancedTableToolbar({fetchData, setFilters, max, filters}: any) {
+function EnhancedTableToolbar({fetchData, setFilters, max, filters, pricePerSqm}: any) {
   return (
     <Toolbar sx={{ pl: { sm: 2 }, pr: { xs: 1, sm: 1 } }}>
       <Typography
@@ -98,7 +102,9 @@ function EnhancedTableToolbar({fetchData, setFilters, max, filters}: any) {
         variant="h5"
         component="div"
       >
-        Properties
+        <span>Ownership: {filters.ownership}; </span>
+        {' '}
+        <span>Average price per sqm: {parseInt(pricePerSqm)}</span>
       </Typography>
 
       <TemporaryDrawer
@@ -133,7 +139,7 @@ export default function EnhancedTable() {
     setPage(0);
   };
 
-  const {data, fetchData, max, setFilters, filters} = useGetDataHook();
+  const {data, fetchData, max, setFilters, filters, pricePerSqm} = useGetDataHook();
 
   React.useEffect(() => {
     fetchData(filters);
@@ -168,6 +174,7 @@ export default function EnhancedTable() {
           max={max}
           filters={filters}
           fetchData={handleFetchData}
+          pricePerSqm={pricePerSqm}
          />
         <TableContainer>
           <Table
@@ -190,15 +197,14 @@ export default function EnhancedTable() {
                 >
                   <TableCell><a href={row.source} target='_blank'>{row.name}</a></TableCell>
                   <TableCell>{row.source}</TableCell>
-                  <TableCell>{row.ownership}</TableCell>
                   <TableCell>{row.propertyType}</TableCell>
                   <TableCell>{row.location}</TableCell>
                   <TableCell>{row.bedroomsCount}</TableCell>
                   <TableCell>{row.bathroomsCount}</TableCell>
                   <TableCell>{row.landSize}</TableCell>
                   <TableCell>{row.buildingSize}</TableCell>
-                  <TableCell>{row.priceIdr}</TableCell>
-                  <TableCell>{row.priceUsd}</TableCell>
+                  <TableCell>{parseInt(row.priceIdr)}</TableCell>
+                  <TableCell>{parseInt(row.priceUsd)}</TableCell>
                 </TableRow>
               ))}
               {emptyRows > 0 && (

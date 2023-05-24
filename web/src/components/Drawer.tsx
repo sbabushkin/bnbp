@@ -13,6 +13,7 @@ import SlidInput from './SlidInput';
 import RangeSlide from './RangeSlide';
 import Stack from '@mui/material/Stack';
 import { FilterType } from '../api/useGetDataHook';
+import { Radio } from '@mui/material';
 
 export default function TemporaryDrawer({fetchData, setFilters, max, filters}: any) {
   const [state, setState] = React.useState(false);
@@ -48,6 +49,12 @@ export default function TemporaryDrawer({fetchData, setFilters, max, filters}: a
       }
     })
   }, [typeName])
+
+  const handleChangeOwnerships = React.useCallback((ownership: string) => {
+    setFilters((prev: any) => {
+      return {...prev, ownership}
+    })
+  }, [])
 
   const handleChangeLocation = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setFilters((prev: any) => ({
@@ -110,6 +117,22 @@ export default function TemporaryDrawer({fetchData, setFilters, max, filters}: a
                 control={<Checkbox checked={filters.type?.includes('land')} />}
                 label="Land"
                 onChange={useHandleTypeChange('land')}
+              />
+            </ListItem>
+
+            <ListItem>
+              <ListItemText>Ownership</ListItemText>
+            </ListItem>
+            <ListItem>
+              <FormControlLabel
+                control={<Radio checked={filters.ownership === 'leasehold'} />}
+                label="Leasehold"
+                onChange={() => setFilters((prev: any) => ({...prev, ownership: 'leasehold'}))}
+              />
+              <FormControlLabel
+                control={<Radio checked={filters.ownership === 'freehold'} />}
+                label="Freehold"
+                onChange={() => setFilters((prev: any) => ({...prev, ownership: 'freehold'}))}
               />
             </ListItem>
 

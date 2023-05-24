@@ -27,10 +27,10 @@ export const headCells: readonly IHeadCell[] = [
     id: 'source',
     label: 'Source',
   },
-  {
-    id: 'ownership',
-    label: 'Ownership',
-  },
+  // {
+  //   id: 'ownership',
+  //   label: 'Ownership',
+  // },
   {
     id: 'propertyType',
     label: 'Type',
@@ -41,11 +41,11 @@ export const headCells: readonly IHeadCell[] = [
   },
   {
     id: 'bathroomsCount',
-    label: 'Bathrooms',
+    label: 'Baths',
   },
   {
     id: 'bedroomsCount',
-    label: 'Bedrooms',
+    label: 'Beds',
   },
   {
     id: 'landSize',
@@ -53,14 +53,14 @@ export const headCells: readonly IHeadCell[] = [
   },
   {
     id: 'buildingSize',
-    label: 'Building Size',
+    label: 'Build Size',
   },
   {
     id: 'priceIdr',
-    label: 'Price Idr',
+    label: 'Idr',
   },
   {
     id: 'priceUsd',
-    label: 'Price Usd',
+    label: 'Usd',
   },
 ];
