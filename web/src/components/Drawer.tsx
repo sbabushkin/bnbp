@@ -50,12 +50,6 @@ export default function TemporaryDrawer({fetchData, setFilters, max, filters}: a
     })
   }, [typeName])
 
-  const handleChangeOwnerships = React.useCallback((ownership: string) => {
-    setFilters((prev: any) => {
-      return {...prev, ownership}
-    })
-  }, [])
-
   const handleChangeLocation = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setFilters((prev: any) => ({
       ...prev,
