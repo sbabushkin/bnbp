@@ -148,10 +148,12 @@ export default function EnhancedTable() {
   const handleFetchData = React.useCallback((isReset?: boolean) => {
     if(isReset) {
       setFilters({
-        type: ['villa', 'apartment', 'house', 'land']
+        type: ['villa', 'apartment', 'house', 'land'],
+        ownership: 'leasehold',
       })
       fetchData({
-        type: ['villa', 'apartment', 'house', 'land']
+        type: ['villa', 'apartment', 'house', 'land'],
+        ownership: 'leasehold',
       })
     } else {
       fetchData(filters)
