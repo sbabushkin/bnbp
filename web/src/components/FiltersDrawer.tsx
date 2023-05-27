@@ -12,18 +12,18 @@ import Divider from '@mui/material/Divider';
 import SlidInput from './SlidInput';
 import RangeSlide from './RangeSlide';
 import Stack from '@mui/material/Stack';
-import { FilterType } from '../api/useGetDataHook';
 import { Radio } from '@mui/material';
+import { usePropertyStore } from '../store/propertyStore';
+import { FilterTypeOption } from '../store/filterTypes';
 
-export default function TemporaryDrawer({fetchData, setFilters, max, filters}: any) {
+export const FiltersDrawer: React.FC = () => {
   const [state, setState] = React.useState(false);
+  const filters = usePropertyStore((state) => state.filters);
+  const propAct = usePropertyStore((state) => state.actions);
+  const max = usePropertyStore((state) => state.maxValues);
 
   const toggleDrawer = (event: React.KeyboardEvent | React.MouseEvent) => {
-    if (
-      event.type === 'keydown' &&
-      ((event as React.KeyboardEvent).key === 'Tab' ||
-        (event as React.KeyboardEvent).key === 'Shift')
-    ) {
+    if ('key' in event && (event.type === 'keydown' && event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
 
@@ -31,52 +31,23 @@ export default function TemporaryDrawer({fetchData, setFilters, max, filters}: a
   };
 
   const handleApply = React.useCallback(() => {
-    fetchData()
+    propAct.fetchData()
     setState((prev) => !prev);
-  }, [fetchData])
+  }, [propAct])
 
   const handleReset = React.useCallback(() => {
-    fetchData(true)
+    propAct.reset()
+    propAct.fetchData()
     setState((prev) => !prev);
-  }, [fetchData])
+  }, [propAct])
 
-  const useHandleTypeChange = (typeName: string) => React.useCallback((_: any, val: boolean) => {
-    setFilters((prev: any) => {
-      if(val) {
-        return {...prev, type: prev.type ? [...prev.type, typeName] : []} as FilterType
-      } else {
-        return { ...prev, type: prev.type ? prev.type.filter((s: string) => s !== typeName) : []}
-      }
-    })
+  const useHandleTypeChange = (typeName: FilterTypeOption) => React.useCallback((_: any, val: boolean) => {
+    propAct.upType(typeName, val)
   }, [typeName])
 
   const handleChangeLocation = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    setFilters((prev: any) => ({
-      ...prev,
-      location: event.target.value,
-    }))
-  }, [setFilters])
-
-  const handleChangeBedroomsCount = React.useCallback((value: number) => {
-    setFilters((prev: any) => ({
-      ...prev,
-      bedroomsCount: value,
-    }))
-  }, [setFilters])
-
-  const handleChangeBathroomsCount = React.useCallback((value: number) => {
-    setFilters((prev: any) => ({
-      ...prev,
-      bathroomsCount: value,
-    }))
-  }, [setFilters])
-
-  const handleChangePrice = React.useCallback((value: [number, number]) => {
-    setFilters((prev: any) => ({
-      ...prev,
-      priceUsd: value,
-    }))
-  }, [setFilters])
+    propAct.upLocation(event.target.value)
+  }, [propAct])
 
   return (
     <>
@@ -93,22 +64,22 @@ export default function TemporaryDrawer({fetchData, setFilters, max, filters}: a
             </ListItem>
             <ListItem>
               <FormControlLabel
-                control={<Checkbox checked={filters.type?.includes('villa')} />}
+                control={<Checkbox checked={filters.type.includes('villa')} />}
                 label="Villa"
                 onChange={useHandleTypeChange('villa')}
               />
               <FormControlLabel
-                control={<Checkbox checked={filters.type?.includes('apartment')} />}
+                control={<Checkbox checked={filters.type.includes('apartment')} />}
                 label="Apartment"
                 onChange={useHandleTypeChange('apartment')}
               />
               <FormControlLabel
-                control={<Checkbox checked={filters.type?.includes('house')} />}
+                control={<Checkbox checked={filters.type.includes('house')} />}
                 label="House"
                 onChange={useHandleTypeChange('house')}
               />
               <FormControlLabel
-                control={<Checkbox checked={filters.type?.includes('land')} />}
+                control={<Checkbox checked={filters.type.includes('land')} />}
                 label="Land"
                 onChange={useHandleTypeChange('land')}
               />
@@ -121,12 +92,12 @@ export default function TemporaryDrawer({fetchData, setFilters, max, filters}: a
               <FormControlLabel
                 control={<Radio checked={filters.ownership === 'leasehold'} />}
                 label="Leasehold"
-                onChange={() => setFilters((prev: any) => ({...prev, ownership: 'leasehold'}))}
+                onChange={() => propAct.upOwnership('leasehold')}
               />
               <FormControlLabel
                 control={<Radio checked={filters.ownership === 'freehold'} />}
                 label="Freehold"
-                onChange={() => setFilters((prev: any) => ({...prev, ownership: 'freehold'}))}
+                onChange={() => propAct.upOwnership('freehold')}
               />
             </ListItem>
 
@@ -146,13 +117,13 @@ export default function TemporaryDrawer({fetchData, setFilters, max, filters}: a
             <SlidInput
               max={max.bedroomsCount || 10}
               title="Bedrooms count"
-              onChange={handleChangeBedroomsCount}
+              onChange={(value: number) => propAct.upRoomCount(value, 'bedroomsCount')}
               value={filters.bedroomsCount ?? 0}
             />
             <SlidInput
               max={max.bathroomsCount || 10}
               title="Bathrooms count"
-              onChange={handleChangeBathroomsCount}
+              onChange={(value: number) => propAct.upRoomCount(value, 'bathroomsCount')}
               value={filters.bathroomsCount ?? 0}
             />
 
@@ -161,8 +132,8 @@ export default function TemporaryDrawer({fetchData, setFilters, max, filters}: a
             <RangeSlide
               max={max.priceUsd || 99999999}
               title="Price usd"
-              setValue={handleChangePrice}
-              value={filters.priceUsd ?? [100, 99999999]}
+              setValue={propAct.upPrice}
+              value={filters.priceUsd ?? [100, max.priceUsd || 99999999]}
             />
 
             <Divider />
@@ -179,3 +150,5 @@ export default function TemporaryDrawer({fetchData, setFilters, max, filters}: a
     </>
   );
 }
+
+export default FiltersDrawer;
