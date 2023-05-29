@@ -25,6 +25,7 @@ export class ParserService {
   }
 
   protected async loadToDb(data: Property[]) {
+    console.log(data);
     const bindings = data.map(item => ([item.source, item.externalId]));
 
     const existedRows = await Property.query().whereIn(
