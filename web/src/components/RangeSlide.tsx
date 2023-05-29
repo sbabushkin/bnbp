@@ -1,25 +1,19 @@
 import * as React from 'react';
 import ListItem from '@mui/material/ListItem';
-import Grid from '@mui/material/Grid';
 import Input from '@mui/material/Input';
 import Slider from '@mui/material/Slider';
-import Typography from '@mui/material/Typography';
+import { ListItemText } from '@mui/material';
 
-function valuetext(value: number) {
-  return `${value}°C`;
-}
-
-const minDistance = 1000;
+const minDistance = 100;
 
 type RangeSlideProps = {
   max: number;
-  title: string;
   value: [number, number];
   setValue: (val: [number, number]) => void;
 }
 
-export default function RangeSlide({ max, title, value, setValue }: RangeSlideProps) {
-  const handleChange = (
+export default function RangeSlide({ max, value, setValue }: RangeSlideProps) {
+  const handleChangeRange = (
     _: Event,
     newValue: number | number[],
     activeThumb: number,
@@ -43,7 +37,7 @@ export default function RangeSlide({ max, title, value, setValue }: RangeSlidePr
     setValue([value[0], Math.max(Number(event.target.value), value[0] + minDistance)]);
   };
 
-  const handleBlurMin = (event: any) => {
+  const handleBlurMin = (event: React.FocusEvent<HTMLInputElement>) => {
     const num = Number(event.target.value)
     if (num < 0) {
       setValue([0, value[1]]);
@@ -52,7 +46,7 @@ export default function RangeSlide({ max, title, value, setValue }: RangeSlidePr
     }
   };
 
-  const handleBlurMax = (event: any) => {
+  const handleBlurMax = (event: React.FocusEvent<HTMLInputElement>) => {
     const num = Number(event.target.value)
     if (num > max) {
       setValue([value[0], max]);
@@ -64,42 +58,31 @@ export default function RangeSlide({ max, title, value, setValue }: RangeSlidePr
   return (
     <>
       <ListItem>
-        <Typography id="input-slider-rooms" gutterBottom>
-          {title}
-        </Typography>
+        <ListItemText>Price USD from:</ListItemText>
+        <Input
+          value={value[0]}
+          onChange={handleInputChangeMin}
+          onBlur={handleBlurMin}
+          sx={{width: 160}}
+          inputProps={{ step: 1, min: 1, max, type: 'number', 'aria-labelledby': 'input-slider-rooms'}}
+        />
       </ListItem>
       <ListItem>
-        <Grid container spacing={2} alignItems="center">
-          <Grid item>
-            <Input
-              value={value[0]}
-              onChange={handleInputChangeMin}
-              onBlur={handleBlurMin}
-              inputProps={{ step: 1, min: 1, max, type: 'number', 'aria-labelledby': 'input-slider-rooms'}}
-              style={{ width: '170px' }}
-            />
-          </Grid>
-          <Grid item xs>
-            <Slider
-              getAriaLabel={() => 'Minimum distance shift'}
-              value={value}
-              onChange={handleChange}
-              valueLabelDisplay="auto"
-              getAriaValueText={valuetext}
-              disableSwap
-              max={max}
-            />
-          </Grid>
-          <Grid item>
-            <Input
-              value={value[1]}
-              onChange={handleInputChangeMax}
-              onBlur={handleBlurMax}
-              inputProps={{ step: 1, min: 1, max, type: 'number', 'aria-labelledby': 'input-slider-rooms'}}
-              style={{ width: '170px' }}
-            />
-          </Grid>
-        </Grid>
+        <Slider
+          value={value}
+          onChange={handleChangeRange}
+          max={max}
+        />
+      </ListItem>
+      <ListItem>
+        <ListItemText>Price USD to:</ListItemText>
+        <Input
+          value={value[1]}
+          onChange={handleInputChangeMax}
+          onBlur={handleBlurMax}
+          sx={{width: 160}}
+          inputProps={{ step: 1, min: 1, max, type: 'number', 'aria-labelledby': 'input-slider-rooms'}}
+        />
       </ListItem>
     </>
   );

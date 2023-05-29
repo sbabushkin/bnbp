@@ -5,16 +5,22 @@ import Button from '@mui/material/Button';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
-import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import TextField from '@mui/material/TextField';
 import Divider from '@mui/material/Divider';
-import SlidInput from './SlidInput';
 import RangeSlide from './RangeSlide';
 import Stack from '@mui/material/Stack';
-import { Radio } from '@mui/material';
+import { Autocomplete, Radio } from '@mui/material';
 import { usePropertyStore } from '../store/propertyStore';
-import { FilterTypeOption } from '../store/filterTypes';
+import { locationOptions, propertyTypeOptions } from '../helpers/constants';
+
+const boxStyles = {
+  width: 320,
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'space-between',
+  height: '100vh'
+}
 
 export const FiltersDrawer: React.FC = () => {
   const [state, setState] = React.useState(false);
@@ -41,14 +47,6 @@ export const FiltersDrawer: React.FC = () => {
     setState((prev) => !prev);
   }, [propAct])
 
-  const useHandleTypeChange = (typeName: FilterTypeOption) => React.useCallback((_: any, val: boolean) => {
-    propAct.upType(typeName, val)
-  }, [typeName])
-
-  const handleChangeLocation = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    propAct.upLocation(event.target.value)
-  }, [propAct])
-
   return (
     <>
       <Button onClick={toggleDrawer}>Filters</Button>
@@ -57,36 +55,39 @@ export const FiltersDrawer: React.FC = () => {
         open={state}
         onClose={toggleDrawer}
       >
-        <Box sx={{ width: 650 }}>
-          <List>
+        <Box sx={boxStyles}>
+          <List sx={{ height: '100%', overflow: 'scroll' }}>
             <ListItem>
-              <ListItemText>Property type</ListItemText>
+              <ListItemText><strong>Filters</strong></ListItemText>
             </ListItem>
             <ListItem>
-              <FormControlLabel
-                control={<Checkbox checked={filters.type.includes('villa')} />}
-                label="Villa"
-                onChange={useHandleTypeChange('villa')}
-              />
-              <FormControlLabel
-                control={<Checkbox checked={filters.type.includes('apartment')} />}
-                label="Apartment"
-                onChange={useHandleTypeChange('apartment')}
-              />
-              <FormControlLabel
-                control={<Checkbox checked={filters.type.includes('house')} />}
-                label="House"
-                onChange={useHandleTypeChange('house')}
-              />
-              <FormControlLabel
-                control={<Checkbox checked={filters.type.includes('land')} />}
-                label="Land"
-                onChange={useHandleTypeChange('land')}
+              <Autocomplete
+                multiple
+                options={propertyTypeOptions}
+                defaultValue={filters.type}
+                filterSelectedOptions
+                fullWidth
+                onChange={(_, value) => propAct.upType(value)}
+                renderInput={(params) => (<TextField {...params} label="Property type" placeholder="type" />)}
               />
             </ListItem>
 
             <ListItem>
-              <ListItemText>Ownership</ListItemText>
+              <Autocomplete
+                multiple
+                options={locationOptions}
+                groupBy={(opt) => opt.groupBy}
+                getOptionLabel={(option) => option.value}
+                defaultValue={filters.locations}
+                filterSelectedOptions
+                fullWidth
+                onChange={(_, value) => propAct.upLocation(value)}
+                renderInput={(params) => (<TextField {...params} label="Location" placeholder="search" />)}
+              />
+            </ListItem>
+
+            <ListItem>
+              <ListItemText>Ownership:</ListItemText>
             </ListItem>
             <ListItem>
               <FormControlLabel
@@ -101,43 +102,40 @@ export const FiltersDrawer: React.FC = () => {
               />
             </ListItem>
 
+            <Divider />
+
             <ListItem>
-              <TextField
-                id="outlined-basic"
-                label="Location"
-                variant="standard"
+              <ListItemText>Room counts:</ListItemText>
+            </ListItem>
+
+            <ListItem sx={{ display: 'flex', gap: '20px' }}>
+              <Autocomplete
+                disableClearable
                 fullWidth
-                value={filters.location}
-                onChange={handleChangeLocation}
+                options={[1,2,3,4,5,'6+']}
+                defaultValue={filters.bedroomsCount || '6+'}
+                onChange={(_, value) => propAct.upRoomCount(value === '6+' ? null : Number(value), 'bedroomsCount')}
+                renderInput={(params) => <TextField {...params} label="Bedrooms" />}
+              />
+              <Autocomplete
+                disableClearable
+                options={[1,2,3,4,5,'6+']}
+                defaultValue={filters.bathroomsCount || '6+'}
+                fullWidth
+                onChange={(_, value) => propAct.upRoomCount(value === '6+' ? null : Number(value), 'bathroomsCount')}
+                renderInput={(params) => <TextField {...params} label="Bathrooms" />}
               />
             </ListItem>
 
-            <Divider />
-
-            <SlidInput
-              max={max.bedroomsCount || 10}
-              title="Bedrooms count"
-              onChange={(value: number) => propAct.upRoomCount(value, 'bedroomsCount')}
-              value={filters.bedroomsCount ?? 0}
-            />
-            <SlidInput
-              max={max.bathroomsCount || 10}
-              title="Bathrooms count"
-              onChange={(value: number) => propAct.upRoomCount(value, 'bathroomsCount')}
-              value={filters.bathroomsCount ?? 0}
-            />
-
-            <Divider />
-
             <RangeSlide
               max={max.priceUsd || 99999999}
-              title="Price usd"
               setValue={propAct.upPrice}
               value={filters.priceUsd ?? [100, max.priceUsd || 99999999]}
             />
 
+          </List>
+          <List>
             <Divider />
-
             <ListItem>
               <Stack spacing={2} direction="row" minWidth={'100%'}>
                 <Button fullWidth variant='contained' onClick={handleApply}>Apply</Button>

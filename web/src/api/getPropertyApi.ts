@@ -43,7 +43,7 @@ export const propertiesQuery = gql`
 type FilterQuery = {
   propertyType: { in: FilterTypeOption[] };
   ownership: { equalTo: FilterOwnershipOption };
-  location?: { includesInsensitive: string };
+  locations?: { in: string[] };
   bedroomsCount?:  { greaterThanOrEqualTo: number };
   bathroomsCount?:  { greaterThanOrEqualTo: number };
   priceUsd?: { lessThanOrEqualTo: number; greaterThanOrEqualTo: number; };
@@ -53,7 +53,7 @@ export const fetchDataApi = async (filterStore: FilterType) => {
   const queryFilter: FilterQuery = {
     propertyType: { in: filterStore.type },
     ownership: { equalTo: filterStore.ownership },
-    ...(filterStore.location?.length ? { location: { includesInsensitive: filterStore.location } } : {}),
+    ...(filterStore.locations.length ? { location: { in: filterStore.locations.map(({value}) => value) } } : {}),
     ...(filterStore.bedroomsCount ? { bedroomsCount: { greaterThanOrEqualTo: filterStore.bedroomsCount } } : {}),
     ...(filterStore.bathroomsCount ? { bathroomsCount: { greaterThanOrEqualTo: filterStore.bathroomsCount } } : {}),
     ...(filterStore.priceUsd ? {

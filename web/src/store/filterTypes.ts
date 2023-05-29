@@ -29,7 +29,10 @@ export type AveragesType = {
 
 export interface FilterType {
   type: FilterTypeOption[];
-  location: string | null;
+  locations: {
+    value: string;
+    groupBy: string;
+  }[];
   bedroomsCount: number | null;
   bathroomsCount: number | null;
   priceUsd: [number, number] | null;

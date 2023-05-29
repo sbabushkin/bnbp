@@ -17,9 +17,9 @@ interface PropertyStore {
   average: AveragesType;
 
   actions: {
-    upType: (type: FilterTypeOption, checked: boolean) => void;
-    upLocation: (location: string) => void;
-    upRoomCount: (num: number, type: 'bedroomsCount' | 'bathroomsCount') => void;
+    upType: (newTypeList: FilterTypeOption[]) => void;
+    upLocation: (locations: { value: string, groupBy: string }[]) => void;
+    upRoomCount: (num: number | null, type: 'bedroomsCount' | 'bathroomsCount') => void;
     upPrice: (value: [number, number]) => void;
     upOwnership: (option: FilterOwnershipOption) => void;
     reset: () => void;
@@ -29,7 +29,7 @@ interface PropertyStore {
 
 const initialFilters: FilterType = {
   type: ['villa', 'house', 'land', 'apartment'],
-  location: '',
+  locations: [],
   bedroomsCount: null,
   bathroomsCount: null,
   priceUsd: null,
@@ -44,24 +44,8 @@ export const usePropertyStore = create<PropertyStore>()(
       average: {},
       filters: initialFilters,
       actions: {
-        upType: (type, checked) => {
-          if(checked) {
-            return set((state) => ({
-              filters: {
-                ...state.filters,
-                type: [...state.filters.type, type],
-              }
-            }))
-          } else {
-            return set((state) => ({
-              filters: {
-                ...state.filters,
-                type: state.filters.type.filter((s: string) => s !== type),
-              }
-            }))
-          }
-        },
-        upLocation: (location) => set((state) => ({ filters: {...state.filters, location} })),
+        upType: (newTypeList) => set((state) => ({ filters: {...state.filters, type: newTypeList} })),
+        upLocation: (locations) => set((state) => ({ filters: {...state.filters, locations} })),
         upRoomCount: (num, type) => set((state) => ({ filters: {...state.filters, [type]: num} })),
         upPrice: (value) => set((state) => ({ filters: {...state.filters, priceUsd: value} })),
         upOwnership: (option) => set((state) => ({ filters: {...state.filters, ownership: option} })),

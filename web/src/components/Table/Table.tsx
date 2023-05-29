@@ -21,7 +21,7 @@ export default function PropertyTable() {
   const [openId, setOpenId] = React.useState<string | null>(null)
   const [orderBy, setOrderBy] = React.useState<keyof IData>('propertyType');
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(25);
+  const [rowsPerPage, setRowsPerPage] = React.useState(50);
 
   const nodes = usePropertyStore((store) => store.nodes)
   const actions = usePropertyStore((store) => store.actions)
@@ -62,7 +62,6 @@ export default function PropertyTable() {
         <TableContainer sx={{ maxHeight: 'calc(100vh - 130px)' }}>
           <Table
             sx={{ minWidth: 750 }}
-            aria-label="sticky table"
             size={'small'}
             stickyHeader
           >
@@ -100,7 +99,7 @@ export default function PropertyTable() {
           </Table>
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[25, 50]}
+          rowsPerPageOptions={[25, 50, 100]}
           component="div"
           count={nodes.length}
           rowsPerPage={rowsPerPage}
