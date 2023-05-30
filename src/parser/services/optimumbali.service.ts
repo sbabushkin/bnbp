@@ -64,23 +64,6 @@ export class OptimumbaliService extends ParserService {
 		});
 
 		const propertyObj = {};
-
-		switch (infoObj['Price'].slice(3)) {
-			case 'USD':
-				propertyObj['priceUsd'] = parseNumeric(infoObj['Price'].replace('USD'));
-				propertyObj['priceIdr'] = Number(propertyObj['priceUsd']) * 14962.35;
-				break;
-			case 'IDR':
-				propertyObj['priceIdr'] = parseNumeric(infoObj['Price'].replace('IDR'));
-				propertyObj['priceUsd'] = Number(propertyObj['priceIdr']) * 0.000067;
-				break;
-			case 'EUR':
-				const valueInEur = parseNumeric(infoObj['Price'].replace('EUR'));
-				propertyObj['priceUsd'] = Number(valueInEur) * 1.07;
-				propertyObj['priceIdr'] = Number(valueInEur) * 16029.61;
-				break;
-		}
-
 		propertyObj['id'] = v4();
 		propertyObj['externalId'] = infoObj['externalId'];
 		propertyObj['name'] = infoObj['name'];
@@ -93,6 +76,9 @@ export class OptimumbaliService extends ParserService {
 		propertyObj['bedroomsCount'] = parseNumeric(infoObj['Bedrooms']);
 		propertyObj['bathroomsCount'] = parseNumeric(infoObj['Bathrooms']);
 		// propertyObj['pool'] = isHavePool ? 'Yes' : 'No'; Не указано
+		propertyObj['priceUsd'] = infoObj['Price'].slice(-3) === 'USD' ?  parseNumeric(infoObj['Price'].replace('USD')) : 0;
+		propertyObj['priceIdr'] = infoObj['Price'].slice(-3) === 'IDR' ?  parseNumeric(infoObj['Price'].replace('IDR')) : 0;
+		// Рандомная валюта на сайте, иногда в евро может быть
 		propertyObj['url'] = itemUrl;
 		propertyObj['source'] = 'optimumbali.com';
 		propertyObj['photos'] = imgArr[0];
