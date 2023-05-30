@@ -74,9 +74,6 @@ export class ExotiqpropertyService extends ParserService {
 		});
 
 		const priceIdr = parseNumeric(infoObj['Price'].replace('IDR').replace('Rp').trim());
-
-		// Т.к. указана одна валюта решил примерно посчитать
-		const priceUsd = Number(priceIdr) * 0.000067;
 		const leaseYearsLeft = parseNumeric(infoObj['Ownership details'].replace(' years lease'));
 
 		const propertyObj = {};
@@ -92,7 +89,7 @@ export class ExotiqpropertyService extends ParserService {
 		propertyObj['bedroomsCount'] = parseNumeric(infoObj['Bedrooms']);
 		propertyObj['bathroomsCount'] = parseNumeric(infoObj['Bathrooms']);
 		propertyObj['pool'] = infoObj['Pool(s)'] ? 'Yes' : 'No' ;
-		propertyObj['priceUsd'] = priceUsd;
+		propertyObj['priceUsd'] = 0; // Не указано
 		propertyObj['priceIdr'] = priceIdr;
 		propertyObj['url'] = itemUrl;
 		propertyObj['source'] = 'exotiqproperty.com';
