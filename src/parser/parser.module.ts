@@ -18,7 +18,8 @@ import { RajavillapropertyService } from "./services/rajavillaproperty.service";
 import { LazudiService } from "./services/lazudi.service";
 import { BalicoconutlivingService } from "./services/balicoconutliving.service";
 import { RumahService } from "./services/rumah.service";
-import {AnniedeanpropertiesService} from "./services/anniedeanproperties.service";
+import { AnniedeanpropertiesService } from "./services/anniedeanproperties.service";
+import { VillabalisaleService } from "./services/villabalisale.service";
 
 @Module({
   providers: [
@@ -40,6 +41,7 @@ import {AnniedeanpropertiesService} from "./services/anniedeanproperties.service
     BalicoconutlivingService,
     RumahService,
     AnniedeanpropertiesService,
+    VillabalisaleService,
   ],
   imports: [
     DatabaseModule,
