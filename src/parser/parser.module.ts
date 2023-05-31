@@ -19,9 +19,13 @@ import { LazudiService } from "./services/lazudi.service";
 import { BalicoconutlivingService } from "./services/balicoconutliving.service";
 import { RumahService } from "./services/rumah.service";
 import {AnniedeanpropertiesService} from "./services/anniedeanproperties.service";
+import { PropertyResolver } from "./property.resolver";
+import { ParserService } from "./parser.service";
 
 @Module({
   providers: [
+    PropertyResolver,
+    ParserService,
     BalirealtyService,
     BaliHomeImmoService,
     BaliexceptionService,

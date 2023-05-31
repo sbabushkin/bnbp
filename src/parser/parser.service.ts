@@ -7,6 +7,7 @@ import { google } from 'googleapis';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import { PropertyPrice } from "./entities/property_price.entity";
+import { UpdatePropertyInput } from "./dto/update-property.input";
 
 // TODO: move to config
 const spreadsheetId = '1VdNUg64ef3HFnsy4A9q_RimC75L6AjCSBdLEZMeQJxE';
@@ -22,6 +23,10 @@ export class ParserService {
     // const credentials = JSON.parse(content);
     // const auth = google.auth.fromJSON(credentials);
     this.sheets = {}; //google.sheets({version: 'v4', auth});
+  }
+
+  async update(input: any) {
+    return Property.query().patchAndFetchById(input.id, input);
   }
 
   protected async loadToDb(data: Property[]) {

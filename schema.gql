@@ -2820,6 +2820,7 @@ type Mutation {
   updateDocumentTemplate(input: UpdateDocumentTemplateInput!): DocumentTemplate!
   updateDocumentType(input: UpdateDocumentTypeInput!): DocumentType!
   updatePassword(input: UpdatePasswordInput!): UserType!
+  updateProperty(input: UpdatePropertyInput!): PropertyType!
   updateRolePermission(input: UpdateRolePermissionInput!): [Permission!]!
   updateUser(updateUserInput: UpdateUserInput!): UserType!
   uploadFile(file: Upload!): FileType!
@@ -3845,6 +3846,7 @@ type Property implements Node {
   priceIdr: BigFloat
   pricePerBuildingSqm: String
   pricePerBuildingSqmPerYear: String
+  pricePerSqm: Float
   priceUsd: BigFloat
 
   """Reads and enables pagination through a set of `PropertyPrice`."""
@@ -3980,6 +3982,9 @@ type PropertyAverageAggregates {
 
   """Mean average of priceIdr across the matching connection"""
   priceIdr: BigFloat
+
+  """Mean average of this field across the matching connection."""
+  pricePerSqm: Float
 
   """Mean average of priceUsd across the matching connection"""
   priceUsd: BigFloat
@@ -4125,6 +4130,9 @@ type PropertyDistinctCountAggregates {
   """
   pricePerBuildingSqmPerYear: BigInt
 
+  """Distinct count of this field across the matching connection."""
+  pricePerSqm: BigInt
+
   """Distinct count of priceUsd across the matching connection"""
   priceUsd: BigInt
 
@@ -4211,6 +4219,9 @@ input PropertyFilter {
   """Filter by the object’s `pricePerBuildingSqmPerYear` field."""
   pricePerBuildingSqmPerYear: StringFilter
 
+  """Filter by the object’s `pricePerSqm` field."""
+  pricePerSqm: FloatFilter
+
   """Filter by the object’s `priceUsd` field."""
   priceUsd: BigFloatFilter
 
@@ -4274,8 +4285,13 @@ input PropertyHavingAverageInput {
   leaseExpiryYear: HavingIntFilter
   leaseYearsLeft: HavingIntFilter
   priceIdr: HavingBigfloatFilter
+  pricePerSqm: PropertyHavingAveragePropertyPricePerSqmInput
   priceUsd: HavingBigfloatFilter
   updated: HavingDatetimeFilter
+}
+
+input PropertyHavingAveragePropertyPricePerSqmInput {
+  filter: HavingFloatFilter
 }
 
 input PropertyHavingDistinctCountInput {
@@ -4288,8 +4304,13 @@ input PropertyHavingDistinctCountInput {
   leaseExpiryYear: HavingIntFilter
   leaseYearsLeft: HavingIntFilter
   priceIdr: HavingBigfloatFilter
+  pricePerSqm: PropertyHavingDistinctCountPropertyPricePerSqmInput
   priceUsd: HavingBigfloatFilter
   updated: HavingDatetimeFilter
+}
+
+input PropertyHavingDistinctCountPropertyPricePerSqmInput {
+  filter: HavingFloatFilter
 }
 
 """Conditions for `Property` aggregates."""
@@ -4317,8 +4338,13 @@ input PropertyHavingMaxInput {
   leaseExpiryYear: HavingIntFilter
   leaseYearsLeft: HavingIntFilter
   priceIdr: HavingBigfloatFilter
+  pricePerSqm: PropertyHavingMaxPropertyPricePerSqmInput
   priceUsd: HavingBigfloatFilter
   updated: HavingDatetimeFilter
+}
+
+input PropertyHavingMaxPropertyPricePerSqmInput {
+  filter: HavingFloatFilter
 }
 
 input PropertyHavingMinInput {
@@ -4331,8 +4357,13 @@ input PropertyHavingMinInput {
   leaseExpiryYear: HavingIntFilter
   leaseYearsLeft: HavingIntFilter
   priceIdr: HavingBigfloatFilter
+  pricePerSqm: PropertyHavingMinPropertyPricePerSqmInput
   priceUsd: HavingBigfloatFilter
   updated: HavingDatetimeFilter
+}
+
+input PropertyHavingMinPropertyPricePerSqmInput {
+  filter: HavingFloatFilter
 }
 
 input PropertyHavingStddevPopulationInput {
@@ -4345,8 +4376,13 @@ input PropertyHavingStddevPopulationInput {
   leaseExpiryYear: HavingIntFilter
   leaseYearsLeft: HavingIntFilter
   priceIdr: HavingBigfloatFilter
+  pricePerSqm: PropertyHavingStddevPopulationPropertyPricePerSqmInput
   priceUsd: HavingBigfloatFilter
   updated: HavingDatetimeFilter
+}
+
+input PropertyHavingStddevPopulationPropertyPricePerSqmInput {
+  filter: HavingFloatFilter
 }
 
 input PropertyHavingStddevSampleInput {
@@ -4359,8 +4395,13 @@ input PropertyHavingStddevSampleInput {
   leaseExpiryYear: HavingIntFilter
   leaseYearsLeft: HavingIntFilter
   priceIdr: HavingBigfloatFilter
+  pricePerSqm: PropertyHavingStddevSamplePropertyPricePerSqmInput
   priceUsd: HavingBigfloatFilter
   updated: HavingDatetimeFilter
+}
+
+input PropertyHavingStddevSamplePropertyPricePerSqmInput {
+  filter: HavingFloatFilter
 }
 
 input PropertyHavingSumInput {
@@ -4373,8 +4414,13 @@ input PropertyHavingSumInput {
   leaseExpiryYear: HavingIntFilter
   leaseYearsLeft: HavingIntFilter
   priceIdr: HavingBigfloatFilter
+  pricePerSqm: PropertyHavingSumPropertyPricePerSqmInput
   priceUsd: HavingBigfloatFilter
   updated: HavingDatetimeFilter
+}
+
+input PropertyHavingSumPropertyPricePerSqmInput {
+  filter: HavingFloatFilter
 }
 
 input PropertyHavingVariancePopulationInput {
@@ -4387,8 +4433,13 @@ input PropertyHavingVariancePopulationInput {
   leaseExpiryYear: HavingIntFilter
   leaseYearsLeft: HavingIntFilter
   priceIdr: HavingBigfloatFilter
+  pricePerSqm: PropertyHavingVariancePopulationPropertyPricePerSqmInput
   priceUsd: HavingBigfloatFilter
   updated: HavingDatetimeFilter
+}
+
+input PropertyHavingVariancePopulationPropertyPricePerSqmInput {
+  filter: HavingFloatFilter
 }
 
 input PropertyHavingVarianceSampleInput {
@@ -4401,8 +4452,13 @@ input PropertyHavingVarianceSampleInput {
   leaseExpiryYear: HavingIntFilter
   leaseYearsLeft: HavingIntFilter
   priceIdr: HavingBigfloatFilter
+  pricePerSqm: PropertyHavingVarianceSamplePropertyPricePerSqmInput
   priceUsd: HavingBigfloatFilter
   updated: HavingDatetimeFilter
+}
+
+input PropertyHavingVarianceSamplePropertyPricePerSqmInput {
+  filter: HavingFloatFilter
 }
 
 type PropertyMaxAggregates {
@@ -4429,6 +4485,9 @@ type PropertyMaxAggregates {
 
   """Maximum of priceIdr across the matching connection"""
   priceIdr: BigFloat
+
+  """Maximum of this field across the matching connection."""
+  pricePerSqm: Float
 
   """Maximum of priceUsd across the matching connection"""
   priceUsd: BigFloat
@@ -4458,6 +4517,9 @@ type PropertyMinAggregates {
 
   """Minimum of priceIdr across the matching connection"""
   priceIdr: BigFloat
+
+  """Minimum of this field across the matching connection."""
+  pricePerSqm: Float
 
   """Minimum of priceUsd across the matching connection"""
   priceUsd: BigFloat
@@ -4975,6 +5037,11 @@ type PropertyStddevPopulationAggregates {
   priceIdr: BigFloat
 
   """
+  Population standard deviation of this field across the matching connection.
+  """
+  pricePerSqm: Float
+
+  """
   Population standard deviation of priceUsd across the matching connection
   """
   priceUsd: BigFloat
@@ -5017,6 +5084,11 @@ type PropertyStddevSampleAggregates {
   """Sample standard deviation of priceIdr across the matching connection"""
   priceIdr: BigFloat
 
+  """
+  Sample standard deviation of this field across the matching connection.
+  """
+  pricePerSqm: Float
+
   """Sample standard deviation of priceUsd across the matching connection"""
   priceUsd: BigFloat
 }
@@ -5046,6 +5118,9 @@ type PropertySumAggregates {
   """Sum of priceIdr across the matching connection"""
   priceIdr: BigFloat!
 
+  """Sum of this field across the matching connection."""
+  pricePerSqm: Float
+
   """Sum of priceUsd across the matching connection"""
   priceUsd: BigFloat!
 }
@@ -5073,6 +5148,30 @@ input PropertyToManyPropertyPriceFilter {
   some: PropertyPriceFilter
 }
 
+type PropertyType {
+  bathroomsCount: Int!
+  bedroomsCount: Int!
+  buildingSize: Float!
+  externalId: String!
+  id: String!
+  landSize: Float!
+  leaseExpiryYear: Int!
+  leaseYearsLeft: Int!
+  location: String!
+  name: String!
+  notes: String!
+  ownership: String!
+  photos: String!
+  pool: String!
+  priceIdr: Float!
+  pricePerBuildingSqm: Float!
+  pricePerBuildingSqmPerYear: Float!
+  priceUsd: Float!
+  propertyType: String!
+  source: String!
+  url: String!
+}
+
 type PropertyVariancePopulationAggregates {
   """Population variance of bathroomsCount across the matching connection"""
   bathroomsCount: BigFloat
@@ -5097,6 +5196,9 @@ type PropertyVariancePopulationAggregates {
 
   """Population variance of priceIdr across the matching connection"""
   priceIdr: BigFloat
+
+  """Population variance of this field across the matching connection."""
+  pricePerSqm: Float
 
   """Population variance of priceUsd across the matching connection"""
   priceUsd: BigFloat
@@ -5126,6 +5228,9 @@ type PropertyVarianceSampleAggregates {
 
   """Sample variance of priceIdr across the matching connection"""
   priceIdr: BigFloat
+
+  """Sample variance of this field across the matching connection."""
+  pricePerSqm: Float
 
   """Sample variance of priceUsd across the matching connection"""
   priceUsd: BigFloat
@@ -7160,6 +7265,19 @@ input UpdatePasswordInput {
   email: String!
   pwd: String!
   requestId: String!
+}
+
+input UpdatePropertyInput {
+  bathroomsCount: Int
+  bedroomsCount: Int
+  buildingSize: Float
+  id: String!
+  landSize: Float
+  location: String
+  ownership: String
+  priceIdr: Float
+  priceUsd: Float
+  propertyType: String
 }
 
 input UpdateRolePermissionInput {
