@@ -80,6 +80,7 @@ export default function PropertyTable() {
                 >
                   <TableCell><Link href={row.url} target='_blank' onClick={(e) => e.stopPropagation()}>{row.name}</Link></TableCell>
                   <TableCell>{row.source}</TableCell>
+                  <TableCell>{row.ownership}</TableCell>
                   <TableCell>{row.propertyType}</TableCell>
                   <TableCell>{row.location}</TableCell>
                   <TableCell>{row.bedroomsCount}</TableCell>

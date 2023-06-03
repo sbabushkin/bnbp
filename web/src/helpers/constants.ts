@@ -30,6 +30,10 @@ export const headCells: readonly IHeadCell[] = [
     label: 'Source',
   },
   {
+    id: 'ownership',
+    label: 'Ownership',
+  },
+  {
     id: 'propertyType',
     label: 'Type',
   },
