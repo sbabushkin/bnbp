@@ -19,6 +19,7 @@ import { LazudiService } from "./services/lazudi.service";
 import { BalicoconutlivingService } from "./services/balicoconutliving.service";
 import { RumahService } from "./services/rumah.service";
 import { AnniedeanpropertiesService } from "./services/anniedeanproperties.service";
+import { OptimumbaliService } from "./services/optimumbali.service";
 import { VillabalisaleService } from "./services/villabalisale.service";
 import { PropertyResolver } from "./property.resolver";
 import { ParserService } from "./parser.service";
@@ -47,6 +48,7 @@ import { PowerbaliService } from "./services/powerbali.service";
     BalicoconutlivingService,
     RumahService,
     AnniedeanpropertiesService,
+    OptimumbaliService,
     PowerbaliService,
     SuasarealestateService,
     VillabalisaleService,
