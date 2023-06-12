@@ -8,7 +8,7 @@ import { ParserService } from "../parser.service";
 export class PowerbaliService extends ParserService {
 
 	public async parse() {
-		let page = 43;
+		let page = 1;
 		while (true) {
 			const url = `https://www.powerbali.com/property-type/resale-villas/page/${page}/`;
 			let resp;
