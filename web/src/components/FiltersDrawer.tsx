@@ -5,14 +5,14 @@ import Button from '@mui/material/Button';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import TextField from '@mui/material/TextField';
 import Divider from '@mui/material/Divider';
 import RangeSlide from './RangeSlide';
 import Stack from '@mui/material/Stack';
-import { Autocomplete, Radio } from '@mui/material';
+import { Autocomplete } from '@mui/material';
 import { usePropertyStore } from '../store/propertyStore';
 import { locationOptions, propertyTypeOptions } from '../helpers/constants';
+import { FilterOwnershipOption } from '../store/filterTypes';
 
 const boxStyles = {
   width: 320,
@@ -66,6 +66,7 @@ export const FiltersDrawer: React.FC = () => {
                 options={propertyTypeOptions}
                 defaultValue={filters.type}
                 filterSelectedOptions
+                size="small"
                 fullWidth
                 onChange={(_, value) => propAct.upType(value)}
                 renderInput={(params) => (<TextField {...params} label="Property type" placeholder="type" />)}
@@ -82,27 +83,23 @@ export const FiltersDrawer: React.FC = () => {
                 filterSelectedOptions
                 fullWidth
                 onChange={(_, value) => propAct.upLocation(value)}
+                size="small"
                 renderInput={(params) => (<TextField {...params} label="Location" placeholder="search" />)}
               />
             </ListItem>
 
             <ListItem>
-              <ListItemText>Ownership:</ListItemText>
-            </ListItem>
-            <ListItem>
-              <FormControlLabel
-                control={<Radio checked={filters.ownership === 'leasehold'} />}
-                label="Leasehold"
-                onChange={() => propAct.upOwnership('leasehold')}
-              />
-              <FormControlLabel
-                control={<Radio checked={filters.ownership === 'freehold'} />}
-                label="Freehold"
-                onChange={() => propAct.upOwnership('freehold')}
+              <Autocomplete
+                multiple
+                options={['leasehold', 'freehold']}
+                defaultValue={filters.ownership}
+                fullWidth
+                size="small"
+                limitTags={2}
+                onChange={(_, value) => propAct.upOwnership(value as FilterOwnershipOption[])}
+                renderInput={(params) => (<TextField {...params} label="Ownership" />)}
               />
             </ListItem>
-
-            <Divider />
 
             <ListItem>
               <ListItemText>Room counts:</ListItemText>
