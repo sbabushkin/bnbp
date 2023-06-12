@@ -1,4 +1,4 @@
-export type FilterTypeOption = 'villa' | 'apartment' | 'house' | 'land'
+export type FilterTypeOption = 'villa' | 'apartment' | 'hotel/resort' | 'land' | 'commercial'
 export type FilterOwnershipOption = 'leasehold' | 'freehold'
 
 export type NodeType = {
@@ -36,5 +36,5 @@ export interface FilterType {
   bedroomsCount: number | null;
   bathroomsCount: number | null;
   priceUsd: [number, number] | null;
-  ownership: FilterOwnershipOption;
+  ownership: FilterOwnershipOption[];
 }

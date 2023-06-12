@@ -59,7 +59,7 @@ export default function PropertyTable() {
       <Paper sx={{ width: '100%', mb: 2 }}>
         <TableToolbar />
 
-        <TableContainer sx={{ maxHeight: 'calc(100vh - 130px)' }}>
+        <TableContainer sx={{ maxHeight: 'calc(100vh - 140px)' }}>
           <Table
             sx={{ minWidth: 750 }}
             size={'small'}
@@ -80,6 +80,7 @@ export default function PropertyTable() {
                 >
                   <TableCell><Link href={row.url} target='_blank' onClick={(e) => e.stopPropagation()}>{row.name}</Link></TableCell>
                   <TableCell>{row.source}</TableCell>
+                  <TableCell>{row.ownership}</TableCell>
                   <TableCell>{row.propertyType}</TableCell>
                   <TableCell>{row.location}</TableCell>
                   <TableCell>{row.bedroomsCount}</TableCell>
