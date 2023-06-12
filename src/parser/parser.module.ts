@@ -21,6 +21,7 @@ import { RumahService } from "./services/rumah.service";
 import { AnniedeanpropertiesService } from "./services/anniedeanproperties.service";
 import { PropertyResolver } from "./property.resolver";
 import { ParserService } from "./parser.service";
+import { SuasarealestateService } from "./services/suasarealestate.service";
 import { PowerbaliService } from "./services/powerbali.service";
 
 @Module({
@@ -46,6 +47,7 @@ import { PowerbaliService } from "./services/powerbali.service";
     RumahService,
     AnniedeanpropertiesService,
     PowerbaliService,
+    SuasarealestateService,
   ],
   imports: [
     DatabaseModule,
