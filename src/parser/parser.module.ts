@@ -20,8 +20,12 @@ import { BalicoconutlivingService } from "./services/balicoconutliving.service";
 import { RumahService } from "./services/rumah.service";
 import { AnniedeanpropertiesService } from "./services/anniedeanproperties.service";
 import { ExotiqpropertyService } from "./services/exotiqproperty.service";
+import { OptimumbaliService } from "./services/optimumbali.service";
+import { VillabalisaleService } from "./services/villabalisale.service";
 import { PropertyResolver } from "./property.resolver";
 import { ParserService } from "./parser.service";
+import { SuasarealestateService } from "./services/suasarealestate.service";
+import { PowerbaliService } from "./services/powerbali.service";
 
 @Module({
   providers: [
@@ -46,6 +50,10 @@ import { ParserService } from "./parser.service";
     RumahService,
     AnniedeanpropertiesService,
     ExotiqpropertyService,
+    OptimumbaliService,
+    PowerbaliService,
+    SuasarealestateService,
+    VillabalisaleService,
   ],
   imports: [
     DatabaseModule,

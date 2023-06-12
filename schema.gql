@@ -2594,7 +2594,6 @@ type Mutation {
   updateDocumentTemplate(input: UpdateDocumentTemplateInput!): DocumentTemplate!
   updateDocumentType(input: UpdateDocumentTypeInput!): DocumentType!
   updatePassword(input: UpdatePasswordInput!): UserType!
-  updateProperty(input: UpdatePropertyInput!): PropertyType!
   updateRolePermission(input: UpdateRolePermissionInput!): [Permission!]!
   updateUser(updateUserInput: UpdateUserInput!): UserType!
   uploadFile(file: Upload!): FileType!
@@ -4922,30 +4921,6 @@ input PropertyToManyPropertyPriceFilter {
   some: PropertyPriceFilter
 }
 
-type PropertyType {
-  bathroomsCount: Int!
-  bedroomsCount: Int!
-  buildingSize: Float!
-  externalId: String!
-  id: String!
-  landSize: Float!
-  leaseExpiryYear: Int!
-  leaseYearsLeft: Int!
-  location: String!
-  name: String!
-  notes: String!
-  ownership: String!
-  photos: String!
-  pool: String!
-  priceIdr: Float!
-  pricePerBuildingSqm: Float!
-  pricePerBuildingSqmPerYear: Float!
-  priceUsd: Float!
-  propertyType: String!
-  source: String!
-  url: String!
-}
-
 type PropertyVariancePopulationAggregates {
   """Population variance of bathroomsCount across the matching connection"""
   bathroomsCount: BigFloat
@@ -7039,19 +7014,6 @@ input UpdatePasswordInput {
   email: String!
   pwd: String!
   requestId: String!
-}
-
-input UpdatePropertyInput {
-  bathroomsCount: Int
-  bedroomsCount: Int
-  buildingSize: Float
-  id: String!
-  landSize: Float
-  location: String
-  ownership: String
-  priceIdr: Float
-  priceUsd: Float
-  propertyType: String
 }
 
 input UpdateRolePermissionInput {
