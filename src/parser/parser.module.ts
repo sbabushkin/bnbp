@@ -22,6 +22,7 @@ import { AnniedeanpropertiesService } from "./services/anniedeanproperties.servi
 import { PropertyResolver } from "./property.resolver";
 import { ParserService } from "./parser.service";
 import { SuasarealestateService } from "./services/suasarealestate.service";
+import { PowerbaliService } from "./services/powerbali.service";
 
 @Module({
   providers: [
@@ -45,6 +46,7 @@ import { SuasarealestateService } from "./services/suasarealestate.service";
     BalicoconutlivingService,
     RumahService,
     AnniedeanpropertiesService,
+    PowerbaliService,
     SuasarealestateService,
   ],
   imports: [

@@ -41,8 +41,8 @@ export const propertiesQuery = gql`
 `;
 
 type FilterQuery = {
-  propertyType: { in: FilterTypeOption[] };
-  ownership: { equalTo: FilterOwnershipOption };
+  propertyType?: { in: FilterTypeOption[] };
+  ownership?: { in: FilterOwnershipOption[] };
   locations?: { in: string[] };
   bedroomsCount?:  { greaterThanOrEqualTo: number };
   bathroomsCount?:  { greaterThanOrEqualTo: number };
@@ -51,8 +51,8 @@ type FilterQuery = {
 
 export const fetchDataApi = async (filterStore: FilterType) => {
   const queryFilter: FilterQuery = {
-    propertyType: { in: filterStore.type },
-    ownership: { equalTo: filterStore.ownership },
+    ...(filterStore.type.length ? { propertyType: { in: filterStore.type } } : {}),
+    ...(filterStore.ownership.length ? { ownership: { in: filterStore.ownership } } : {}),
     ...(filterStore.locations.length ? { location: { in: filterStore.locations.map(({value}) => value) } } : {}),
     ...(filterStore.bedroomsCount ? { bedroomsCount: { greaterThanOrEqualTo: filterStore.bedroomsCount } } : {}),
     ...(filterStore.bathroomsCount ? { bathroomsCount: { greaterThanOrEqualTo: filterStore.bathroomsCount } } : {}),
@@ -61,7 +61,10 @@ export const fetchDataApi = async (filterStore: FilterType) => {
     } : {}),
   }
 
-  const data = await apolloQuery<any, { filter: FilterQuery }>({ query: propertiesQuery, variables: {filter: queryFilter} });
+  const data = await apolloQuery<any, { filter?: FilterQuery }>({
+    query: propertiesQuery,
+    variables: Object.keys(queryFilter).length ? { filter: queryFilter } : {},
+  });
 
   return {
     aggregates: data?.propertiesConnection?.aggregates ?? {},

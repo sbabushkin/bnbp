@@ -30,6 +30,10 @@ export const headCells: readonly IHeadCell[] = [
     label: 'Source',
   },
   {
+    id: 'ownership',
+    label: 'Ownership',
+  },
+  {
     id: 'propertyType',
     label: 'Type',
   },
@@ -63,7 +67,7 @@ export const headCells: readonly IHeadCell[] = [
   },
 ];
 
-export const propertyTypeOptions: FilterTypeOption[] = ['villa', 'apartment', 'house', 'land']
+export const propertyTypeOptions: FilterTypeOption[] = ['villa', 'apartment', 'hotel/resort', 'land', 'commercial']
 
 export const locationOptions = [
 {value: 'Amed', groupBy: ''},
