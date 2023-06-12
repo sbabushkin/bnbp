@@ -19,6 +19,7 @@ import { RajavillapropertyService } from "./services/rajavillaproperty.service";
 import { LazudiService } from "./services/lazudi.service";
 import { BalicoconutlivingService } from "./services/balicoconutliving.service";
 import { RumahService } from "./services/rumah.service";
+import { ExotiqpropertyService } from "./services/exotiqproperty.service";
 import { OptimumbaliService } from "./services/optimumbali.service";
 import {SuasarealestateService} from "./services/suasarealestate.service";
 import { AnniedeanpropertiesService } from "./services/anniedeanproperties.service";
@@ -46,6 +47,7 @@ export class ParserController {
     private readonly balicoconutlivingService: BalicoconutlivingService,
     private readonly rumahService: RumahService,
     private readonly anniedeanpropertiesService: AnniedeanpropertiesService,
+    private readonly exotiqpropertyService: ExotiqpropertyService,
     private readonly villabalisaleService: VillabalisaleService,
     private readonly suasarealestateService: SuasarealestateService,
     private readonly powerbaliService: PowerbaliService,
@@ -110,6 +112,9 @@ export class ParserController {
         break;
       case 'anniedeanproperties':
         data = await this.anniedeanpropertiesService.parse();
+        break;
+      case 'exotiqproperty':
+        data = await this.exotiqpropertyService.parse();
         break;
       case 'optimumbali':
         data = await this.optimumbaliService.parse();

@@ -79,8 +79,8 @@ export class AnniedeanpropertiesService extends ParserService { // TODO: resours
 		propertyObj['name'] = listingName;
 		propertyObj['location'] = infoObj['Location'];
 		propertyObj['ownership'] = infoObj['Title'];
-		propertyObj['buildingSize'] = parseNumeric(infoObj['Land Area'].replace('sqm'));
-		propertyObj['landSize'] = parseNumeric(infoObj['Building/Floor Area'].replace('sqm'));
+		propertyObj['buildingSize'] = parseNumeric(infoObj['Building/Floor Area'].replace('sqm'));
+		propertyObj['landSize'] =  parseNumeric(infoObj['Land Area'].replace('sqm'));
 		// propertyObj['leaseYearsLeft'] = leaseYearsLeft;
 		propertyObj['propertyType'] = 'Villa'; // TODO: ask about it
 		propertyObj['bedroomsCount'] = parseNumeric(infoObj['bedrooms']);
