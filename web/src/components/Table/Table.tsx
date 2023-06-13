@@ -83,8 +83,8 @@ export default function PropertyTable() {
                   <TableCell>{row.ownership}</TableCell>
                   <TableCell>{row.propertyType}</TableCell>
                   <TableCell>{row.location}</TableCell>
-                  <TableCell>{row.bedroomsCount}</TableCell>
                   <TableCell>{row.bathroomsCount}</TableCell>
+                  <TableCell>{row.bedroomsCount}</TableCell>
                   <TableCell>{row.landSize}</TableCell>
                   <TableCell>{row.buildingSize}</TableCell>
                   <TableCell>{chunkNumberByClass(row.priceIdr)}</TableCell>
@@ -109,7 +109,7 @@ export default function PropertyTable() {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
-      <PropertyForm openId={openId} setOpenId={setOpenId} />
+      {openId && <PropertyForm openId={openId} setOpenId={setOpenId} />}
     </Box>
   );
 }
