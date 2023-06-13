@@ -10,7 +10,7 @@ export class SuasarealestateService extends ParserService {
 	public async parse() {
 		let page = 1;
 		while (true) {
-			const url = `https://www.suasarealestate.com/wp-json/wp/v2/villa?page=${page}&per_page=100`;
+			const url = `https://www.suasarealestate.com/wp-json/wp/v2/villa?page=${page}&per_page=100`; // TODO: catch 404
 			const resp = await axios.get(url);
 			const urlsArr = resp.data.map(el => el.link);
 			console.log(url, urlsArr.length);
