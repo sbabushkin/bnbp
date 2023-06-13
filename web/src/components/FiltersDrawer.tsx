@@ -49,7 +49,9 @@ export const FiltersDrawer: React.FC = () => {
 
   return (
     <>
-      <Button onClick={toggleDrawer}>Filters</Button>
+      <div style={{ margin: '0 auto auto' }}>
+        <Button onClick={toggleDrawer}>Filters</Button>
+      </div>
       <Drawer
         anchor={'right'}
         open={state}
