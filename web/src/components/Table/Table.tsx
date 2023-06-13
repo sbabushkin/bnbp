@@ -59,7 +59,7 @@ export default function PropertyTable() {
       <Paper sx={{ width: '100%', mb: 2 }}>
         <TableToolbar />
 
-        <TableContainer sx={{ maxHeight: 'calc(100vh - 140px)' }}>
+        <TableContainer sx={{ maxHeight: 'calc(100vh - 255px)' }}>
           <Table
             sx={{ minWidth: 750 }}
             size={'small'}
