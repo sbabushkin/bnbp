@@ -48,6 +48,7 @@ export const PropertyForm: FC<PropertyFormType> = ({ openId, setOpenId }) => {
       updateProperty(input)
     }
     setOpenId(null)
+    updateForm({id: ''})
   }, [setOpenId, updateProperty, node, form])
 
   const useFieldChange = (fieldName: keyof NodeType) => useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
