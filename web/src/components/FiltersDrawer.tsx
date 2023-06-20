@@ -11,8 +11,8 @@ import RangeSlide from './RangeSlide';
 import Stack from '@mui/material/Stack';
 import { Autocomplete } from '@mui/material';
 import { usePropertyStore } from '../store/propertyStore';
-import { locationOptions, propertyTypeOptions } from '../helpers/constants';
-import { FilterOwnershipOption } from '../store/filterTypes';
+import { locationOptions, propertyTypeOptions, sourceOptions } from '../helpers/constants';
+import { FilterOwnershipOption, FilterSourceOption } from '../store/filterTypes';
 
 const boxStyles = {
   width: 320,
@@ -72,6 +72,21 @@ export const FiltersDrawer: React.FC = () => {
                 fullWidth
                 onChange={(_, value) => propAct.upType(value)}
                 renderInput={(params) => (<TextField {...params} label="Property type" placeholder="type" />)}
+              />
+            </ListItem>
+
+            <ListItem>
+              <Autocomplete
+                multiple
+                options={sourceOptions}
+                // groupBy={(opt) => opt.groupBy}
+                // getOptionLabel={(option) => option.value}
+                defaultValue={filters.source}
+                filterSelectedOptions
+                fullWidth
+                onChange={(_, value) => propAct.upSource(value as FilterSourceOption[])}
+                size="small"
+                renderInput={(params) => (<TextField {...params} label="Source" placeholder="search" />)}
               />
             </ListItem>
 

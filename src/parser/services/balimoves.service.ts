@@ -113,7 +113,7 @@ export class BalimovesService extends ParserService {
     propertyObj['landSize'] = parseFloat(landSize.replace(',', '.'));
     // propertyObj['leaseYearsLeft'] = leaseYearsLeft;
     propertyObj['leaseExpiryYear'] = leaseExpiryYear;
-    propertyObj['propertyType'] = 'Villa';
+    propertyObj['propertyType'] = this.parsePropertyTypeFromTitle(listingName);
     propertyObj['bedroomsCount'] = parseNumeric(bedrooms);
     propertyObj['bathroomsCount'] = parseNumeric(bathrooms);
     propertyObj['pool'] = poolExists ? 'Yes' : 'No';

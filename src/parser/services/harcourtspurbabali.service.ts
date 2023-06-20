@@ -74,7 +74,7 @@ export class HarcourtspurbabaliService extends ParserService {
     propertyObj['buildingSize'] = parseSquare(details['Property Size:']);
     propertyObj['landSize'] = parseSquare(details['Land Area:']);
     // propertyObj['leaseYearsLeft'] = leaseYearsLeft;
-    propertyObj['propertyType'] = 'Villa'; // TODO: ask about it
+    propertyObj['propertyType'] = this.parsePropertyTypeFromTitle(listingName);
     propertyObj['bedroomsCount'] = parseNumeric(details['Bedrooms:']);
     propertyObj['bathroomsCount'] = parseNumeric(details['Bathrooms:']);
     propertyObj['pool'] = details['Pool Details:'] ? 'Yes' : 'No';

@@ -90,7 +90,7 @@ export class DotpropertyService extends ParserService {
     propertyObj['buildingSize'] = parseNumeric(infoObj['Usable area']);
     propertyObj['landSize'] = parseNumeric(infoObj['Land area']);
     // propertyObj['leaseYearsLeft'] = leaseYearsLeft; // TODO: only in text
-    propertyObj['propertyType'] = 'Villa'; // TODO: ask about it
+    propertyObj['propertyType'] = this.parsePropertyTypeFromTitle(listingName);
     propertyObj['bedroomsCount'] = parseNumeric(infoObj['Beds'] || infoObj['Bed']);
     propertyObj['bathroomsCount'] = parseNumeric(infoObj['Baths'] || infoObj['Bath']);
     propertyObj['pool'] = poolExists ? 'Yes' : 'No';

@@ -75,7 +75,7 @@ export class LazudiService extends ParserService {
     propertyObj['buildingSize'] = parseNumeric(info[0]);
     propertyObj['landSize'] = parseNumeric(info[1]);
     // propertyObj['leaseYearsLeft'] = leaseYearsLeft;
-    propertyObj['propertyType'] = 'Villa'; // TODO: ask about it
+    propertyObj['propertyType'] = this.parsePropertyTypeFromTitle(listingName);
     propertyObj['bedroomsCount'] = parseNumeric(info[2]);
     propertyObj['bathroomsCount'] = parseNumeric(info[3]);
     propertyObj['pool'] = poolExists ? 'Yes' : 'No';

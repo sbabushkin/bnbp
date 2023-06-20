@@ -13,7 +13,7 @@ export class BaliexceptionService extends ParserService {
     let page = 1;
 
     while (true) {
-      const listUrl = `https://baliexception.com//page/${page}`;
+      const listUrl = `https://baliexception.com/page/${page}`;
       const listResp = await axios.get(listUrl);
       const parsedContentList = parse(listResp.data);
       const propertiesClass = '.item-title a';
@@ -95,7 +95,7 @@ export class BaliexceptionService extends ParserService {
     propertyObj['buildingSize'] = parseNumeric(buildingSize);
     propertyObj['landSize'] = parseNumeric(landSize);
     propertyObj['leaseYearsLeft'] = leaseYearsLeft;
-    propertyObj['propertyType'] = 'Villa'; // TODO: ask about it
+    propertyObj['propertyType'] = this.parsePropertyTypeFromTitle(listingName);
     propertyObj['bedroomsCount'] = parseNumeric(bedrooms);
     propertyObj['bathroomsCount'] = parseNumeric(bathrooms);
     propertyObj['pool'] = poolExists ? 'Yes' : 'No';

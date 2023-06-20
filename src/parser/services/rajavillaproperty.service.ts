@@ -94,7 +94,7 @@ export class RajavillapropertyService extends ParserService {
     propertyObj['buildingSize'] = parseNumeric(buildingSize);
     propertyObj['landSize'] = parseNumeric(landSize);
     propertyObj['leaseYearsLeft'] = leaseYearsLeft;
-    propertyObj['propertyType'] = 'Villa'; // TODO: ask about it
+    propertyObj['propertyType'] = this.parsePropertyTypeFromTitle(listingName);
     propertyObj['bedroomsCount'] = parseNumeric(bedrooms);
     propertyObj['bathroomsCount'] = parseNumeric(bathrooms);
     propertyObj['pool'] = poolExists ? 'Yes' : 'No';

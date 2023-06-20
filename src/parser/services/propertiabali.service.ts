@@ -84,7 +84,7 @@ export class PropertiabaliService extends ParserService {
     propertyObj['buildingSize'] = parseSquare(details['Building size']);
     propertyObj['landSize'] = parseSquare(details['Land size']) * 100;
     propertyObj['leaseYearsLeft'] = parseNumeric(details['Years']);
-    propertyObj['propertyType'] = 'Villa'; // TODO: ask about it
+    propertyObj['propertyType'] = this.parsePropertyTypeFromTitle(listingName);
     propertyObj['bedroomsCount'] = bedrooms;
     propertyObj['bathroomsCount'] = bathrooms;
     propertyObj['pool'] = details['POOL'];

@@ -1299,6 +1299,336 @@ input CreateUserInput {
   telegramId: String
 }
 
+type CurrencyRate implements Node {
+  amount: Float
+  created: Datetime!
+  from: String!
+  id: Int!
+
+  """
+  A globally unique identifier. Can be used in various places throughout the system to identify this single value.
+  """
+  nodeId: ID!
+  to: String!
+}
+
+type CurrencyRateAggregates {
+  """
+  Mean average aggregates across the matching connection (ignoring before/after/first/last/offset)
+  """
+  average: CurrencyRateAverageAggregates
+
+  """
+  Distinct count aggregates across the matching connection (ignoring before/after/first/last/offset)
+  """
+  distinctCount: CurrencyRateDistinctCountAggregates
+  keys: [String!]
+
+  """
+  Maximum aggregates across the matching connection (ignoring before/after/first/last/offset)
+  """
+  max: CurrencyRateMaxAggregates
+
+  """
+  Minimum aggregates across the matching connection (ignoring before/after/first/last/offset)
+  """
+  min: CurrencyRateMinAggregates
+
+  """
+  Population standard deviation aggregates across the matching connection (ignoring before/after/first/last/offset)
+  """
+  stddevPopulation: CurrencyRateStddevPopulationAggregates
+
+  """
+  Sample standard deviation aggregates across the matching connection (ignoring before/after/first/last/offset)
+  """
+  stddevSample: CurrencyRateStddevSampleAggregates
+
+  """
+  Sum aggregates across the matching connection (ignoring before/after/first/last/offset)
+  """
+  sum: CurrencyRateSumAggregates
+
+  """
+  Population variance aggregates across the matching connection (ignoring before/after/first/last/offset)
+  """
+  variancePopulation: CurrencyRateVariancePopulationAggregates
+
+  """
+  Sample variance aggregates across the matching connection (ignoring before/after/first/last/offset)
+  """
+  varianceSample: CurrencyRateVarianceSampleAggregates
+}
+
+type CurrencyRateAverageAggregates {
+  """Mean average of amount across the matching connection"""
+  amount: Float
+
+  """Mean average of id across the matching connection"""
+  id: BigFloat
+}
+
+"""
+A condition to be used against `CurrencyRate` object types. All fields are
+tested for equality and combined with a logical ‘and.’
+"""
+input CurrencyRateCondition {
+  """Checks for equality with the object’s `amount` field."""
+  amount: Float
+
+  """Checks for equality with the object’s `created` field."""
+  created: Datetime
+
+  """Checks for equality with the object’s `from` field."""
+  from: String
+
+  """Checks for equality with the object’s `id` field."""
+  id: Int
+
+  """Checks for equality with the object’s `to` field."""
+  to: String
+}
+
+type CurrencyRateDistinctCountAggregates {
+  """Distinct count of amount across the matching connection"""
+  amount: BigInt
+
+  """Distinct count of created across the matching connection"""
+  created: BigInt
+
+  """Distinct count of from across the matching connection"""
+  from: BigInt
+
+  """Distinct count of id across the matching connection"""
+  id: BigInt
+
+  """Distinct count of to across the matching connection"""
+  to: BigInt
+}
+
+"""
+A filter to be used against `CurrencyRate` object types. All fields are combined with a logical ‘and.’
+"""
+input CurrencyRateFilter {
+  """Filter by the object’s `amount` field."""
+  amount: FloatFilter
+
+  """Checks for all expressions in this list."""
+  and: [CurrencyRateFilter!]
+
+  """Filter by the object’s `created` field."""
+  created: DatetimeFilter
+
+  """Filter by the object’s `from` field."""
+  from: StringFilter
+
+  """Filter by the object’s `id` field."""
+  id: IntFilter
+
+  """Negates the expression."""
+  not: CurrencyRateFilter
+
+  """Checks for any expressions in this list."""
+  or: [CurrencyRateFilter!]
+
+  """Filter by the object’s `to` field."""
+  to: StringFilter
+}
+
+"""Grouping methods for `CurrencyRate` for usage during aggregation."""
+enum CurrencyRateGroupBy {
+  AMOUNT
+  CREATED
+  CREATED_TRUNCATED_TO_DAY
+  CREATED_TRUNCATED_TO_HOUR
+  FROM
+  TO
+}
+
+input CurrencyRateHavingAverageInput {
+  amount: HavingFloatFilter
+  created: HavingDatetimeFilter
+  id: HavingIntFilter
+}
+
+input CurrencyRateHavingDistinctCountInput {
+  amount: HavingFloatFilter
+  created: HavingDatetimeFilter
+  id: HavingIntFilter
+}
+
+"""Conditions for `CurrencyRate` aggregates."""
+input CurrencyRateHavingInput {
+  AND: [CurrencyRateHavingInput!]
+  OR: [CurrencyRateHavingInput!]
+  average: CurrencyRateHavingAverageInput
+  distinctCount: CurrencyRateHavingDistinctCountInput
+  max: CurrencyRateHavingMaxInput
+  min: CurrencyRateHavingMinInput
+  stddevPopulation: CurrencyRateHavingStddevPopulationInput
+  stddevSample: CurrencyRateHavingStddevSampleInput
+  sum: CurrencyRateHavingSumInput
+  variancePopulation: CurrencyRateHavingVariancePopulationInput
+  varianceSample: CurrencyRateHavingVarianceSampleInput
+}
+
+input CurrencyRateHavingMaxInput {
+  amount: HavingFloatFilter
+  created: HavingDatetimeFilter
+  id: HavingIntFilter
+}
+
+input CurrencyRateHavingMinInput {
+  amount: HavingFloatFilter
+  created: HavingDatetimeFilter
+  id: HavingIntFilter
+}
+
+input CurrencyRateHavingStddevPopulationInput {
+  amount: HavingFloatFilter
+  created: HavingDatetimeFilter
+  id: HavingIntFilter
+}
+
+input CurrencyRateHavingStddevSampleInput {
+  amount: HavingFloatFilter
+  created: HavingDatetimeFilter
+  id: HavingIntFilter
+}
+
+input CurrencyRateHavingSumInput {
+  amount: HavingFloatFilter
+  created: HavingDatetimeFilter
+  id: HavingIntFilter
+}
+
+input CurrencyRateHavingVariancePopulationInput {
+  amount: HavingFloatFilter
+  created: HavingDatetimeFilter
+  id: HavingIntFilter
+}
+
+input CurrencyRateHavingVarianceSampleInput {
+  amount: HavingFloatFilter
+  created: HavingDatetimeFilter
+  id: HavingIntFilter
+}
+
+type CurrencyRateMaxAggregates {
+  """Maximum of amount across the matching connection"""
+  amount: Float
+
+  """Maximum of id across the matching connection"""
+  id: Int
+}
+
+type CurrencyRateMinAggregates {
+  """Minimum of amount across the matching connection"""
+  amount: Float
+
+  """Minimum of id across the matching connection"""
+  id: Int
+}
+
+type CurrencyRateStddevPopulationAggregates {
+  """Population standard deviation of amount across the matching connection"""
+  amount: Float
+
+  """Population standard deviation of id across the matching connection"""
+  id: BigFloat
+}
+
+type CurrencyRateStddevSampleAggregates {
+  """Sample standard deviation of amount across the matching connection"""
+  amount: Float
+
+  """Sample standard deviation of id across the matching connection"""
+  id: BigFloat
+}
+
+type CurrencyRateSumAggregates {
+  """Sum of amount across the matching connection"""
+  amount: Float!
+
+  """Sum of id across the matching connection"""
+  id: BigInt!
+}
+
+type CurrencyRateVariancePopulationAggregates {
+  """Population variance of amount across the matching connection"""
+  amount: Float
+
+  """Population variance of id across the matching connection"""
+  id: BigFloat
+}
+
+type CurrencyRateVarianceSampleAggregates {
+  """Sample variance of amount across the matching connection"""
+  amount: Float
+
+  """Sample variance of id across the matching connection"""
+  id: BigFloat
+}
+
+"""A connection to a list of `CurrencyRate` values."""
+type CurrencyRatesConnection {
+  """
+  Aggregates across the matching connection (ignoring before/after/first/last/offset)
+  """
+  aggregates: CurrencyRateAggregates
+
+  """
+  A list of edges which contains the `CurrencyRate` and cursor to aid in pagination.
+  """
+  edges: [CurrencyRatesEdge!]!
+
+  """
+  Grouped aggregates across the matching connection (ignoring before/after/first/last/offset)
+  """
+  groupedAggregates(
+    """The method to use when grouping `CurrencyRate` for these aggregates."""
+    groupBy: [CurrencyRateGroupBy!]!
+
+    """Conditions on the grouped aggregates."""
+    having: CurrencyRateHavingInput
+  ): [CurrencyRateAggregates!]
+
+  """A list of `CurrencyRate` objects."""
+  nodes: [CurrencyRate]!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """The count of *all* `CurrencyRate` you could get from the connection."""
+  totalCount: Int!
+}
+
+"""A `CurrencyRate` edge in the connection."""
+type CurrencyRatesEdge {
+  """A cursor for use in pagination."""
+  cursor: Cursor
+
+  """The `CurrencyRate` at the end of the edge."""
+  node: CurrencyRate
+}
+
+"""Methods to use when ordering `CurrencyRate`."""
+enum CurrencyRatesOrderBy {
+  AMOUNT_ASC
+  AMOUNT_DESC
+  CREATED_ASC
+  CREATED_DESC
+  FROM_ASC
+  FROM_DESC
+  ID_ASC
+  ID_DESC
+  NATURAL
+  PRIMARY_KEY_ASC
+  PRIMARY_KEY_DESC
+  TO_ASC
+  TO_DESC
+}
+
 """A location in a connection that can be used for resuming pagination."""
 scalar Cursor
 
@@ -3694,8 +4024,6 @@ enum PropertiesOrderBy {
   LAND_SIZE_DESC
   LEASE_EXPIRY_YEAR_ASC
   LEASE_EXPIRY_YEAR_DESC
-  LEASE_YEARS_LEFT_ASC
-  LEASE_YEARS_LEFT_DESC
   LOCATION_ASC
   LOCATION_DESC
   NAME_ASC
@@ -3828,10 +4156,11 @@ type Property implements Node {
   buildingSize: Float
   created: Datetime!
   externalId: String!
+  freeholdLandPrice: Float
   id: UUID!
   landSize: Float
   leaseExpiryYear: Int
-  leaseYearsLeft: Int
+  leaseYearsLeft: Float
   location: String
   name: String!
 
@@ -3971,14 +4300,17 @@ type PropertyAverageAggregates {
   """Mean average of buildingSize across the matching connection"""
   buildingSize: Float
 
+  """Mean average of this field across the matching connection."""
+  freeholdLandPrice: Float
+
   """Mean average of landSize across the matching connection"""
   landSize: Float
 
   """Mean average of leaseExpiryYear across the matching connection"""
   leaseExpiryYear: BigFloat
 
-  """Mean average of leaseYearsLeft across the matching connection"""
-  leaseYearsLeft: BigFloat
+  """Mean average of this field across the matching connection."""
+  leaseYearsLeft: Float
 
   """Mean average of priceIdr across the matching connection"""
   priceIdr: BigFloat
@@ -4021,9 +4353,6 @@ input PropertyCondition {
 
   """Checks for equality with the object’s `leaseExpiryYear` field."""
   leaseExpiryYear: Int
-
-  """Checks for equality with the object’s `leaseYearsLeft` field."""
-  leaseYearsLeft: Int
 
   """Checks for equality with the object’s `location` field."""
   location: String
@@ -4089,6 +4418,9 @@ type PropertyDistinctCountAggregates {
   """Distinct count of externalId across the matching connection"""
   externalId: BigInt
 
+  """Distinct count of this field across the matching connection."""
+  freeholdLandPrice: BigInt
+
   """Distinct count of id across the matching connection"""
   id: BigInt
 
@@ -4098,7 +4430,7 @@ type PropertyDistinctCountAggregates {
   """Distinct count of leaseExpiryYear across the matching connection"""
   leaseExpiryYear: BigInt
 
-  """Distinct count of leaseYearsLeft across the matching connection"""
+  """Distinct count of this field across the matching connection."""
   leaseYearsLeft: BigInt
 
   """Distinct count of location across the matching connection"""
@@ -4174,6 +4506,9 @@ input PropertyFilter {
   """Filter by the object’s `externalId` field."""
   externalId: StringFilter
 
+  """Filter by the object’s `freeholdLandPrice` field."""
+  freeholdLandPrice: FloatFilter
+
   """Filter by the object’s `id` field."""
   id: UUIDFilter
 
@@ -4184,7 +4519,7 @@ input PropertyFilter {
   leaseExpiryYear: IntFilter
 
   """Filter by the object’s `leaseYearsLeft` field."""
-  leaseYearsLeft: IntFilter
+  leaseYearsLeft: FloatFilter
 
   """Filter by the object’s `location` field."""
   location: StringFilter
@@ -4256,7 +4591,6 @@ enum PropertyGroupBy {
   EXTERNAL_ID
   LAND_SIZE
   LEASE_EXPIRY_YEAR
-  LEASE_YEARS_LEFT
   LOCATION
   NAME
   NOTES
@@ -4281,13 +4615,22 @@ input PropertyHavingAverageInput {
   bedroomsSize: HavingIntFilter
   buildingSize: HavingFloatFilter
   created: HavingDatetimeFilter
+  freeholdLandPrice: PropertyHavingAveragePropertyFreeholdLandPriceInput
   landSize: HavingFloatFilter
   leaseExpiryYear: HavingIntFilter
-  leaseYearsLeft: HavingIntFilter
+  leaseYearsLeft: PropertyHavingAveragePropertyLeaseYearsLeftInput
   priceIdr: HavingBigfloatFilter
   pricePerSqm: PropertyHavingAveragePropertyPricePerSqmInput
   priceUsd: HavingBigfloatFilter
   updated: HavingDatetimeFilter
+}
+
+input PropertyHavingAveragePropertyFreeholdLandPriceInput {
+  filter: HavingFloatFilter
+}
+
+input PropertyHavingAveragePropertyLeaseYearsLeftInput {
+  filter: HavingFloatFilter
 }
 
 input PropertyHavingAveragePropertyPricePerSqmInput {
@@ -4300,13 +4643,22 @@ input PropertyHavingDistinctCountInput {
   bedroomsSize: HavingIntFilter
   buildingSize: HavingFloatFilter
   created: HavingDatetimeFilter
+  freeholdLandPrice: PropertyHavingDistinctCountPropertyFreeholdLandPriceInput
   landSize: HavingFloatFilter
   leaseExpiryYear: HavingIntFilter
-  leaseYearsLeft: HavingIntFilter
+  leaseYearsLeft: PropertyHavingDistinctCountPropertyLeaseYearsLeftInput
   priceIdr: HavingBigfloatFilter
   pricePerSqm: PropertyHavingDistinctCountPropertyPricePerSqmInput
   priceUsd: HavingBigfloatFilter
   updated: HavingDatetimeFilter
+}
+
+input PropertyHavingDistinctCountPropertyFreeholdLandPriceInput {
+  filter: HavingFloatFilter
+}
+
+input PropertyHavingDistinctCountPropertyLeaseYearsLeftInput {
+  filter: HavingFloatFilter
 }
 
 input PropertyHavingDistinctCountPropertyPricePerSqmInput {
@@ -4334,13 +4686,22 @@ input PropertyHavingMaxInput {
   bedroomsSize: HavingIntFilter
   buildingSize: HavingFloatFilter
   created: HavingDatetimeFilter
+  freeholdLandPrice: PropertyHavingMaxPropertyFreeholdLandPriceInput
   landSize: HavingFloatFilter
   leaseExpiryYear: HavingIntFilter
-  leaseYearsLeft: HavingIntFilter
+  leaseYearsLeft: PropertyHavingMaxPropertyLeaseYearsLeftInput
   priceIdr: HavingBigfloatFilter
   pricePerSqm: PropertyHavingMaxPropertyPricePerSqmInput
   priceUsd: HavingBigfloatFilter
   updated: HavingDatetimeFilter
+}
+
+input PropertyHavingMaxPropertyFreeholdLandPriceInput {
+  filter: HavingFloatFilter
+}
+
+input PropertyHavingMaxPropertyLeaseYearsLeftInput {
+  filter: HavingFloatFilter
 }
 
 input PropertyHavingMaxPropertyPricePerSqmInput {
@@ -4353,13 +4714,22 @@ input PropertyHavingMinInput {
   bedroomsSize: HavingIntFilter
   buildingSize: HavingFloatFilter
   created: HavingDatetimeFilter
+  freeholdLandPrice: PropertyHavingMinPropertyFreeholdLandPriceInput
   landSize: HavingFloatFilter
   leaseExpiryYear: HavingIntFilter
-  leaseYearsLeft: HavingIntFilter
+  leaseYearsLeft: PropertyHavingMinPropertyLeaseYearsLeftInput
   priceIdr: HavingBigfloatFilter
   pricePerSqm: PropertyHavingMinPropertyPricePerSqmInput
   priceUsd: HavingBigfloatFilter
   updated: HavingDatetimeFilter
+}
+
+input PropertyHavingMinPropertyFreeholdLandPriceInput {
+  filter: HavingFloatFilter
+}
+
+input PropertyHavingMinPropertyLeaseYearsLeftInput {
+  filter: HavingFloatFilter
 }
 
 input PropertyHavingMinPropertyPricePerSqmInput {
@@ -4372,13 +4742,22 @@ input PropertyHavingStddevPopulationInput {
   bedroomsSize: HavingIntFilter
   buildingSize: HavingFloatFilter
   created: HavingDatetimeFilter
+  freeholdLandPrice: PropertyHavingStddevPopulationPropertyFreeholdLandPriceInput
   landSize: HavingFloatFilter
   leaseExpiryYear: HavingIntFilter
-  leaseYearsLeft: HavingIntFilter
+  leaseYearsLeft: PropertyHavingStddevPopulationPropertyLeaseYearsLeftInput
   priceIdr: HavingBigfloatFilter
   pricePerSqm: PropertyHavingStddevPopulationPropertyPricePerSqmInput
   priceUsd: HavingBigfloatFilter
   updated: HavingDatetimeFilter
+}
+
+input PropertyHavingStddevPopulationPropertyFreeholdLandPriceInput {
+  filter: HavingFloatFilter
+}
+
+input PropertyHavingStddevPopulationPropertyLeaseYearsLeftInput {
+  filter: HavingFloatFilter
 }
 
 input PropertyHavingStddevPopulationPropertyPricePerSqmInput {
@@ -4391,13 +4770,22 @@ input PropertyHavingStddevSampleInput {
   bedroomsSize: HavingIntFilter
   buildingSize: HavingFloatFilter
   created: HavingDatetimeFilter
+  freeholdLandPrice: PropertyHavingStddevSamplePropertyFreeholdLandPriceInput
   landSize: HavingFloatFilter
   leaseExpiryYear: HavingIntFilter
-  leaseYearsLeft: HavingIntFilter
+  leaseYearsLeft: PropertyHavingStddevSamplePropertyLeaseYearsLeftInput
   priceIdr: HavingBigfloatFilter
   pricePerSqm: PropertyHavingStddevSamplePropertyPricePerSqmInput
   priceUsd: HavingBigfloatFilter
   updated: HavingDatetimeFilter
+}
+
+input PropertyHavingStddevSamplePropertyFreeholdLandPriceInput {
+  filter: HavingFloatFilter
+}
+
+input PropertyHavingStddevSamplePropertyLeaseYearsLeftInput {
+  filter: HavingFloatFilter
 }
 
 input PropertyHavingStddevSamplePropertyPricePerSqmInput {
@@ -4410,13 +4798,22 @@ input PropertyHavingSumInput {
   bedroomsSize: HavingIntFilter
   buildingSize: HavingFloatFilter
   created: HavingDatetimeFilter
+  freeholdLandPrice: PropertyHavingSumPropertyFreeholdLandPriceInput
   landSize: HavingFloatFilter
   leaseExpiryYear: HavingIntFilter
-  leaseYearsLeft: HavingIntFilter
+  leaseYearsLeft: PropertyHavingSumPropertyLeaseYearsLeftInput
   priceIdr: HavingBigfloatFilter
   pricePerSqm: PropertyHavingSumPropertyPricePerSqmInput
   priceUsd: HavingBigfloatFilter
   updated: HavingDatetimeFilter
+}
+
+input PropertyHavingSumPropertyFreeholdLandPriceInput {
+  filter: HavingFloatFilter
+}
+
+input PropertyHavingSumPropertyLeaseYearsLeftInput {
+  filter: HavingFloatFilter
 }
 
 input PropertyHavingSumPropertyPricePerSqmInput {
@@ -4429,13 +4826,22 @@ input PropertyHavingVariancePopulationInput {
   bedroomsSize: HavingIntFilter
   buildingSize: HavingFloatFilter
   created: HavingDatetimeFilter
+  freeholdLandPrice: PropertyHavingVariancePopulationPropertyFreeholdLandPriceInput
   landSize: HavingFloatFilter
   leaseExpiryYear: HavingIntFilter
-  leaseYearsLeft: HavingIntFilter
+  leaseYearsLeft: PropertyHavingVariancePopulationPropertyLeaseYearsLeftInput
   priceIdr: HavingBigfloatFilter
   pricePerSqm: PropertyHavingVariancePopulationPropertyPricePerSqmInput
   priceUsd: HavingBigfloatFilter
   updated: HavingDatetimeFilter
+}
+
+input PropertyHavingVariancePopulationPropertyFreeholdLandPriceInput {
+  filter: HavingFloatFilter
+}
+
+input PropertyHavingVariancePopulationPropertyLeaseYearsLeftInput {
+  filter: HavingFloatFilter
 }
 
 input PropertyHavingVariancePopulationPropertyPricePerSqmInput {
@@ -4448,13 +4854,22 @@ input PropertyHavingVarianceSampleInput {
   bedroomsSize: HavingIntFilter
   buildingSize: HavingFloatFilter
   created: HavingDatetimeFilter
+  freeholdLandPrice: PropertyHavingVarianceSamplePropertyFreeholdLandPriceInput
   landSize: HavingFloatFilter
   leaseExpiryYear: HavingIntFilter
-  leaseYearsLeft: HavingIntFilter
+  leaseYearsLeft: PropertyHavingVarianceSamplePropertyLeaseYearsLeftInput
   priceIdr: HavingBigfloatFilter
   pricePerSqm: PropertyHavingVarianceSamplePropertyPricePerSqmInput
   priceUsd: HavingBigfloatFilter
   updated: HavingDatetimeFilter
+}
+
+input PropertyHavingVarianceSamplePropertyFreeholdLandPriceInput {
+  filter: HavingFloatFilter
+}
+
+input PropertyHavingVarianceSamplePropertyLeaseYearsLeftInput {
+  filter: HavingFloatFilter
 }
 
 input PropertyHavingVarianceSamplePropertyPricePerSqmInput {
@@ -4474,14 +4889,17 @@ type PropertyMaxAggregates {
   """Maximum of buildingSize across the matching connection"""
   buildingSize: Float
 
+  """Maximum of this field across the matching connection."""
+  freeholdLandPrice: Float
+
   """Maximum of landSize across the matching connection"""
   landSize: Float
 
   """Maximum of leaseExpiryYear across the matching connection"""
   leaseExpiryYear: Int
 
-  """Maximum of leaseYearsLeft across the matching connection"""
-  leaseYearsLeft: Int
+  """Maximum of this field across the matching connection."""
+  leaseYearsLeft: Float
 
   """Maximum of priceIdr across the matching connection"""
   priceIdr: BigFloat
@@ -4506,14 +4924,17 @@ type PropertyMinAggregates {
   """Minimum of buildingSize across the matching connection"""
   buildingSize: Float
 
+  """Minimum of this field across the matching connection."""
+  freeholdLandPrice: Float
+
   """Minimum of landSize across the matching connection"""
   landSize: Float
 
   """Minimum of leaseExpiryYear across the matching connection"""
   leaseExpiryYear: Int
 
-  """Minimum of leaseYearsLeft across the matching connection"""
-  leaseYearsLeft: Int
+  """Minimum of this field across the matching connection."""
+  leaseYearsLeft: Float
 
   """Minimum of priceIdr across the matching connection"""
   priceIdr: BigFloat
@@ -5017,6 +5438,11 @@ type PropertyStddevPopulationAggregates {
   buildingSize: Float
 
   """
+  Population standard deviation of this field across the matching connection.
+  """
+  freeholdLandPrice: Float
+
+  """
   Population standard deviation of landSize across the matching connection
   """
   landSize: Float
@@ -5027,9 +5453,9 @@ type PropertyStddevPopulationAggregates {
   leaseExpiryYear: BigFloat
 
   """
-  Population standard deviation of leaseYearsLeft across the matching connection
+  Population standard deviation of this field across the matching connection.
   """
-  leaseYearsLeft: BigFloat
+  leaseYearsLeft: Float
 
   """
   Population standard deviation of priceIdr across the matching connection
@@ -5068,6 +5494,11 @@ type PropertyStddevSampleAggregates {
   """
   buildingSize: Float
 
+  """
+  Sample standard deviation of this field across the matching connection.
+  """
+  freeholdLandPrice: Float
+
   """Sample standard deviation of landSize across the matching connection"""
   landSize: Float
 
@@ -5077,9 +5508,9 @@ type PropertyStddevSampleAggregates {
   leaseExpiryYear: BigFloat
 
   """
-  Sample standard deviation of leaseYearsLeft across the matching connection
+  Sample standard deviation of this field across the matching connection.
   """
-  leaseYearsLeft: BigFloat
+  leaseYearsLeft: Float
 
   """Sample standard deviation of priceIdr across the matching connection"""
   priceIdr: BigFloat
@@ -5106,14 +5537,17 @@ type PropertySumAggregates {
   """Sum of buildingSize across the matching connection"""
   buildingSize: Float!
 
+  """Sum of this field across the matching connection."""
+  freeholdLandPrice: Float
+
   """Sum of landSize across the matching connection"""
   landSize: Float!
 
   """Sum of leaseExpiryYear across the matching connection"""
   leaseExpiryYear: BigInt!
 
-  """Sum of leaseYearsLeft across the matching connection"""
-  leaseYearsLeft: BigInt!
+  """Sum of this field across the matching connection."""
+  leaseYearsLeft: Float
 
   """Sum of priceIdr across the matching connection"""
   priceIdr: BigFloat!
@@ -5185,14 +5619,17 @@ type PropertyVariancePopulationAggregates {
   """Population variance of buildingSize across the matching connection"""
   buildingSize: Float
 
+  """Population variance of this field across the matching connection."""
+  freeholdLandPrice: Float
+
   """Population variance of landSize across the matching connection"""
   landSize: Float
 
   """Population variance of leaseExpiryYear across the matching connection"""
   leaseExpiryYear: BigFloat
 
-  """Population variance of leaseYearsLeft across the matching connection"""
-  leaseYearsLeft: BigFloat
+  """Population variance of this field across the matching connection."""
+  leaseYearsLeft: Float
 
   """Population variance of priceIdr across the matching connection"""
   priceIdr: BigFloat
@@ -5217,14 +5654,17 @@ type PropertyVarianceSampleAggregates {
   """Sample variance of buildingSize across the matching connection"""
   buildingSize: Float
 
+  """Sample variance of this field across the matching connection."""
+  freeholdLandPrice: Float
+
   """Sample variance of landSize across the matching connection"""
   landSize: Float
 
   """Sample variance of leaseExpiryYear across the matching connection"""
   leaseExpiryYear: BigFloat
 
-  """Sample variance of leaseYearsLeft across the matching connection"""
-  leaseYearsLeft: BigFloat
+  """Sample variance of this field across the matching connection."""
+  leaseYearsLeft: Float
 
   """Sample variance of priceIdr across the matching connection"""
   priceIdr: BigFloat
@@ -5366,6 +5806,71 @@ type Query implements Node {
     """The method to use when ordering `Comment`."""
     orderBy: [CommentsOrderBy!] = [PRIMARY_KEY_ASC]
   ): CommentsConnection
+  currencyRate(id: Int!): CurrencyRate
+
+  """Reads a single `CurrencyRate` using its globally unique `ID`."""
+  currencyRateByNodeId(
+    """
+    The globally unique `ID` to be used in selecting a single `CurrencyRate`.
+    """
+    nodeId: ID!
+  ): CurrencyRate
+
+  """Reads a set of `CurrencyRate`."""
+  currencyRates(
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: CurrencyRateCondition
+
+    """
+    A filter to be used in determining which values should be returned by the collection.
+    """
+    filter: CurrencyRateFilter
+
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Skip the first `n` values."""
+    offset: Int
+
+    """The method to use when ordering `CurrencyRate`."""
+    orderBy: [CurrencyRatesOrderBy!]
+  ): [CurrencyRate!]
+
+  """Reads and enables pagination through a set of `CurrencyRate`."""
+  currencyRatesConnection(
+    """Read all values in the set after (below) this cursor."""
+    after: Cursor
+
+    """Read all values in the set before (above) this cursor."""
+    before: Cursor
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: CurrencyRateCondition
+
+    """
+    A filter to be used in determining which values should be returned by the collection.
+    """
+    filter: CurrencyRateFilter
+
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Only read the last `n` values of the set."""
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """The method to use when ordering `CurrencyRate`."""
+    orderBy: [CurrencyRatesOrderBy!] = [PRIMARY_KEY_ASC]
+  ): CurrencyRatesConnection
   file(id: UUID!): File
 
   """Reads a single `File` using its globally unique `ID`."""
@@ -5903,6 +6408,69 @@ type Query implements Node {
     """The method to use when ordering `Role`."""
     orderBy: [RolesOrderBy!] = [PRIMARY_KEY_ASC]
   ): RolesConnection
+  test(id: Int!): Test
+
+  """Reads a single `Test` using its globally unique `ID`."""
+  testByNodeId(
+    """The globally unique `ID` to be used in selecting a single `Test`."""
+    nodeId: ID!
+  ): Test
+
+  """Reads a set of `Test`."""
+  tests(
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: TestCondition
+
+    """
+    A filter to be used in determining which values should be returned by the collection.
+    """
+    filter: TestFilter
+
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Skip the first `n` values."""
+    offset: Int
+
+    """The method to use when ordering `Test`."""
+    orderBy: [TestsOrderBy!]
+  ): [Test!]
+
+  """Reads and enables pagination through a set of `Test`."""
+  testsConnection(
+    """Read all values in the set after (below) this cursor."""
+    after: Cursor
+
+    """Read all values in the set before (above) this cursor."""
+    before: Cursor
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: TestCondition
+
+    """
+    A filter to be used in determining which values should be returned by the collection.
+    """
+    filter: TestFilter
+
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Only read the last `n` values of the set."""
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """The method to use when ordering `Test`."""
+    orderBy: [TestsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): TestsConnection
   user(id: UUID!): User
   userByEmail(email: String!): User
   userByLogin(login: String!): User
@@ -7173,6 +7741,285 @@ type Subscription {
   permissionChanged: UpdateRolePermissionSubscriptionType!
   userEmailHasChanged: UserType!
   userLoggedIn: UserType!
+}
+
+type Test implements Node {
+  id: Int!
+
+  """
+  A globally unique identifier. Can be used in various places throughout the system to identify this single value.
+  """
+  nodeId: ID!
+  value: Int
+}
+
+type TestAggregates {
+  """
+  Mean average aggregates across the matching connection (ignoring before/after/first/last/offset)
+  """
+  average: TestAverageAggregates
+
+  """
+  Distinct count aggregates across the matching connection (ignoring before/after/first/last/offset)
+  """
+  distinctCount: TestDistinctCountAggregates
+  keys: [String!]
+
+  """
+  Maximum aggregates across the matching connection (ignoring before/after/first/last/offset)
+  """
+  max: TestMaxAggregates
+
+  """
+  Minimum aggregates across the matching connection (ignoring before/after/first/last/offset)
+  """
+  min: TestMinAggregates
+
+  """
+  Population standard deviation aggregates across the matching connection (ignoring before/after/first/last/offset)
+  """
+  stddevPopulation: TestStddevPopulationAggregates
+
+  """
+  Sample standard deviation aggregates across the matching connection (ignoring before/after/first/last/offset)
+  """
+  stddevSample: TestStddevSampleAggregates
+
+  """
+  Sum aggregates across the matching connection (ignoring before/after/first/last/offset)
+  """
+  sum: TestSumAggregates
+
+  """
+  Population variance aggregates across the matching connection (ignoring before/after/first/last/offset)
+  """
+  variancePopulation: TestVariancePopulationAggregates
+
+  """
+  Sample variance aggregates across the matching connection (ignoring before/after/first/last/offset)
+  """
+  varianceSample: TestVarianceSampleAggregates
+}
+
+type TestAverageAggregates {
+  """Mean average of id across the matching connection"""
+  id: BigFloat
+
+  """Mean average of value across the matching connection"""
+  value: BigFloat
+}
+
+"""
+A condition to be used against `Test` object types. All fields are tested for equality and combined with a logical ‘and.’
+"""
+input TestCondition {
+  """Checks for equality with the object’s `id` field."""
+  id: Int
+
+  """Checks for equality with the object’s `value` field."""
+  value: Int
+}
+
+type TestDistinctCountAggregates {
+  """Distinct count of id across the matching connection"""
+  id: BigInt
+
+  """Distinct count of value across the matching connection"""
+  value: BigInt
+}
+
+"""
+A filter to be used against `Test` object types. All fields are combined with a logical ‘and.’
+"""
+input TestFilter {
+  """Checks for all expressions in this list."""
+  and: [TestFilter!]
+
+  """Filter by the object’s `id` field."""
+  id: IntFilter
+
+  """Negates the expression."""
+  not: TestFilter
+
+  """Checks for any expressions in this list."""
+  or: [TestFilter!]
+
+  """Filter by the object’s `value` field."""
+  value: IntFilter
+}
+
+"""Grouping methods for `Test` for usage during aggregation."""
+enum TestGroupBy {
+  VALUE
+}
+
+input TestHavingAverageInput {
+  id: HavingIntFilter
+  value: HavingIntFilter
+}
+
+input TestHavingDistinctCountInput {
+  id: HavingIntFilter
+  value: HavingIntFilter
+}
+
+"""Conditions for `Test` aggregates."""
+input TestHavingInput {
+  AND: [TestHavingInput!]
+  OR: [TestHavingInput!]
+  average: TestHavingAverageInput
+  distinctCount: TestHavingDistinctCountInput
+  max: TestHavingMaxInput
+  min: TestHavingMinInput
+  stddevPopulation: TestHavingStddevPopulationInput
+  stddevSample: TestHavingStddevSampleInput
+  sum: TestHavingSumInput
+  variancePopulation: TestHavingVariancePopulationInput
+  varianceSample: TestHavingVarianceSampleInput
+}
+
+input TestHavingMaxInput {
+  id: HavingIntFilter
+  value: HavingIntFilter
+}
+
+input TestHavingMinInput {
+  id: HavingIntFilter
+  value: HavingIntFilter
+}
+
+input TestHavingStddevPopulationInput {
+  id: HavingIntFilter
+  value: HavingIntFilter
+}
+
+input TestHavingStddevSampleInput {
+  id: HavingIntFilter
+  value: HavingIntFilter
+}
+
+input TestHavingSumInput {
+  id: HavingIntFilter
+  value: HavingIntFilter
+}
+
+input TestHavingVariancePopulationInput {
+  id: HavingIntFilter
+  value: HavingIntFilter
+}
+
+input TestHavingVarianceSampleInput {
+  id: HavingIntFilter
+  value: HavingIntFilter
+}
+
+type TestMaxAggregates {
+  """Maximum of id across the matching connection"""
+  id: Int
+
+  """Maximum of value across the matching connection"""
+  value: Int
+}
+
+type TestMinAggregates {
+  """Minimum of id across the matching connection"""
+  id: Int
+
+  """Minimum of value across the matching connection"""
+  value: Int
+}
+
+type TestStddevPopulationAggregates {
+  """Population standard deviation of id across the matching connection"""
+  id: BigFloat
+
+  """Population standard deviation of value across the matching connection"""
+  value: BigFloat
+}
+
+type TestStddevSampleAggregates {
+  """Sample standard deviation of id across the matching connection"""
+  id: BigFloat
+
+  """Sample standard deviation of value across the matching connection"""
+  value: BigFloat
+}
+
+type TestSumAggregates {
+  """Sum of id across the matching connection"""
+  id: BigInt!
+
+  """Sum of value across the matching connection"""
+  value: BigInt!
+}
+
+type TestVariancePopulationAggregates {
+  """Population variance of id across the matching connection"""
+  id: BigFloat
+
+  """Population variance of value across the matching connection"""
+  value: BigFloat
+}
+
+type TestVarianceSampleAggregates {
+  """Sample variance of id across the matching connection"""
+  id: BigFloat
+
+  """Sample variance of value across the matching connection"""
+  value: BigFloat
+}
+
+"""A connection to a list of `Test` values."""
+type TestsConnection {
+  """
+  Aggregates across the matching connection (ignoring before/after/first/last/offset)
+  """
+  aggregates: TestAggregates
+
+  """
+  A list of edges which contains the `Test` and cursor to aid in pagination.
+  """
+  edges: [TestsEdge!]!
+
+  """
+  Grouped aggregates across the matching connection (ignoring before/after/first/last/offset)
+  """
+  groupedAggregates(
+    """The method to use when grouping `Test` for these aggregates."""
+    groupBy: [TestGroupBy!]!
+
+    """Conditions on the grouped aggregates."""
+    having: TestHavingInput
+  ): [TestAggregates!]
+
+  """A list of `Test` objects."""
+  nodes: [Test]!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """The count of *all* `Test` you could get from the connection."""
+  totalCount: Int!
+}
+
+"""A `Test` edge in the connection."""
+type TestsEdge {
+  """A cursor for use in pagination."""
+  cursor: Cursor
+
+  """The `Test` at the end of the edge."""
+  node: Test
+}
+
+"""Methods to use when ordering `Test`."""
+enum TestsOrderBy {
+  ID_ASC
+  ID_DESC
+  NATURAL
+  PRIMARY_KEY_ASC
+  PRIMARY_KEY_DESC
+  VALUE_ASC
+  VALUE_DESC
 }
 
 type TokenPairType {

@@ -3,13 +3,14 @@ import axios from 'axios';
 import { v4 } from 'uuid';
 import { parseNumeric, parsePrice, parseSquare } from "../../helpers/common.helper";
 import { ParserService } from "../parser.service";
+import { getYear } from 'date-fns';
 
 
 export class VillabalisaleService extends ParserService {
 
 	public async parse() {
 
-		let page = 58;
+		let page = 1;
 		while (true) {
 			const url = `https://www.villabalisale.com/search/villas-for-sale?page=${page}`;
 			const resp = await axios.get(url);
@@ -79,6 +80,8 @@ export class VillabalisaleService extends ParserService {
 			return el.querySelector('img').getAttribute('src');
 		});
 
+		const leaseYearsLeft = parseInt(infoObj['leaseYearsLeft']) || 0;
+
 		const propertyObj = {};
 		propertyObj['id'] = v4();
 		propertyObj['externalId'] = externalId;
@@ -86,9 +89,13 @@ export class VillabalisaleService extends ParserService {
 		propertyObj['location'] = infoObj['location'];
 		propertyObj['ownership'] = infoObj['ownership'];
 		propertyObj['buildingSize'] = infoObj['buildingSize'];
-		propertyObj['landSize'] = infoObj['landSize'];
-		propertyObj['leaseYearsLeft'] = infoObj['leaseYearsLeft'] ? infoObj['leaseYearsLeft'] : undefined;
-		propertyObj['propertyType'] = 'Villa'; // TODO: ask about it
+		propertyObj['landSize'] = infoObj['landSize'] || null;
+
+		if (leaseYearsLeft) {
+			propertyObj['leaseExpiryYear'] = getYear(new Date()) + leaseYearsLeft;
+		}
+		// propertyObj['leaseYearsLeft'] = infoObj['leaseYearsLeft'] ? infoObj['leaseYearsLeft'] : undefined;
+		propertyObj['propertyType'] = this.parsePropertyTypeFromTitle(name);
 		propertyObj['bedroomsCount'] = infoObj['bedroomsCount'];
 		propertyObj['bathroomsCount'] = infoObj['bathroomsCount'];
 		propertyObj['pool'] = isHavePool.length ? 'Yes' : 'No' ;

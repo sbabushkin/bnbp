@@ -2,11 +2,11 @@ import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import {
   AveragesType,
-  FilterOwnershipOption,
+  FilterOwnershipOption, FilterSourceOption,
   FilterType,
   FilterTypeOption,
   MaxValuesType,
-  NodeType,
+  NodeType, RateType,
 } from './filterTypes';
 import { fetchDataApi } from '../api/getPropertyApi';
 import { UpdatePropertyInput, updatePropertyApi } from '../api/updatePropertyApi';
@@ -14,6 +14,7 @@ import { UpdatePropertyInput, updatePropertyApi } from '../api/updatePropertyApi
 interface PropertyStore {
   filters: FilterType;
   nodes: NodeType[];
+  rates: RateType[];
   maxValues: MaxValuesType;
   average: AveragesType;
 
@@ -23,6 +24,7 @@ interface PropertyStore {
     upRoomCount: (num: number | null, type: 'bedroomsCount' | 'bathroomsCount') => void;
     upPrice: (value: [number, number]) => void;
     upOwnership: (newOptions: FilterOwnershipOption[]) => void;
+    upSource: (newSourceOptions: FilterSourceOption[]) => void;
     reset: () => void;
     fetchData: () => void;
     updateProperty: (input: UpdatePropertyInput) => void;
@@ -32,6 +34,7 @@ interface PropertyStore {
 const initialFilters: FilterType = {
   type: [],
   locations: [],
+  source: [],
   bedroomsCount: null,
   bathroomsCount: null,
   priceUsd: null,
@@ -42,6 +45,7 @@ export const usePropertyStore = create<PropertyStore>()(
   devtools(
     (set, get) => ({
       nodes: [],
+      rates: [],
       maxValues: {},
       average: {},
       filters: initialFilters,
@@ -51,12 +55,13 @@ export const usePropertyStore = create<PropertyStore>()(
         upRoomCount: (num, type) => set((state) => ({ filters: {...state.filters, [type]: num} })),
         upPrice: (value) => set((state) => ({ filters: {...state.filters, priceUsd: value} })),
         upOwnership: (newOptions) => set((state) => ({ filters: {...state.filters, ownership: newOptions} })),
+        upSource: (sourceOptions) => set((state) => ({ filters: {...state.filters, source: sourceOptions} })),
         reset: () => set({ filters: initialFilters }),
         fetchData: async () => {
           const { filters } = get()
-          const { nodes, aggregates } = await fetchDataApi(filters)
+          const { nodes, aggregates, rates } = await fetchDataApi(filters)
           console.log('data in fetch data func', aggregates)
-          set({ nodes, maxValues: aggregates.max || {}, average: aggregates.average || {} })
+          set({ nodes, rates,  maxValues: aggregates.max || {}, average: aggregates.average || {} })
         },
         updateProperty: async (input) => {
           const data = await updatePropertyApi(input)

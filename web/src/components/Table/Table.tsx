@@ -21,9 +21,10 @@ export default function PropertyTable() {
   const [openId, setOpenId] = React.useState<string | null>(null)
   const [orderBy, setOrderBy] = React.useState<keyof IData>('propertyType');
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(50);
+  const [rowsPerPage, setRowsPerPage] = React.useState(500);
 
   const nodes = usePropertyStore((store) => store.nodes)
+  const rates = usePropertyStore((store) => store.rates)
   const actions = usePropertyStore((store) => store.actions)
 
   React.useEffect(() => {
@@ -54,12 +55,13 @@ export default function PropertyTable() {
       page * rowsPerPage + rowsPerPage,
     ), [order, orderBy, page, rowsPerPage, nodes]);
 
+
   return (
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 2 }}>
         <TableToolbar />
 
-        <TableContainer sx={{ maxHeight: 'calc(100vh - 255px)' }}>
+        <TableContainer sx={{ maxHeight: 'calc(100vh - 510px)' }}>
           <Table
             sx={{ minWidth: 750 }}
             size={'small'}
@@ -87,7 +89,9 @@ export default function PropertyTable() {
                   <TableCell>{row.bedroomsCount}</TableCell>
                   <TableCell>{row.landSize}</TableCell>
                   <TableCell>{row.buildingSize}</TableCell>
-                  <TableCell>{chunkNumberByClass(row.priceIdr)}</TableCell>
+                  <TableCell>{row.leaseExpiryYear}</TableCell>
+                  <TableCell>{row.leaseYearsLeft}</TableCell>
+                  <TableCell>{chunkNumberByClass((rates[0] && row.priceUsd ? rates[0].amount * row.priceUsd : 0).toString())}</TableCell>
                   <TableCell>{chunkNumberByClass(row.priceUsd)}</TableCell>
                 </TableRow>
               ))}
@@ -100,7 +104,7 @@ export default function PropertyTable() {
           </Table>
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[25, 50, 100]}
+          rowsPerPageOptions={[25, 50, 100, 500, 1000]}
           component="div"
           count={nodes.length}
           rowsPerPage={rowsPerPage}

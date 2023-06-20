@@ -108,7 +108,7 @@ export class BalitreasurepropertiesService extends ParserService {
     propertyObj['buildingSize'] = parseNumeric(info['Building size']); // TODO: // hard to parse
     propertyObj['landSize'] = parseNumeric(landSize);
     propertyObj['leaseYearsLeft'] = leaseHoldText && parseNumeric(leaseHoldText);
-    propertyObj['propertyType'] = 'Villa'; // TODO: ask about it
+    propertyObj['propertyType'] = this.parsePropertyTypeFromTitle(listingName);
     propertyObj['bedroomsCount'] = parseNumeric(bedrooms);
     propertyObj['bathroomsCount'] = parseNumeric(bathrooms);
     propertyObj['pool'] = 'Yes';

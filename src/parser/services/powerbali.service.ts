@@ -108,7 +108,7 @@ export class PowerbaliService extends ParserService {
 		propertyObj['location'] = location;
 		propertyObj['ownership'] = infoObj['Title']?.split(',')[0].trim().toLowerCase();
 		propertyObj['leaseExpiryYear'] = infoObj['leaseExpiryYear'];
-		propertyObj['propertyType'] = 'Villa'; // TODO: ask about it
+		propertyObj['propertyType'] = this.parsePropertyTypeFromTitle(name);
 		propertyObj['buildingSize'] = buildingSize;
 		propertyObj['landSize'] = landSize;
 		propertyObj['bedroomsCount'] = infoObj['bedroomsCount'];

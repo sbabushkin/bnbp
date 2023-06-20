@@ -29,6 +29,26 @@ export class ParserService {
     return Property.query().patchAndFetchById(input.id, input);
   }
 
+  parsePropertyTypeFromTitle(title: string) { // TODO: move to helper
+    const types = {
+      villa: 'villa',
+      apartment: 'apartment',
+      hotel: 'hotel/resort',
+      resort: 'hotel/resort',
+      land: 'land',
+      commercial: 'commercial',
+    }
+
+    const myTitle = 'the best villa!!!';
+    const includes = Object.keys(types)
+      .map((type) => ({ includes: myTitle.toLowerCase().includes(type), type }))
+      .filter((value) => value.includes);
+
+    console.log(includes);
+    const result = types[includes[0]?.type] || types.villa; // villa by default
+    return result;
+  }
+
   protected async loadToDb(data: Property[]) {
     const bindings = data.map(item => ([item.source, item.externalId]));
 

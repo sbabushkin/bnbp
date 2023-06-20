@@ -95,7 +95,7 @@ export class PpbaliService extends ParserService {
     propertyObj['buildingSize'] = info['Build size'] && parseSquare(info['Build size']);
     propertyObj['landSize'] = info['Land size'] && parseSquare(info['Land size']);
     propertyObj['leaseExpiryYear'] = ownershipAndYear[1] && parseNumeric(ownershipAndYear[1]);
-    propertyObj['propertyType'] = 'Villa'; // TODO: ask about it
+    propertyObj['propertyType'] = this.parsePropertyTypeFromTitle(listingName);
     propertyObj['bedroomsCount'] = parseNumeric(bedrooms);
     propertyObj['bathroomsCount'] = parseNumeric(bathrooms);
     propertyObj['pool'] = poolExists ? 'Yes' : 'No';

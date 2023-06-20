@@ -85,7 +85,7 @@ export class ExotiqpropertyService extends ParserService {
  		propertyObj['buildingSize'] = parseNumeric(infoObj['Land area']);
 		propertyObj['landSize'] = parseNumeric(infoObj['Building size']);
 		propertyObj['leaseYearsLeft'] = propertyObj['ownership'] === 'freehold' ? undefined : leaseYearsLeft;
-		propertyObj['propertyType'] = 'Villa'; // TODO: ask about it
+		propertyObj['propertyType'] = this.parsePropertyTypeFromTitle(listingName);
 		propertyObj['bedroomsCount'] = parseNumeric(infoObj['Bedrooms']);
 		propertyObj['bathroomsCount'] = parseNumeric(infoObj['Bathrooms']);
 		propertyObj['pool'] = infoObj['Pool(s)'] ? 'Yes' : 'No' ;

@@ -111,7 +111,7 @@ export class BaliHomeImmoService extends ParserService {
     propertyObj['buildingSize'] = parseNumeric(generalInfoObj['Building Size']);
     propertyObj['landSize'] = parseNumeric(generalInfoObj['Land Size']);
     propertyObj['leaseYearsLeft'] = parseNumeric(generalInfoObj['Leasehold Period']);
-    propertyObj['propertyType'] = 'Villa'; // TODO: ask about it
+    propertyObj['propertyType'] = this.parsePropertyTypeFromTitle(listingName);
     propertyObj['bedroomsCount'] = parseNumeric(indoorObj['Bedroom']);
     propertyObj['bathroomsCount'] = parseNumeric(indoorObj['Bathroom'] || indoorObj['Ensuite Bathroom']);
     propertyObj['pool'] = (outdoorObj['Swimming Pool'] && outdoorObj['Swimming Pool'].indexOf('Yes')) ? 'Yes' : 'No';

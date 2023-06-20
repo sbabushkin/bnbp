@@ -76,7 +76,7 @@ export class SuasarealestateService extends ParserService {
 		propertyObj['buildingSize'] = parseNumeric(infoObj['Building Size'].replace('m2'));
 		propertyObj['landSize'] = parseNumeric(infoObj['Land Size'].replace('m2'));
 		propertyObj['leaseExpiryYear'] = parseNumeric(infoObj['End of Lease']) || undefined;
-		propertyObj['propertyType'] = 'Villa'; // TODO: ask about it
+		propertyObj['propertyType'] = this.parsePropertyTypeFromTitle(name);
 		propertyObj['bedroomsCount'] = parseNumeric(infoObj['Number of Bedroom(s)']);
 		propertyObj['bathroomsCount'] = parseNumeric(infoObj['Number of Bathroom(s)']);
 		propertyObj['pool'] = infoObj['Pool Size'] ? 'Yes' : 'No' ;

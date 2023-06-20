@@ -110,7 +110,7 @@ export class FazwazService extends ParserService {
     propertyObj['landSize'] = parseNumeric(basicInfo['Plot Size']);
     // propertyObj['leaseYearsLeft'] = leaseYearsLeft;
     // propertyObj['leaseExpiryYear'] = leaseExpiryYear;
-    propertyObj['propertyType'] = 'Villa';
+    propertyObj['propertyType'] = this.parsePropertyTypeFromTitle(listingName);
     propertyObj['bedroomsCount'] = parseSquare(info['Bedrooms'] || info['Bedroom']) ;
     propertyObj['bathroomsCount'] = parseSquare(info['Bathrooms'] || info['Bathroom']);
     propertyObj['pool'] = poolExists ? 'Yes' : 'No';

@@ -70,7 +70,7 @@ export class UnikbalivillaService extends ParserService {
     propertyObj['leaseYearsLeft'] = info['Status'].indexOf('Leasehold') >= 0 ? parseNumeric(info['Status']) : '';;
     propertyObj['buildingSize'] = parseNumeric(info['Building size']);
     propertyObj['landSize'] = parseNumeric(info['Land size']);
-    propertyObj['propertyType'] = 'Villa'; // TODO: ask about it
+    propertyObj['propertyType'] = this.parsePropertyTypeFromTitle(listingName);
     propertyObj['bedroomsCount'] = parseNumeric(info['Number of bedroom(s)']);
     propertyObj['bathroomsCount'] = parseNumeric(info['Number of bathroom(s)']);
     propertyObj['pool'] = info['Pool'];

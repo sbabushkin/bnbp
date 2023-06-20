@@ -88,7 +88,7 @@ export class ExcelbaliService extends ParserService {
 
     propertyObj['buildingSize'] = parseSquare(info['Build Size']);
     propertyObj['landSize'] = parseSquare(info['Land Size']);
-    propertyObj['propertyType'] = 'Villa';
+    propertyObj['propertyType'] = this.parsePropertyTypeFromTitle(listingName);
     propertyObj['bedroomsCount'] = parseNumeric(info['Bedrooms']);
     propertyObj['bathroomsCount'] = parseNumeric(info['Bathrooms']);
     propertyObj['pool'] = poolExists ? 'Yes' : 'No';

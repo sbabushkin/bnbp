@@ -1,4 +1,4 @@
-import { FilterTypeOption } from "../store/filterTypes";
+import { FilterSourceOption, FilterTypeOption } from "../store/filterTypes";
 
 export interface IData {
   id: string;
@@ -11,6 +11,9 @@ export interface IData {
   bathroomsCount: number;
   priceIdr: string;
   landSize: string;
+  lease: number;
+  leaseExpiryYear: number;
+  leaseYearsLeft: number;
   buildingSize: string;
   priceUsd: string;
 }
@@ -58,6 +61,14 @@ export const headCells: readonly IHeadCell[] = [
     label: 'Build Size',
   },
   {
+    id: 'leaseExpiryYear',
+    label: 'LEY',
+  },
+  {
+    id: 'leaseYearsLeft',
+    label: 'LYL',
+  },
+  {
     id: 'priceIdr',
     label: 'Idr',
   },
@@ -68,6 +79,32 @@ export const headCells: readonly IHeadCell[] = [
 ];
 
 export const propertyTypeOptions: FilterTypeOption[] = ['villa', 'apartment', 'hotel/resort', 'land', 'commercial']
+
+export const sourceOptions: FilterSourceOption[] = [
+  'villabalisale.com',
+  'balivillasales.com',
+  'suasarealestate.com',
+  'rumah123.com',
+  'balivillasales.com',
+  'propertiabali.com',
+  'ppbali.com',
+  'powerbali.com',
+  'optimumbali.com',
+  'lazudi.com',
+  'harcourtspurbabali.com',
+  'fazwaz.id',
+  'exotiqproperty.com',
+  'excelbali.com',
+  'dotproperty.id',
+  'balivillasales.com',
+  'balitreasureproperties.com',
+  'balirealty.com',
+  'bbalimoves.com',
+  'bali-home-immo.com',
+  'balivillasales.com',
+  'balicoconutliving.com',
+  'anniedeanproperties.com',
+]
 
 export const locationOptions = [
 {value: 'Amed', groupBy: ''},

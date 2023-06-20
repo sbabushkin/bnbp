@@ -72,7 +72,7 @@ export class OptimumbaliService extends ParserService {
 		propertyObj['buildingSize'] = parseNumeric(infoObj['Living space'].replace('m2'));
 		propertyObj['landSize'] = parseNumeric(infoObj['Land size'].replace('m2'));
 		propertyObj['leaseYearsLeft'] = leaseDuration === 'Fr' ? undefined : leaseDuration;
-		propertyObj['propertyType'] = 'Villa'; // TODO: ask about it
+		propertyObj['propertyType'] = this.parsePropertyTypeFromTitle(infoObj['name']);
 		propertyObj['bedroomsCount'] = parseNumeric(infoObj['Bedrooms']);
 		propertyObj['bathroomsCount'] = parseNumeric(infoObj['Bathrooms']);
 		// propertyObj['pool'] = isHavePool ? 'Yes' : 'No'; Не указано

@@ -83,7 +83,7 @@ export class RumahService extends ParserService {
     propertyObj['landSize'] = parseNumeric(infoObj['Land Size'] || infoObj['L. Tanah']);
     propertyObj['buildingSize'] = parseNumeric(infoObj['Building Size'] || infoObj['L. Bangunan']);
     // propertyObj['leaseYearsLeft'] = leaseYearsLeft;
-    propertyObj['propertyType'] = infoObj['Property Type'];
+    propertyObj['propertyType'] = infoObj['Property Type'] || this.parsePropertyTypeFromTitle(listingName);
     propertyObj['bedroomsCount'] = parseNumeric(infoObj['Bedrooms'] || infoObj['Bedroom'] || infoObj['K. Tidur']);
     propertyObj['bathroomsCount'] = parseNumeric(infoObj['Bathrooms'] || infoObj['Bathroom'] || infoObj['K. Mandi']);
     // propertyObj['pool'] = poolExists ? 'Yes' : 'No';

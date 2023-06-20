@@ -29,12 +29,14 @@ import { FsmModule } from './fsm/fsm.module';
 import { ApplicationStatusModule } from './applicationStatus/applicationStatus.module';
 import { PG_AUTH_ERROR_CODE } from './postgraphile/error-codes';
 import { ParserModule } from "./parser/parser.module";
+import { CurrencyModule } from "./currency/currency.module";
 
 @Module({
 
   imports: [
     UserModule,
     AuthModule,
+    CurrencyModule,
     GraphQLModule.forRootAsync({
       imports: [PostgraphileModule],
       inject: [PostgraphileService],

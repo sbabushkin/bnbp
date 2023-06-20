@@ -100,7 +100,7 @@ export class BalicoconutlivingService extends ParserService {
     propertyObj['buildingSize'] = parseNumeric(info['Building Size:']?.replace('m2'));
     propertyObj['landSize'] = parseNumeric(info['Land Size:']?.replace('m2'));
     // propertyObj['leaseYearsLeft'] = leaseYearsLeft;
-    propertyObj['propertyType'] = 'Villa'; // TODO: ask about it
+    propertyObj['propertyType'] = this.parsePropertyTypeFromTitle(listingName);
     propertyObj['bedroomsCount'] = parseNumeric(info['Bedroom(s):']);
     propertyObj['bathroomsCount'] = parseNumeric(info['Bathroom(s):']);
     propertyObj['pool'] = info['Swimming Pool:'] ? 'Yes' : 'No';
