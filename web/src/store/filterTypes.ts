@@ -37,16 +37,19 @@ export type RateType = {
 export type NodeType = {
   id: string;
   name: string;
-  url: string;
   source: string;
-  location: string;
-  ownership: string;
+  url: string;
   propertyType: string;
+  ownership: string;
+  location: string;
   bedroomsCount: number;
   bathroomsCount: number;
-  priceIdr: string;
   landSize: string;
   buildingSize: string;
+  leaseYearsLeft: string;
+  lease: string; // ???
+  leaseExpiryYear: string;
+  priceIdr: string;
   priceUsd: string;
 }
 
@@ -57,15 +60,15 @@ export type MaxValuesType = {
 }
 
 export type AveragesType = {
-  pricePerSqm?: string;
-  leaseYearsLeft?: string;
-  freeholdLandPrice?: string;
-  bedroomsCount?: string;
-  bathroomsCount?: string;
-  buildingSize?: string;
-  landSize?: string;
-  priceIdr?: string;
-  priceUsd?: string;
+  pricePerSqm?: number;
+  leaseYearsLeft?: number;
+  freeholdLandPrice?: number;
+  bedroomsCount?: number;
+  bathroomsCount?: number;
+  buildingSize?: number;
+  landSize?: number;
+  // priceIdr?: number;
+  priceUsd?: number;
 }
 
 export interface FilterType {

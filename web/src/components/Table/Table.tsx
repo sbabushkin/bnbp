@@ -80,7 +80,7 @@ export default function PropertyTable() {
                   sx={{ cursor: 'pointer' }}
                   onClick={() => setOpenId(row.id)}
                 >
-                  <TableCell><Link href={row.url} target='_blank' onClick={(e) => e.stopPropagation()}>{row.name}</Link></TableCell>
+                  <TableCell><Link href={row.url.toString()} target='_blank' onClick={(e) => e.stopPropagation()}>{row.name}</Link></TableCell>
                   <TableCell>{row.source}</TableCell>
                   <TableCell>{row.ownership}</TableCell>
                   <TableCell>{row.propertyType}</TableCell>
@@ -91,8 +91,8 @@ export default function PropertyTable() {
                   <TableCell>{row.buildingSize}</TableCell>
                   <TableCell>{row.leaseExpiryYear}</TableCell>
                   <TableCell>{row.leaseYearsLeft}</TableCell>
-                  <TableCell>{chunkNumberByClass((rates[0] && row.priceUsd ? rates[0].amount * row.priceUsd : 0).toString())}</TableCell>
-                  <TableCell>{chunkNumberByClass(row.priceUsd)}</TableCell>
+                  <TableCell>{chunkNumberByClass((rates[0] && row.priceUsd ? rates[0].amount * parseFloat(row.priceUsd.toString()) : 0).toString())}</TableCell>
+                  <TableCell>{chunkNumberByClass(row.priceUsd.toString())}</TableCell>
                 </TableRow>
               ))}
               {emptyRows > 0 && (
