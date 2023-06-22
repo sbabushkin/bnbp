@@ -4,10 +4,15 @@ import { parseNumeric } from "../../helpers/common.helper";
 import parse from "node-html-parser";
 import { v4 } from 'uuid';
 import {PropertyPrice} from "../entities/property_price.entity";
+import { getYear } from "date-fns";
+import { CurrencyRate } from "../../currency/entities/currency.entity";
 
 export class ExotiqpropertyService extends ParserService {
 
 	public async parse() {
+		// TODO: move to service
+		const currentRate = await CurrencyRate.query().where({ from: 'USD'}).orderBy('created', 'desc').first();
+
 		const propertiesUrlArr = [];
 		const hostUrl = 'https://www.exotiqproperty.com';
 		const listingUrl = 'https://www.exotiqproperty.com/all-listings?for-lease=true&for-sale=true&villa=true'
@@ -21,7 +26,7 @@ export class ExotiqpropertyService extends ParserService {
 		const data = [];
 
 		for (const url of propertiesUrlArr) {
-			const item = await this.parseItem(url);
+			const item = await this.parseItem(url, currentRate);
 			if (!item) {
 				continue;
 			}
@@ -33,7 +38,7 @@ export class ExotiqpropertyService extends ParserService {
 		return 'ok';
 	}
 
-	private async parseItem(itemUrl) {
+	private async parseItem(itemUrl, currentRate) {
 		console.log('item URL >>>', itemUrl);
 		let respItem;
 
@@ -80,17 +85,21 @@ export class ExotiqpropertyService extends ParserService {
 		propertyObj['id'] = v4();
 		propertyObj['externalId'] = itemUrlId;
 		propertyObj['name'] = listingName;
-		propertyObj['location'] = location;
+		propertyObj['location'] = this.normalizeLocation(location);
 		propertyObj['ownership'] = infoObj['Ownership'] === 'For sale' ? 'freehold' : 'leasehold';
  		propertyObj['buildingSize'] = parseNumeric(infoObj['Land area']);
 		propertyObj['landSize'] = parseNumeric(infoObj['Building size']);
-		propertyObj['leaseYearsLeft'] = propertyObj['ownership'] === 'freehold' ? undefined : leaseYearsLeft;
+
+		if (leaseYearsLeft) {
+			propertyObj['leaseExpiryYear'] = getYear(new Date()) + parseInt(leaseYearsLeft);
+		}
+
 		propertyObj['propertyType'] = this.parsePropertyTypeFromTitle(listingName);
 		propertyObj['bedroomsCount'] = parseNumeric(infoObj['Bedrooms']);
 		propertyObj['bathroomsCount'] = parseNumeric(infoObj['Bathrooms']);
 		propertyObj['pool'] = infoObj['Pool(s)'] ? 'Yes' : 'No' ;
-		propertyObj['priceUsd'] = 0; // Не указано
 		propertyObj['priceIdr'] = priceIdr;
+		propertyObj['priceUsd'] = this.convertToUsd(propertyObj['priceIdr'], currentRate.amount)
 		propertyObj['url'] = itemUrl;
 		propertyObj['source'] = 'exotiqproperty.com';
 		propertyObj['photos'] = imgArr[0];

@@ -4,6 +4,7 @@ import { Property } from "../entities/property.entity";
 import { v4 } from 'uuid';
 import { parseNumeric } from "../../helpers/common.helper";
 import { ParserService } from "../parser.service";
+import { CurrencyRate } from "../../currency/entities/currency.entity";
 const FormData = require('form-data');
 
 
@@ -12,6 +13,9 @@ export class BalirealtyService extends ParserService {
   public async parse() {
 
     let page = 1;
+
+    // TODO: move to service
+    const currentRate = await CurrencyRate.query().where({ from: 'USD'}).orderBy('created', 'desc').first();
 
     while (true) {
       const listUrl = `https://www.balirealty.com/properties/page/${page}/?filter-contract=SALE&filter-location&filter-property-type=75&display=grid`;
@@ -34,7 +38,7 @@ export class BalirealtyService extends ParserService {
       const data = [];
 
       for (const url of propertiesUrlArr) {
-        const item = await this.parseItem(url);
+        const item = await this.parseItem(url, currentRate);
         data.push(item);
       }
       await this.loadToDb(data);
@@ -45,7 +49,7 @@ export class BalirealtyService extends ParserService {
     // console.log(propertiesHtmlArr.length);
   }
 
-  private async parseItem(itemUrl) {
+  private async parseItem(itemUrl, currentRate) {
     const respItem = await axios.get(itemUrl);
     const parsedContent = parse(respItem.data);
 
@@ -102,8 +106,9 @@ export class BalirealtyService extends ParserService {
     propertyObj['name'] = listingName;
     propertyObj['ownership'] = propertyObj['status'].indexOf('Freehold') >= 0 ? 'freehold' : 'leasehold';
     propertyObj['pool'] = poolExists ? 'Yes' : 'No';
-    propertyObj['priceUsd'] = currency === 'USD' ? propertyObj['price'] : 0;
-    propertyObj['priceIdr'] = currency === 'IDR' ? propertyObj['price'] : 0;
+    propertyObj['priceIdr'] = currency === 'IDR' ? propertyObj['price'] : null;
+    const priceUsd = currency === 'USD' ? propertyObj['price'] : null;
+    propertyObj['priceUsd'] = priceUsd || this.convertToUsd(priceUsd, currentRate.amount);
     propertyObj['url'] = itemUrl;
     // propertyObj['leaseYearsLeft'] = ''; // TODO: doesnt work
     propertyObj['source'] = 'balirealty.com';

@@ -4,6 +4,7 @@ import { Property } from "../entities/property.entity";
 import { v4 } from 'uuid';
 import { parseNumeric, parseSquare } from "../../helpers/common.helper";
 import { ParserService } from "../parser.service";
+import { CurrencyRate } from "../../currency/entities/currency.entity";
 
 
 export class RumahService extends ParserService {
@@ -11,6 +12,9 @@ export class RumahService extends ParserService {
   public async parse() {
 
     let page = 1;
+
+    // TODO: move to service
+    const currentRate = await CurrencyRate.query().where({ from: 'USD'}).orderBy('created', 'desc').first();
 
     while (true) {
       const listUrl = `https://www.rumah123.com/en/sale/bali/house/?page=${page}`;
@@ -28,7 +32,7 @@ export class RumahService extends ParserService {
       const data = [];
 
       for (const url of propertiesUrlArr) {
-        const item = await this.parseItem(url);
+        const item = await this.parseItem(url, currentRate);
         data.push(item);
       }
 
@@ -38,7 +42,7 @@ export class RumahService extends ParserService {
     return 'ok';
   }
 
-  private async parseItem(itemUrl) {
+  private async parseItem(itemUrl, currentRate) {
     const respItem = await axios.get(itemUrl);
     const parsedContent = parse(respItem.data);
 
@@ -78,7 +82,7 @@ export class RumahService extends ParserService {
     propertyObj['id'] = v4();
     propertyObj['externalId'] = itemUrlId;
     propertyObj['name'] = listingName;
-    propertyObj['location'] = location;
+    propertyObj['location'] = this.normalizeLocation(location);
     // propertyObj['ownership'] = ownership;
     propertyObj['landSize'] = parseNumeric(infoObj['Land Size'] || infoObj['L. Tanah']);
     propertyObj['buildingSize'] = parseNumeric(infoObj['Building Size'] || infoObj['L. Bangunan']);
@@ -87,8 +91,8 @@ export class RumahService extends ParserService {
     propertyObj['bedroomsCount'] = parseNumeric(infoObj['Bedrooms'] || infoObj['Bedroom'] || infoObj['K. Tidur']);
     propertyObj['bathroomsCount'] = parseNumeric(infoObj['Bathrooms'] || infoObj['Bathroom'] || infoObj['K. Mandi']);
     // propertyObj['pool'] = poolExists ? 'Yes' : 'No';
-    // propertyObj['priceUSD'] = priceUsd;
     propertyObj['priceIdr'] = parseSquare(priceIdr) * multi;
+    propertyObj['priceUSD'] = this.convertToUsd(propertyObj['priceIdr'], currentRate.amount);
     propertyObj['url'] = itemUrl;
     propertyObj['source'] = 'rumah123.com';
     // propertyObj['photos'] = imgArr[0];

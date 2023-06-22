@@ -5,6 +5,10 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
 import Stack from '@mui/material/Stack';
 import { FC, useCallback, useState } from 'react';
 import { usePropertyStore } from '../store/propertyStore';
@@ -37,6 +41,7 @@ export const PropertyForm: FC<PropertyFormType> = ({ openId, setOpenId }) => {
     const input: UpdatePropertyInput = {
       id: node.id,
       ...(form.location ? { location: form.location } : {}),
+      ...(form.propertyType ? { propertyType: form.propertyType } : {}),
       ...(form.bathroomsCount ? { bathroomsCount: Number(form.bathroomsCount) } : {}),
       ...(form.bedroomsCount ? { bedroomsCount: Number(form.bedroomsCount) } : {}),
       ...(form.landSize ? { landSize: Number(form.landSize) } : {}),
@@ -52,6 +57,7 @@ export const PropertyForm: FC<PropertyFormType> = ({ openId, setOpenId }) => {
   }, [setOpenId, updateProperty, node, form])
 
   const useFieldChange = (fieldName: keyof NodeType) => useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(e.target.value);
     updateForm((prev) => ({ ...prev, [fieldName]: e.target.value }))
   }, [fieldName])
 
@@ -76,6 +82,24 @@ export const PropertyForm: FC<PropertyFormType> = ({ openId, setOpenId }) => {
             onChange={(_, elem) => updateForm((prev) => ({ ...prev, location: elem?.value || '' }))}
             renderInput={(params) => (<TextField {...params} label="Location" placeholder="search" />)}
           />
+
+          <FormControl fullWidth>
+            <InputLabel id="demo-simple-select-label">Property type</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={node.propertyType}
+              label="Property type"
+              onChange={(_, elem: any) => updateForm((prev) => {
+                return ({ ...prev, propertyType: elem?.props?.value || '' }) // TODO: fix selected
+              })}
+            >
+              <MenuItem selected={node.propertyType === 'villa'} value="villa">Villa</MenuItem>
+              <MenuItem selected={node.propertyType === 'apartment'} value="apartment">Apartment</MenuItem>
+              <MenuItem selected={node.propertyType === 'land'} value="land">Land</MenuItem>
+              <MenuItem selected={node.propertyType === 'hotel/resort'} value="hotel/resort">Hotel/Resort</MenuItem>
+            </Select>
+          </FormControl>
 
           <Stack spacing={2} direction="row" minWidth={'100%'}>
             <TextField
@@ -115,20 +139,20 @@ export const PropertyForm: FC<PropertyFormType> = ({ openId, setOpenId }) => {
             />
           </Stack>
 
-          <TextField
-            defaultValue={node.priceIdr}
-            variant="outlined"
-            label="Price Idr"
-            type='number'
-            onChange={useFieldChange('priceIdr')}
-          />
-          <TextField
-            defaultValue={node.priceUsd}
-            variant="outlined"
-            label="Price Usd"
-            type='number'
-            onChange={useFieldChange('priceUsd')}
-          />
+          {/*<TextField*/}
+          {/*  defaultValue={node.priceIdr}*/}
+          {/*  variant="outlined"*/}
+          {/*  label="Price Idr"*/}
+          {/*  type='number'*/}
+          {/*  onChange={useFieldChange('priceIdr')}*/}
+          {/*/>*/}
+          {/*<TextField*/}
+          {/*  defaultValue={node.priceUsd}*/}
+          {/*  variant="outlined"*/}
+          {/*  label="Price Usd"*/}
+          {/*  type='number'*/}
+          {/*  onChange={useFieldChange('priceUsd')}*/}
+          {/*/>*/}
 
           <Stack spacing={2} direction="row" minWidth={'100%'}>
             <Button fullWidth variant='contained' size='large' onClick={handleApply}>Save</Button>

@@ -54,10 +54,12 @@ export class ParserController {
     private readonly optimumbaliService: OptimumbaliService,
   ) {}
 
-  @Post('parse/:source')
-  async parse(@Param('source') source: string, @Res() res: any, @Req() req: any) {
 
+  async parseInner(source) {
     let data = 'not found';
+
+
+
     switch(source) {
       case 'balihomeimmo':
         data = await this.baliHomeImmoService.parse();
@@ -129,6 +131,50 @@ export class ParserController {
         data = await this.powerbaliService.parse();
         break;
     }
+  }
+
+  @Post('parse')
+  async parseAll(@Param('source') source: string, @Res() res: any, @Req() req: any) {
+    const sources = [
+      'balihomeimmo',
+      'baliexception',
+      'balivillasales',
+      'balirealty',
+      'balimoves',
+      'excelbali',
+      'ppbali',
+      'harcourtspurbabali',
+      'dotproperty',
+      'propertiabali',
+      'balitreasureproperties',
+      'fazwaz',
+      'unikbalivilla',
+      'rajavillaproperty',
+      'lazudi',
+      'balicoconutliving',
+      'rumah',
+      'anniedeanproperties',
+      'exotiqproperty',
+      'optimumbali',
+      'villabalisale',
+      'suasarealestate',
+      'powerbali',
+    ];
+
+    for (const source of sources) {
+      try {
+        await this.parseInner(source);
+      } catch (e) {
+        console.error(source, e.message);
+      }
+    }
+
+    res.send('ok');
+  }
+
+  @Post('parse/:source')
+  async parse(@Param('source') source: string, @Res() res: any, @Req() req: any) {
+    const data = this.parseInner(source);
     res.send(data);
   }
 }

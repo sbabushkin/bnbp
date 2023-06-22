@@ -3,12 +3,16 @@ import axios from 'axios';
 import { v4 } from 'uuid';
 import { parseNumeric, parseSquare, parseText } from "../../helpers/common.helper";
 import { ParserService } from "../parser.service";
+import { CurrencyRate } from "../../currency/entities/currency.entity";
 
 
 export class PowerbaliService extends ParserService {
 
 	public async parse() {
 		let page = 1;
+
+		// TODO: move to service
+		const currentRate = await CurrencyRate.query().where({ from: 'USD'}).orderBy('created', 'desc').first();
 		while (true) {
 			const url = `https://www.powerbali.com/property-type/resale-villas/page/${page}/`;
 			let resp;
@@ -32,7 +36,7 @@ export class PowerbaliService extends ParserService {
 			const data = [];
 
 			for (const url of urlsArr) {
-				const item = await this.parseItem(url);
+				const item = await this.parseItem(url, currentRate);
 				data.push(item);
 			}
 
@@ -42,7 +46,7 @@ export class PowerbaliService extends ParserService {
 		return 'ok';
 	}
 
-	private async parseItem(itemUrl) {
+	private async parseItem(itemUrl, currentRate) {
 		console.log('item URL >>>', itemUrl)
 		const respItem = await axios.get(itemUrl);
 		const parsedContent = parse(respItem.data);
@@ -105,7 +109,7 @@ export class PowerbaliService extends ParserService {
 		propertyObj['id'] = v4();
 		propertyObj['externalId'] = externalId;
 		propertyObj['name'] = name;
-		propertyObj['location'] = location;
+		propertyObj['location'] = this.normalizeLocation(location);
 		propertyObj['ownership'] = infoObj['Title']?.split(',')[0].trim().toLowerCase();
 		propertyObj['leaseExpiryYear'] = infoObj['leaseExpiryYear'];
 		propertyObj['propertyType'] = this.parsePropertyTypeFromTitle(name);
@@ -114,8 +118,8 @@ export class PowerbaliService extends ParserService {
 		propertyObj['bedroomsCount'] = infoObj['bedroomsCount'];
 		propertyObj['bathroomsCount'] = infoObj['bathroomsCount'];
 		// propertyObj['pool'] = isHavePool ? 'Yes' : 'No';
-		propertyObj['priceUsd'] = infoObj['priceUSD'];
 		propertyObj['priceIdr'] = infoObj['priceIDR'];
+		propertyObj['priceUsd'] = infoObj['priceUSD'] || this.convertToUsd(propertyObj['priceIdr'], currentRate.amount);
 		propertyObj['url'] = itemUrl;
 		propertyObj['source'] = 'powerbali.com';
 		propertyObj['photos'] = imgArr[0];

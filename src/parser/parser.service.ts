@@ -8,6 +8,8 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 import { PropertyPrice } from "./entities/property_price.entity";
 import { UpdatePropertyInput } from "./dto/update-property.input";
+import { CacheService } from "../cache/cache.service";
+import { CurrencyService } from "../currency/currency.service";
 
 // TODO: move to config
 const spreadsheetId = '1VdNUg64ef3HFnsy4A9q_RimC75L6AjCSBdLEZMeQJxE';
@@ -18,15 +20,92 @@ export class ParserService {
 
   private sheets;
 
-  constructor() {
-    // const content = readFileSync(TOKEN_PATH).toString();
-    // const credentials = JSON.parse(content);
-    // const auth = google.auth.fromJSON(credentials);
-    this.sheets = {}; //google.sheets({version: 'v4', auth});
-  }
-
   async update(input: any) {
     return Property.query().patchAndFetchById(input.id, input);
+  }
+
+  normalizeLocation(location: string) { // TODO: area id instead of string
+    const locations = [
+      {value: 'Amed', groupBy: '', match: false},
+      {value: 'Balian', groupBy: '', match: false},
+      {value: 'Batu Belig', groupBy: '', match: false},
+      {value: 'Karangasem', groupBy: '', match: false},
+      {value: 'Kedungu', groupBy: '', match: false},
+      {value: 'Kerobokan', groupBy: '', match: false},
+      {value: 'Ketewel', groupBy: '', match: false},
+      {value: 'Kuta', groupBy: '', match: false},
+      {value: 'Lovina', groupBy: '', match: false},
+      {value: 'Medewi', groupBy: '', match: false},
+      {value: 'Megwi', groupBy: '', match: false},
+      {value: 'North Bali', groupBy: '', match: false},
+      {value: 'Pecatu', groupBy: '', match: false},
+      {value: 'Saba', groupBy: '', match: false},
+      {value: 'Sanur', groupBy: '', match: false},
+      {value: 'Sukawati', groupBy: '', match: false},
+      {value: 'Umalas', groupBy: '', match: false},
+      {value: 'Bukit', groupBy: 'Bukit', match: false},
+      {value: 'Balangan', groupBy: 'Bukit', match: false},
+      {value: 'Bingin', groupBy: 'Bukit', match: false},
+      {value: 'Jimbaran', groupBy: 'Bukit', match: false},
+      {value: 'Nusa Dua', groupBy: 'Bukit', match: false},
+      {value: 'Padang Padang', groupBy: 'Bukit', match: false},
+      {value: 'Pecatu', groupBy: 'Bukit', match: false},
+      {value: 'Uluwatu', groupBy: 'Bukit', match: false},
+      {value: 'Ungasan', groupBy: 'Bukit', match: false},
+      {value: 'Buwit', groupBy: 'Buwit', match: false},
+      {value: 'Tabanan', groupBy: 'Buwit', match: false},
+      {value: 'Canggu', groupBy: 'Canggu', match: false},
+      {value: 'Babakan', groupBy: 'Canggu', match: false},
+      {value: 'Batu Bolong', groupBy: 'Canggu', match: false},
+      {value: 'Berawa', groupBy: 'Canggu', match: false},
+      {value: 'Cemagi', groupBy: 'Canggu', match: false},
+      {value: 'Echo Beach', groupBy: 'Canggu', match: false},
+      {value: 'Kayu Tulang', groupBy: 'Canggu', match: false},
+      {value: 'Nelayan', groupBy: 'Canggu', match: false},
+      {value: 'North', groupBy: 'Canggu', match: false},
+      {value: 'Nyanyi', groupBy: 'Canggu', match: false},
+      {value: 'Padonan', groupBy: 'Canggu', match: false},
+      {value: 'Pantai Lima', groupBy: 'Canggu', match: false},
+      {value: 'Pererenan', groupBy: 'Canggu', match: false},
+      {value: 'Seseh', groupBy: 'Canggu', match: false},
+      {value: 'Tiying Tutul', groupBy: 'Canggu', match: false},
+      {value: 'Tumbak Bayuh', groupBy: 'Canggu', match: false},
+      {value: 'Other Islands', groupBy: 'Other Islands', match: false},
+      {value: 'Lombok', groupBy: 'Other Islands', match: false},
+      {value: 'Sumba', groupBy: 'Other Islands', match: false},
+      {value: 'Seminyak', groupBy: 'Seminyak', match: false},
+      {value: 'Batu Belig', groupBy: 'Seminyak', match: false},
+      {value: 'Drupadi', groupBy: 'Seminyak', match: false},
+      {value: 'Legian', groupBy: 'Seminyak', match: false},
+      {value: 'Oberoi', groupBy: 'Seminyak', match: false},
+      {value: 'Petitenget', groupBy: 'Seminyak', match: false},
+      {value: 'Tabanan', groupBy: 'Tabanan', match: false},
+      {value: 'Kedungu', groupBy: 'Tabanan', match: false},
+      {value: 'Tanah Lot', groupBy: 'Tabanan', match: false},
+      {value: 'Ubud', groupBy: 'Ubud', match: false},
+      {value: 'Central', groupBy: 'Ubud', match: false},
+      {value: 'Other', groupBy: 'Ubud', match: false},
+      {value: 'Sayan', groupBy: 'Ubud', match: false},
+      {value: 'Tegalalang', groupBy: 'Ubud', match: false},
+      {value: 'Tegallalang', groupBy: 'Ubud', match: false},
+    ];
+
+    const matchedLocations = locations.map((loc) => {
+      return {
+        ...loc,
+        match: location.toLowerCase().includes(loc.value.toLowerCase())
+      }
+    }).filter(loc => loc.match);
+
+    return matchedLocations[0]?.value || location;
+  }
+
+  convertToUsd(idrValue: number, rate: number) {
+    console.log(idrValue, rate);
+    if (idrValue && rate) {
+      return idrValue/rate;
+    }
+    return null;
   }
 
   parsePropertyTypeFromTitle(title: string) { // TODO: move to helper
@@ -39,12 +118,10 @@ export class ParserService {
       commercial: 'commercial',
     }
 
-    const myTitle = 'the best villa!!!';
     const includes = Object.keys(types)
-      .map((type) => ({ includes: myTitle.toLowerCase().includes(type), type }))
+      .map((type) => ({ includes: title.toLowerCase().includes(type), type }))
       .filter((value) => value.includes);
 
-    console.log(includes);
     const result = types[includes[0]?.type] || types.villa; // villa by default
     return result;
   }

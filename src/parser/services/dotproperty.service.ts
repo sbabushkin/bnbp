@@ -3,6 +3,7 @@ import axios from 'axios';
 import { v4 } from 'uuid';
 import { parseNumeric, parseSquare } from "../../helpers/common.helper";
 import { ParserService } from "../parser.service";
+import { CurrencyRate } from "../../currency/entities/currency.entity";
 
 
 export class DotpropertyService extends ParserService {
@@ -10,6 +11,9 @@ export class DotpropertyService extends ParserService {
   public async parse() {
 
     let page = 1;
+
+    // TODO: move to service
+    const currentRate = await CurrencyRate.query().where({ from: 'USD'}).orderBy('created', 'desc').first();
 
     while (true) {
       const listUrl = `https://www.dotproperty.id/en/villas-for-sale/bali?page=${page}`;
@@ -27,7 +31,7 @@ export class DotpropertyService extends ParserService {
       const data = [];
 
       for (const url of propertiesUrlArr) {
-        const item = await this.parseItem(url);
+        const item = await this.parseItem(url, currentRate);
         data.push(item);
       }
 
@@ -37,7 +41,7 @@ export class DotpropertyService extends ParserService {
     return 'ok';
   }
 
-  private async parseItem(itemUrl) {
+  private async parseItem(itemUrl, currentRate) {
     const respItem = await axios.get(itemUrl);
     const parsedContent = parse(respItem.data);
 
@@ -85,7 +89,7 @@ export class DotpropertyService extends ParserService {
     propertyObj['id'] = v4();
     propertyObj['externalId'] = itemUrlId;
     propertyObj['name'] = listingName;
-    propertyObj['location'] = location;
+    propertyObj['location'] = this.normalizeLocation(location);
     propertyObj['ownership'] = ownership;
     propertyObj['buildingSize'] = parseNumeric(infoObj['Usable area']);
     propertyObj['landSize'] = parseNumeric(infoObj['Land area']);
@@ -94,9 +98,9 @@ export class DotpropertyService extends ParserService {
     propertyObj['bedroomsCount'] = parseNumeric(infoObj['Beds'] || infoObj['Bed']);
     propertyObj['bathroomsCount'] = parseNumeric(infoObj['Baths'] || infoObj['Bath']);
     propertyObj['pool'] = poolExists ? 'Yes' : 'No';
-    // propertyObj['priceUsd'] = priceUsd;
     propertyObj['priceIdr'] = priceIdr.indexOf('billion') >= 0
       ? parseSquare(priceIdr) * 1000000000 : parseNumeric(priceIdr);
+    propertyObj['priceUsd'] = this.convertToUsd(propertyObj['priceIdr'], currentRate.amount);
     propertyObj['url'] = itemUrl;
     propertyObj['source'] = 'dotproperty.id';
     // propertyObj['photos'] = imgArr[0];

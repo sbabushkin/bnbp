@@ -3,6 +3,7 @@ import axios from 'axios';
 import { v4 } from 'uuid';
 import { parseNumeric, parsePrice, parseSquare } from "../../helpers/common.helper";
 import { ParserService } from "../parser.service";
+import { CurrencyRate } from "../../currency/entities/currency.entity";
 
 
 export class ExcelbaliService extends ParserService {
@@ -10,6 +11,9 @@ export class ExcelbaliService extends ParserService {
   public async parse() {
 
     let page = 1;
+
+    // TODO: move to service
+    const currentRate = await CurrencyRate.query().where({ from: 'USD'}).orderBy('created', 'desc').first();
 
     while (true) {
       const listUrl = `https://excelbali.com/bali-villas-for-sale/page/${page}`;
@@ -28,7 +32,7 @@ export class ExcelbaliService extends ParserService {
       const data = [];
 
       for (const url of propertiesUrlArr) {
-        const item = await this.parseItem(url);
+        const item = await this.parseItem(url, currentRate);
         data.push(item);
       }
       await this.loadToDb(data);
@@ -38,7 +42,7 @@ export class ExcelbaliService extends ParserService {
     return 'ok';
   }
 
-  private async parseItem(itemUrl) {
+  private async parseItem(itemUrl, currentRate) {
     const respItem = await axios.get(itemUrl);
     const parsedContent = parse(respItem.data);
 
@@ -79,7 +83,7 @@ export class ExcelbaliService extends ParserService {
     propertyObj['id'] = v4();
     propertyObj['externalId'] = itemUrlId;
     propertyObj['name'] = listingName;
-    propertyObj['location'] = info['Location'];
+    propertyObj['location'] = this.normalizeLocation(info['Location']);
 
     if (holdInfo) {
       propertyObj['ownership'] = holdInfo[0].trim();
@@ -92,8 +96,9 @@ export class ExcelbaliService extends ParserService {
     propertyObj['bedroomsCount'] = parseNumeric(info['Bedrooms']);
     propertyObj['bathroomsCount'] = parseNumeric(info['Bathrooms']);
     propertyObj['pool'] = poolExists ? 'Yes' : 'No';
-    propertyObj['priceUsd'] = info['Price'].indexOf('USD') >= 0 ? parsePrice(info['Price']) : 0;
-    propertyObj['priceIdr'] = info['Price'].indexOf('IDR') >= 0 ? parsePrice(info['Price']) : 0;
+    const priceUsd = info['Price'].indexOf('USD') >= 0 ? parsePrice(info['Price']) : null;
+    propertyObj['priceIdr'] = info['Price'].indexOf('IDR') >= 0 ? parsePrice(info['Price']) : null;
+    propertyObj['priceUsd'] = priceUsd || this.convertToUsd(propertyObj['priceIdr'], currentRate.amount)
     propertyObj['url'] = itemUrl;
     propertyObj['source'] = 'excelbali.com';
     propertyObj['photos'] = imgArr.length && imgArr[0];

@@ -3,12 +3,17 @@ import axios from "axios";
 import { parseNumeric } from "../../helpers/common.helper";
 import parse from "node-html-parser";
 import { v4 } from 'uuid';
+import { getYear } from "date-fns";
+import { CurrencyRate } from "../../currency/entities/currency.entity";
 
 export class OptimumbaliService extends ParserService {
 
 	public async parse() {
 
 		let page = 1;
+
+		// TODO: move to service
+		const currentRate = await CurrencyRate.query().where({ from: 'USD'}).orderBy('created', 'desc').first();
 		while (true) {
 			const url = `https://optimumbali.com/villa-bali/property-for-sale/page/${page}/`;
 			const resp = await axios.get(url);
@@ -26,7 +31,7 @@ export class OptimumbaliService extends ParserService {
 			const data = [];
 
 			for (const url of urlsArr) {
-				const item = await this.parseItem(url);
+				const item = await this.parseItem(url, currentRate);
 				data.push(item);
 			}
 
@@ -37,7 +42,7 @@ export class OptimumbaliService extends ParserService {
 		return 'ok';
 	}
 
-	private async parseItem(itemUrl) {
+	private async parseItem(itemUrl, currentRate) {
 		console.log('item URL >>>', itemUrl)
 		const respItem = await axios.get(itemUrl);
 		const parsedContent = parse(respItem.data);
@@ -67,17 +72,24 @@ export class OptimumbaliService extends ParserService {
 		propertyObj['id'] = v4();
 		propertyObj['externalId'] = infoObj['externalId'];
 		propertyObj['name'] = infoObj['name'];
-		propertyObj['location'] = infoObj['location'];
+		propertyObj['location'] = this.normalizeLocation(infoObj['location']);
 		propertyObj['ownership'] = leaseDuration === 'Fr' ? 'freehold' : 'leasehold';
 		propertyObj['buildingSize'] = parseNumeric(infoObj['Living space'].replace('m2'));
 		propertyObj['landSize'] = parseNumeric(infoObj['Land size'].replace('m2'));
-		propertyObj['leaseYearsLeft'] = leaseDuration === 'Fr' ? undefined : leaseDuration;
+
+		const leaseYearsLeft = leaseDuration === 'Fr' ? undefined : leaseDuration;
+
+		if (leaseYearsLeft) {
+			propertyObj['leaseExpiryYear'] = getYear(new Date()) + parseInt(leaseYearsLeft);
+		}
+
 		propertyObj['propertyType'] = this.parsePropertyTypeFromTitle(infoObj['name']);
 		propertyObj['bedroomsCount'] = parseNumeric(infoObj['Bedrooms']);
 		propertyObj['bathroomsCount'] = parseNumeric(infoObj['Bathrooms']);
 		// propertyObj['pool'] = isHavePool ? 'Yes' : 'No'; Не указано
-		propertyObj['priceUsd'] = infoObj['Price'].slice(-3) === 'USD' ?  parseNumeric(infoObj['Price'].replace('USD')) : 0;
-		propertyObj['priceIdr'] = infoObj['Price'].slice(-3) === 'IDR' ?  parseNumeric(infoObj['Price'].replace('IDR')) : 0;
+		const priceUsd = infoObj['Price'].slice(-3) === 'USD' ?  parseNumeric(infoObj['Price'].replace('USD')) : null;
+		propertyObj['priceIdr'] = infoObj['Price'].slice(-3) === 'IDR' ?  parseNumeric(infoObj['Price'].replace('IDR')) : null;
+		propertyObj['priceUsd'] = priceUsd || this.convertToUsd(propertyObj['priceIdr'], currentRate.amount);
 		// Рандомная валюта на сайте, иногда в евро может быть
 		propertyObj['url'] = itemUrl;
 		propertyObj['source'] = 'optimumbali.com';

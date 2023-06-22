@@ -7,7 +7,7 @@ import { chunkNumberByClass } from "../../utils/formatPrice";
 import styles from './Table.module.scss'
 
 export default function TableToolbar() {
-  const { average, nodes, rates } = usePropertyStore((state) => state);
+  const { average, nodes, rates, filters } = usePropertyStore((state) => state);
 
   const priceIdr = average.priceUsd && rates[0]?.amount ? average.priceUsd * rates[0]?.amount : 0;
 
@@ -42,33 +42,44 @@ export default function TableToolbar() {
     <Toolbar sx={{ pl: { sm: 2 } }}>
       <Container maxWidth={false} disableGutters>
         <Typography variant="h6">
-          Averages:
+          Filter Results:
         </Typography>
+        { filters.type.length > 0 &&
+          <Typography variant="subtitle1">
+            Property type: {filters.type.join(', ')}
+          </Typography>
+        }
+        { filters.locations.length > 0 &&
+          <Typography variant="subtitle1">
+            Location: {filters.locations.map(item => item.value).join(', ')}
+          </Typography>
+        }
+
         <div className={styles.avg_wrapper}>
           <Typography variant="caption">
-            Count units: <strong>{chunkNumberByClass(nodes.length.toString())}</strong>
+            No. of listings: <strong>{chunkNumberByClass(nodes.length.toString())}</strong>
           </Typography>
           <Typography variant="caption">
             Currency rate (USD/IDR): <strong>{chunkNumberByClass(currencyRate.toString())}</strong>
           </Typography>
           <Typography variant="caption">
-            Land size: <strong>{chunkNumberByClass((average.landSize || 0).toString())}</strong>
+            Average land size: <strong>{chunkNumberByClass((average.landSize || 0).toString())}</strong>
           </Typography>
           <Typography variant="caption">
-            Building size: <strong>{chunkNumberByClass((average.buildingSize || 0).toString())}</strong>
+            Average building size: <strong>{chunkNumberByClass((average.buildingSize || 0).toString())}</strong>
           </Typography>
           <Typography variant="caption">
-            Price: <strong>${chunkNumberByClass((average.priceUsd || 0).toString())} / <strong>{chunkNumberByClass(priceIdr.toString())}</strong></strong>
+            Average price: <strong>${chunkNumberByClass((average.priceUsd || 0).toString())} / <strong>{chunkNumberByClass(priceIdr.toString())}</strong></strong>
           </Typography>
           <Typography variant="caption">
-            No. of Bedrooms: <strong>{chunkNumberByClass((average.bedroomsCount || 0).toString())}</strong>
+            Average no. of Bedrooms: <strong>{chunkNumberByClass((average.bedroomsCount || 0).toString())}</strong>
           </Typography>
           <Typography variant="caption">
-            No. of Bathrooms: <strong>{chunkNumberByClass((average.bathroomsCount || 0).toString())}</strong>
+            Average no. of Bathrooms: <strong>{chunkNumberByClass((average.bathroomsCount || 0).toString())}</strong>
           </Typography>
 
           <Typography variant="caption">
-            Price per sqm:
+            Average building price per sqm:
             <strong>
               &nbsp;${chunkNumberByClass((average.pricePerSqm || 0).toString())} / {chunkNumberByClass(pricePerSqm.toString())}
             </strong>
@@ -76,40 +87,46 @@ export default function TableToolbar() {
 
 
 
-          <Typography variant="caption">
-            Lease Years: <strong>{chunkNumberByClass((average.leaseYearsLeft || 0).toString())}</strong>
+          <Typography variant="caption" >
+            Average Lease Years: <strong>{chunkNumberByClass((average.leaseYearsLeft || 0).toString())}</strong>
           </Typography>
           <Typography variant="caption">
-            Leasehold Building price per sqm per year:
+            Average Leasehold Building price per sqm per year:
             <strong>
               &nbsp;${chunkNumberByClass(leaseholdBuildingPricePerSqmPerYear.toString())}
             </strong>
           </Typography>
 
-          <Typography variant="caption">
-            Leasehold Land price per are (100sqm):
-            <strong>
-              &nbsp;${chunkNumberByClass(leaseHoldLandPricePerAre.toString())}
-              &nbsp;/ {chunkNumberByClass(leaseHoldLandPricePerAreIdr.toString())}
-            </strong>
-          </Typography>
+          {filters.type.includes('land') &&
+            <Typography variant="caption">
+              Average Leasehold Land price per are (100sqm):
+              <strong>
+                &nbsp;${chunkNumberByClass(leaseHoldLandPricePerAre.toString())}
+                &nbsp;/ {chunkNumberByClass(leaseHoldLandPricePerAreIdr.toString())}
+              </strong>
+            </Typography>
+          }
 
-          <Typography variant="caption">
-            Leasehold Land price per are per year(100sqm):
-            <strong>
-              &nbsp;${chunkNumberByClass(leaseHoldLandPricePerArePerYear.toString())}
-              &nbsp;/ {chunkNumberByClass(leaseHoldLandPricePerArePerYearIdr.toString())}
-            </strong>
-          </Typography>
+          { filters.type.includes('land') &&
+            <Typography variant="caption">
+              Average Leasehold Land price per are per year(100sqm):
+              <strong>
+                &nbsp;${chunkNumberByClass(leaseHoldLandPricePerArePerYear.toString())}
+                &nbsp;/ {chunkNumberByClass(leaseHoldLandPricePerArePerYearIdr.toString())}
+              </strong>
+            </Typography>
+          }
 
+          { filters.type.includes('land') &&
+            <Typography variant="caption">
+              Average Freehold Land price per are (100sqm):
+              <strong>
+                &nbsp;${chunkNumberByClass(freeholdLandPricePerAre.toString())}
+                &nbsp;/ {chunkNumberByClass(freeholdLandPricePerAreIdr.toString())}
+              </strong>
+            </Typography>
+          }
 
-          <Typography variant="caption">
-            Freehold Land price per are (100sqm):
-            <strong>
-              &nbsp;${chunkNumberByClass(freeholdLandPricePerAre.toString())}
-              &nbsp;/ {chunkNumberByClass(freeholdLandPricePerAreIdr.toString())}
-            </strong>
-          </Typography>
         </div>
       </Container>
 

@@ -3,6 +3,7 @@ import axios from 'axios';
 import { v4 } from 'uuid';
 import { parseNumeric, parsePrice, parseSquare } from "../../helpers/common.helper";
 import { ParserService } from "../parser.service";
+import { CurrencyRate } from "../../currency/entities/currency.entity";
 
 
 export class HarcourtspurbabaliService extends ParserService {
@@ -10,6 +11,9 @@ export class HarcourtspurbabaliService extends ParserService {
   public async parse() {
 
     let page = 1;
+
+    // TODO: move to service
+    const currentRate = await CurrencyRate.query().where({ from: 'USD'}).orderBy('created', 'desc').first();
 
     while (true) {
       const listUrl = `https://harcourtspurbabali.com/villa-for-sale/page/${page}`;
@@ -28,7 +32,7 @@ export class HarcourtspurbabaliService extends ParserService {
       const data = [];
 
       for (const url of propertiesUrlArr) {
-        const item = await this.parseItem(url);
+        const item = await this.parseItem(url, currentRate);
         data.push(item);
       }
       await this.loadToDb(data);
@@ -37,7 +41,7 @@ export class HarcourtspurbabaliService extends ParserService {
     return 'ok';
   }
 
-  private async parseItem(itemUrl) {
+  private async parseItem(itemUrl, currentRate) {
     const respItem = await axios.get(itemUrl);
     const parsedContent = parse(respItem.data);
 
@@ -69,7 +73,7 @@ export class HarcourtspurbabaliService extends ParserService {
     propertyObj['id'] = v4();
     propertyObj['externalId'] = itemUrlId;
     propertyObj['name'] = listingName;
-    propertyObj['location'] = location;
+    propertyObj['location'] = this.normalizeLocation(location);
     propertyObj['ownership'] = details['Property Title:']?.toLowerCase();
     propertyObj['buildingSize'] = parseSquare(details['Property Size:']);
     propertyObj['landSize'] = parseSquare(details['Land Area:']);
@@ -78,8 +82,8 @@ export class HarcourtspurbabaliService extends ParserService {
     propertyObj['bedroomsCount'] = parseNumeric(details['Bedrooms:']);
     propertyObj['bathroomsCount'] = parseNumeric(details['Bathrooms:']);
     propertyObj['pool'] = details['Pool Details:'] ? 'Yes' : 'No';
-    // propertyObj['priceUsd'] = priceUsd;
     propertyObj['priceIdr'] = parsePrice(details['Price:']);
+    propertyObj['priceUsd'] = this.convertToUsd(propertyObj['priceIdr'], currentRate.amount);
     propertyObj['url'] = itemUrl;
     propertyObj['source'] = 'harcourtspurbabali.com';
     propertyObj['photos'] = imgArr[0];

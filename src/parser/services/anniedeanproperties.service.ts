@@ -5,6 +5,7 @@ import parse from "node-html-parser";
 import { v4 } from 'uuid';
 import {Property} from "../entities/property.entity";
 import {PropertyPrice} from "../entities/property_price.entity";
+import { CurrencyRate } from "../../currency/entities/currency.entity";
 
 export class AnniedeanpropertiesService extends ParserService { // TODO: resourse doesnt work properly
 
@@ -12,6 +13,9 @@ export class AnniedeanpropertiesService extends ParserService { // TODO: resours
 		const categories = ['leasehold', 'freehold', 'rental'];
 		let listUrl = '';
 		const propertiesUrlArr = [];
+
+		// TODO: move to service
+		const currentRate = await CurrencyRate.query().where({ from: 'USD'}).orderBy('created', 'desc').first();
 
 		for (let category of categories) {
 			listUrl = `https://anniedeanproperties.com/filters?type=villa&category=${category}&roomrange1=1&roomrange2=10&range1=1&range2=999`
@@ -27,7 +31,7 @@ export class AnniedeanpropertiesService extends ParserService { // TODO: resours
 		const data = [];
 
 		for (const url of propertiesUrlArr) {
-			const item = await this.parseItem(url);
+			const item = await this.parseItem(url, currentRate);
 			data.push(item);
 		}
 
@@ -36,7 +40,7 @@ export class AnniedeanpropertiesService extends ParserService { // TODO: resours
 		return 'ok';
 	}
 
-	private async parseItem(itemUrl) {
+	private async parseItem(itemUrl, currentRate) {
 		console.log('item URL >>>', itemUrl)
 		const respItem = await axios.get(itemUrl);
 		const parsedContent = parse(respItem.data);
@@ -77,7 +81,7 @@ export class AnniedeanpropertiesService extends ParserService { // TODO: resours
 		propertyObj['id'] = v4();
 		propertyObj['externalId'] = itemUrlId;
 		propertyObj['name'] = listingName;
-		propertyObj['location'] = infoObj['Location'];
+		propertyObj['location'] = this.normalizeLocation(infoObj['Location']);
 		propertyObj['ownership'] = infoObj['Title'];
 		propertyObj['buildingSize'] = parseNumeric(infoObj['Building/Floor Area'].replace('sqm'));
 		propertyObj['landSize'] =  parseNumeric(infoObj['Land Area'].replace('sqm'));
@@ -86,7 +90,7 @@ export class AnniedeanpropertiesService extends ParserService { // TODO: resours
 		propertyObj['bedroomsCount'] = parseNumeric(infoObj['bedrooms']);
 		propertyObj['bathroomsCount'] = parseNumeric(infoObj['bathrooms']);
 		propertyObj['pool'] = Number(infoObj['pool']) > 0 ? 'Yes' : 'No' ;
-		propertyObj['priceUsd'] = parseNumeric(priceUsd);
+		propertyObj['priceUsd'] = parseNumeric(priceUsd) || this.convertToUsd(priceIdr, currentRate.amount);
 		propertyObj['priceIdr'] = parseNumeric(priceIdr);
 		propertyObj['url'] = itemUrl;
 		propertyObj['source'] = 'anniedeanproperties.com';

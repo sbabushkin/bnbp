@@ -11,6 +11,7 @@ import { CurrencyController } from './currency.controller';
     CurrencyController,
   ],
   controllers: [CurrencyController],
+  exports: [CurrencyService],
 })
 export class CurrencyModule {
 }

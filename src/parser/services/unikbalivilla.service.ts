@@ -4,6 +4,8 @@ import { Property } from "../entities/property.entity";
 import { v4 } from 'uuid';
 import { parseNumeric } from "../../helpers/common.helper";
 import { ParserService } from "../parser.service";
+import { getYear } from "date-fns";
+import { CurrencyRate } from "../../currency/entities/currency.entity";
 
 
 export class UnikbalivillaService extends ParserService {
@@ -11,6 +13,9 @@ export class UnikbalivillaService extends ParserService {
   public async parse() {
 
     let page = 1;
+
+    // TODO: move to service
+    const currentRate = await CurrencyRate.query().where({ from: 'USD'}).orderBy('created', 'desc').first();
 
     while (true) {
       const listUrl = `https://unikbalivilla.com/villas-for-sale/page/${page}/?localisation&statut&superficie-du-terrain&chambres&types-of=Villas+for+sale`;
@@ -28,7 +33,7 @@ export class UnikbalivillaService extends ParserService {
       const data = [];
 
       for (const url of propertiesUrlArr) {
-        const item = await this.parseItem(url);
+        const item = await this.parseItem(url, currentRate);
         data.push(item);
       }
 
@@ -38,7 +43,7 @@ export class UnikbalivillaService extends ParserService {
     return 'ok';
   }
 
-  private async parseItem(itemUrl) {
+  private async parseItem(itemUrl, currentRate) {
     const respItem = await axios.get(itemUrl);
     const parsedContent = parse(respItem.data);
 
@@ -65,9 +70,15 @@ export class UnikbalivillaService extends ParserService {
     propertyObj['id'] = v4();
     propertyObj['externalId'] = itemUrlId;
     propertyObj['name'] = listingName;
-    propertyObj['location'] = info['Location'];
+    propertyObj['location'] = this.normalizeLocation(info['Location']);
     propertyObj['ownership'] = info['Status'].indexOf('Leasehold') >= 0 ? 'leasehold' : 'freehold';
-    propertyObj['leaseYearsLeft'] = info['Status'].indexOf('Leasehold') >= 0 ? parseNumeric(info['Status']) : '';;
+
+    const leaseYearsLeft = info['Status'].indexOf('Leasehold') >= 0 ? parseNumeric(info['Status']) : '';;
+
+    if (leaseYearsLeft) {
+      propertyObj['leaseExpiryYear'] = getYear(new Date()) + parseInt(leaseYearsLeft);
+    }
+
     propertyObj['buildingSize'] = parseNumeric(info['Building size']);
     propertyObj['landSize'] = parseNumeric(info['Land size']);
     propertyObj['propertyType'] = this.parsePropertyTypeFromTitle(listingName);
@@ -77,7 +88,7 @@ export class UnikbalivillaService extends ParserService {
     propertyObj['priceUsd'] = info['Price'];
     // propertyObj['priceIDR'] = priceIdr;
     propertyObj['url'] = itemUrl;
-    propertyObj['source'] = 'balivillasales.com';
+    propertyObj['source'] = 'unikbalivilla.com';
     // propertyObj['photos'] = imgArr[0];
     return propertyObj;
   }

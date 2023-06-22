@@ -3,15 +3,29 @@ import axios from 'axios';
 import { v4 } from 'uuid';
 import { parseNumeric, parsePrice, parseSquare } from "../../helpers/common.helper";
 import { ParserService } from "../parser.service";
+import { CurrencyRate } from "../../currency/entities/currency.entity";
 
 
 export class SuasarealestateService extends ParserService {
 
 	public async parse() {
 		let page = 1;
+
+		// TODO: move to service
+		const currentRate = await CurrencyRate.query().where({ from: 'USD'}).orderBy('created', 'desc').first();
+
 		while (true) {
 			const url = `https://www.suasarealestate.com/wp-json/wp/v2/villa?page=${page}&per_page=100`; // TODO: catch 404
-			const resp = await axios.get(url);
+
+			let resp;
+
+			try {
+				resp = await axios.get(url);
+			} catch (e) {
+				console.error(e.message);
+				break;
+			}
+
 			const urlsArr = resp.data.map(el => el.link);
 			console.log(url, urlsArr.length);
 
@@ -20,7 +34,7 @@ export class SuasarealestateService extends ParserService {
 			const data = [];
 
 			for (const url of urlsArr) {
-				const item = await this.parseItem(url);
+				const item = await this.parseItem(url, currentRate);
 				data.push(item);
 			}
 
@@ -30,7 +44,7 @@ export class SuasarealestateService extends ParserService {
 		return 'ok';
 	}
 
-	private async parseItem(itemUrl) {
+	private async parseItem(itemUrl, currentRate) {
 		console.log('item URL >>>', itemUrl)
 		const respItem = await axios.get(itemUrl);
 		const parsedContent = parse(respItem.data);
@@ -55,6 +69,7 @@ export class SuasarealestateService extends ParserService {
 		const currency = price?.slice(0, 3);
 		infoObj['price' + currency] = parseNumeric(price);
 
+		const convertedPriceUsd = this.convertToUsd(infoObj['priceIDR'], currentRate.amount)
 
 		parsedContent.querySelectorAll('.table').forEach(el => {
 			const arr = el.querySelectorAll('td')
@@ -71,7 +86,7 @@ export class SuasarealestateService extends ParserService {
 		propertyObj['id'] = v4();
 		propertyObj['externalId'] = externalId;
 		propertyObj['name'] = name;
-		propertyObj['location'] = location;
+		propertyObj['location'] = this.normalizeLocation(location);
 		propertyObj['ownership'] = infoObj['Term'].toLowerCase();
 		propertyObj['buildingSize'] = parseNumeric(infoObj['Building Size'].replace('m2'));
 		propertyObj['landSize'] = parseNumeric(infoObj['Land Size'].replace('m2'));
@@ -80,8 +95,8 @@ export class SuasarealestateService extends ParserService {
 		propertyObj['bedroomsCount'] = parseNumeric(infoObj['Number of Bedroom(s)']);
 		propertyObj['bathroomsCount'] = parseNumeric(infoObj['Number of Bathroom(s)']);
 		propertyObj['pool'] = infoObj['Pool Size'] ? 'Yes' : 'No' ;
-		propertyObj['priceUsd'] = infoObj['priceUSD'] || 0;
-		propertyObj['priceIdr'] = infoObj['priceIDR'] || 0;
+		propertyObj['priceIdr'] = infoObj['priceIDR'] || null;
+		propertyObj['priceUsd'] = infoObj['priceUSD'] || convertedPriceUsd;
 		propertyObj['url'] = itemUrl;
 		propertyObj['source'] = 'suasarealestate.com';
 		propertyObj['photos'] = img;

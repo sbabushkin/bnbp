@@ -4,6 +4,7 @@ import { v4 } from 'uuid';
 import { parseNumeric, parsePrice, parseSquare } from "../../helpers/common.helper";
 import { ParserService } from "../parser.service";
 import { getYear } from 'date-fns';
+import { CurrencyRate } from "../../currency/entities/currency.entity";
 
 
 export class VillabalisaleService extends ParserService {
@@ -11,6 +12,9 @@ export class VillabalisaleService extends ParserService {
 	public async parse() {
 
 		let page = 1;
+
+		// TODO: move to service
+		const currentRate = await CurrencyRate.query().where({ from: 'USD'}).orderBy('created', 'desc').first();
 		while (true) {
 			const url = `https://www.villabalisale.com/search/villas-for-sale?page=${page}`;
 			const resp = await axios.get(url);
@@ -28,7 +32,7 @@ export class VillabalisaleService extends ParserService {
 			const data = [];
 
 			for (const url of urlsArr) {
-				const item = await this.parseItem(url);
+				const item = await this.parseItem(url, currentRate);
 				data.push(item);
 			}
 
@@ -38,7 +42,7 @@ export class VillabalisaleService extends ParserService {
 		return 'ok';
 	}
 
-	private async parseItem(itemUrl) {
+	private async parseItem(itemUrl, currentRate) {
 		console.log('item URL >>>', itemUrl)
 		const respItem = await axios.get(itemUrl);
 		const parsedContent = parse(respItem.data);
@@ -86,7 +90,7 @@ export class VillabalisaleService extends ParserService {
 		propertyObj['id'] = v4();
 		propertyObj['externalId'] = externalId;
 		propertyObj['name'] = name;
-		propertyObj['location'] = infoObj['location'];
+		propertyObj['location'] = this.normalizeLocation(infoObj['location']);;
 		propertyObj['ownership'] = infoObj['ownership'];
 		propertyObj['buildingSize'] = infoObj['buildingSize'];
 		propertyObj['landSize'] = infoObj['landSize'] || null;
@@ -99,8 +103,8 @@ export class VillabalisaleService extends ParserService {
 		propertyObj['bedroomsCount'] = infoObj['bedroomsCount'];
 		propertyObj['bathroomsCount'] = infoObj['bathroomsCount'];
 		propertyObj['pool'] = isHavePool.length ? 'Yes' : 'No' ;
-		propertyObj['priceUsd'] = Number(parseNumeric(priceUsd)) ? parseNumeric(priceUsd) : 0;
-		propertyObj['priceIdr'] = 0; // не указано
+		propertyObj['priceUsd'] = Number(parseNumeric(priceUsd)) ? parseNumeric(priceUsd) : null;
+		// propertyObj['priceIdr'] = 0; // не указано
 		propertyObj['url'] = itemUrl;
 		propertyObj['source'] = 'villabalisale.com';
 		propertyObj['photos'] = imgArr[0];

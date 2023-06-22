@@ -5,6 +5,8 @@ import { PropertyPrice } from "../entities/property_price.entity";
 import { v4 } from 'uuid';
 import { parseNumeric } from "../../helpers/common.helper";
 import { ParserService } from "../parser.service";
+import { getYear } from "date-fns";
+import { CurrencyRate } from "../../currency/entities/currency.entity";
 
 
 export class BaliHomeImmoService extends ParserService {
@@ -12,6 +14,9 @@ export class BaliHomeImmoService extends ParserService {
   public async parse() {
 
     let page = 1;
+
+    // TODO: move to service
+    const currentRate = await CurrencyRate.query().where({ from: 'USD'}).orderBy('created', 'desc').first();
 
     while (true) {
       const listUrl = `https://bali-home-immo.com/realestate-property/for-sale/villa?page=${page}`;
@@ -28,7 +33,7 @@ export class BaliHomeImmoService extends ParserService {
       const data = [];
 
       for (const url of propertiesUrlArr) {
-        const item = await this.parseItem(url);
+        const item = await this.parseItem(url, currentRate);
         data.push(item);
       }
       await this.loadToDb(data);
@@ -37,7 +42,7 @@ export class BaliHomeImmoService extends ParserService {
     return 'ok';
   }
 
-  private async parseItem(itemUrl) {
+  private async parseItem(itemUrl, currentRate) {
     const respItem = await axios.get(itemUrl);
     const parsedContent = parse(respItem.data);
 
@@ -106,17 +111,21 @@ export class BaliHomeImmoService extends ParserService {
     propertyObj['id'] = v4();
     propertyObj['externalId'] = itemUrlId;
     propertyObj['name'] = listingName;
-    propertyObj['location'] = location;
+    propertyObj['location'] = this.normalizeLocation(location);
     propertyObj['ownership'] = ownership;
     propertyObj['buildingSize'] = parseNumeric(generalInfoObj['Building Size']);
     propertyObj['landSize'] = parseNumeric(generalInfoObj['Land Size']);
-    propertyObj['leaseYearsLeft'] = parseNumeric(generalInfoObj['Leasehold Period']);
+    const leaseYearsLeft = parseNumeric(generalInfoObj['Leasehold Period']);
+
+    if (leaseYearsLeft) {
+      propertyObj['leaseExpiryYear'] = getYear(new Date()) + parseInt(leaseYearsLeft);
+    }
     propertyObj['propertyType'] = this.parsePropertyTypeFromTitle(listingName);
     propertyObj['bedroomsCount'] = parseNumeric(indoorObj['Bedroom']);
     propertyObj['bathroomsCount'] = parseNumeric(indoorObj['Bathroom'] || indoorObj['Ensuite Bathroom']);
     propertyObj['pool'] = (outdoorObj['Swimming Pool'] && outdoorObj['Swimming Pool'].indexOf('Yes')) ? 'Yes' : 'No';
-    propertyObj['priceUsd'] = parseNumeric(priceUsd.toString());
     propertyObj['priceIdr'] = parseNumeric(priceIdr.toString());
+    propertyObj['priceUsd'] = parseNumeric(priceUsd.toString()) || this.convertToUsd(propertyObj['priceIdr'], currentRate.amount);
     propertyObj['url'] = itemUrl;
     propertyObj['source'] = 'bali-home-immo.com';
     propertyObj['photos'] = imgArr[0];

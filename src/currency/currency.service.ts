@@ -8,6 +8,8 @@ import { CacheService } from "../cache/cache.service";
 const apikey = 'fYk8v1ThAejllghWN8c0Y2p613Oj9W6L'; // TODO: move to config
 const baseApiUrl = 'https://api.apilayer.com/exchangerates_data/convert';
 
+export const CURRENCY_SERVICE = 'CURRENCY_SERVICE';
+
 @Injectable({ scope: Scope.REQUEST })
 export class CurrencyService extends BaseService {
 

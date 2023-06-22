@@ -4,6 +4,7 @@ import { Property } from "../entities/property.entity";
 import { v4 } from 'uuid';
 import { parseNumeric } from "../../helpers/common.helper";
 import { ParserService } from "../parser.service";
+import { CurrencyRate } from "../../currency/entities/currency.entity";
 
 
 export class BalimovesService extends ParserService {
@@ -11,6 +12,9 @@ export class BalimovesService extends ParserService {
   public async parse() {
 
     let page = 1;
+
+    // TODO: move to service
+    const currentRate = await CurrencyRate.query().where({ from: 'USD'}).orderBy('created', 'desc').first();
 
     while (true) {
       const listUrl = `https://www.balimoves.com/buy/?fwp_paged=${page}`;
@@ -29,7 +33,7 @@ export class BalimovesService extends ParserService {
       const data = [];
 
       for (const url of propertiesUrlArr) {
-        const item = await this.parseItem(url);
+        const item = await this.parseItem(url, currentRate);
         data.push(item);
       }
       await this.loadToDb(data);
@@ -38,7 +42,7 @@ export class BalimovesService extends ParserService {
     return 'ok';
   }
 
-  private async parseItem(itemUrl) {
+  private async parseItem(itemUrl, currentRate) {
     const respItem = await axios.get(itemUrl);
     const parsedContent = parse(respItem.data);
 
@@ -107,7 +111,7 @@ export class BalimovesService extends ParserService {
     propertyObj['id'] = v4();
     propertyObj['externalId'] = itemUrlId;
     propertyObj['name'] = listingName;
-    propertyObj['location'] = location.split(',')[0];
+    propertyObj['location'] = this.normalizeLocation(location.split(',')[0]);
     propertyObj['ownership'] = ownership.indexOf('leasehold') >= 0 ? 'leasehold' : 'freehold';
     propertyObj['buildingSize'] = parseNumeric(buildingSize);
     propertyObj['landSize'] = parseFloat(landSize.replace(',', '.'));
@@ -117,8 +121,8 @@ export class BalimovesService extends ParserService {
     propertyObj['bedroomsCount'] = parseNumeric(bedrooms);
     propertyObj['bathroomsCount'] = parseNumeric(bathrooms);
     propertyObj['pool'] = poolExists ? 'Yes' : 'No';
-    propertyObj['priceUsd'] = priceUsd;
     propertyObj['priceIdr'] = priceIdr;
+    propertyObj['priceUsd'] = priceUsd || this.convertToUsd(propertyObj['priceIdr'], currentRate.amount);
     propertyObj['url'] = itemUrl;
     propertyObj['source'] = 'balimoves.com';
     propertyObj['photos'] = imgArr[0];

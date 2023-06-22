@@ -24,6 +24,7 @@ export const propertyMutation = gql`
 export type UpdatePropertyInput = {
   id: string;
   location?: string;
+  propertyType?: string;
   bathroomsCount?: number;
   bedroomsCount?: number;
   landSize?: number;
