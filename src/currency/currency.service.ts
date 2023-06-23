@@ -42,12 +42,14 @@ export class CurrencyService extends BaseService {
       {
         from: 'USD',
         to: 'IDR',
-        amount: usdResponse.data.result
+        amount: usdResponse.data.result,
+        created: (new Date()).toISOString(),
       },
       {
         from: 'IDR',
         to: 'USD',
-        amount: idrResponse.data.result
+        amount: idrResponse.data.result,
+        created: (new Date()).toISOString(),
       },
     ];
 

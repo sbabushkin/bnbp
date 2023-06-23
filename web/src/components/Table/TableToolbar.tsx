@@ -60,7 +60,7 @@ export default function TableToolbar() {
             No. of listings: <strong>{chunkNumberByClass(nodes.length.toString())}</strong>
           </Typography>
           <Typography variant="caption">
-            Currency rate (USD/IDR): <strong>{chunkNumberByClass(currencyRate.toString())}</strong>
+            Currency rate (USD/IDR): <strong>{currencyRate.toString()}</strong>
           </Typography>
           <Typography variant="caption">
             Average land size: <strong>{chunkNumberByClass((average.landSize || 0).toString())}</strong>
