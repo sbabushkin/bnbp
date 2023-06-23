@@ -82,7 +82,7 @@ export class HarcourtspurbabaliService extends ParserService {
     propertyObj['bedroomsCount'] = parseNumeric(details['Bedrooms:']);
     propertyObj['bathroomsCount'] = parseNumeric(details['Bathrooms:']);
     propertyObj['pool'] = details['Pool Details:'] ? 'Yes' : 'No';
-    propertyObj['priceIdr'] = parsePrice(details['Price:']);
+    propertyObj['priceIdr'] = parsePrice(details['Price:']) || null;
     propertyObj['priceUsd'] = this.convertToUsd(propertyObj['priceIdr'], currentRate.amount);
     propertyObj['url'] = itemUrl;
     propertyObj['source'] = 'harcourtspurbabali.com';

@@ -174,7 +174,7 @@ export class ParserController {
 
   @Post('parse/:source')
   async parse(@Param('source') source: string, @Res() res: any, @Req() req: any) {
-    const data = this.parseInner(source);
+    const data = await this.parseInner(source);
     res.send(data);
   }
 }

@@ -110,7 +110,7 @@ export class RajavillapropertyService extends ParserService {
     propertyObj['priceIdr'] = priceIdr;
     propertyObj['priceUsd'] = priceUsd || this.convertToUsd(propertyObj['priceIdr'], currentRate.amount);
     propertyObj['url'] = itemUrl;
-    propertyObj['source'] = 'balivillasales.com';
+    propertyObj['source'] = 'rajavillaproperty.com';
     propertyObj['photos'] = imgArr[0];
     return propertyObj;
   }

@@ -106,6 +106,7 @@ export class BalirealtyService extends ParserService {
     propertyObj['name'] = listingName;
     propertyObj['ownership'] = propertyObj['status'].indexOf('Freehold') >= 0 ? 'freehold' : 'leasehold';
     propertyObj['pool'] = poolExists ? 'Yes' : 'No';
+    propertyObj['propertyType'] = this.parsePropertyTypeFromTitle(listingName);
     propertyObj['priceIdr'] = currency === 'IDR' ? propertyObj['price'] : null;
     const priceUsd = currency === 'USD' ? propertyObj['price'] : null;
     propertyObj['priceUsd'] = priceUsd || this.convertToUsd(priceUsd, currentRate.amount);

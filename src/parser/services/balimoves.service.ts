@@ -113,8 +113,8 @@ export class BalimovesService extends ParserService {
     propertyObj['name'] = listingName;
     propertyObj['location'] = this.normalizeLocation(location.split(',')[0]);
     propertyObj['ownership'] = ownership.indexOf('leasehold') >= 0 ? 'leasehold' : 'freehold';
-    propertyObj['buildingSize'] = parseNumeric(buildingSize);
-    propertyObj['landSize'] = parseFloat(landSize.replace(',', '.'));
+    propertyObj['buildingSize'] = parseNumeric(buildingSize) || null;
+    propertyObj['landSize'] = parseFloat(landSize.replace(',', '.')) || null;
     // propertyObj['leaseYearsLeft'] = leaseYearsLeft;
     propertyObj['leaseExpiryYear'] = leaseExpiryYear;
     propertyObj['propertyType'] = this.parsePropertyTypeFromTitle(listingName);

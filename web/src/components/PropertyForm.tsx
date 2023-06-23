@@ -100,6 +100,15 @@ export const PropertyForm: FC<PropertyFormType> = ({ openId, setOpenId }) => {
               <MenuItem selected={node.propertyType === 'hotel/resort'} value="hotel/resort">Hotel/Resort</MenuItem>
             </Select>
           </FormControl>
+          <TextField
+            defaultValue={node.leaseExpiryYear}
+            variant="outlined"
+            label="Lease Expiry Year"
+            type='number'
+            onChange={useFieldChange('leaseExpiryYear')}
+            size='small'
+          />
+
 
           <Stack spacing={2} direction="row" minWidth={'100%'}>
             <TextField

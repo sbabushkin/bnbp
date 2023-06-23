@@ -98,7 +98,7 @@ export class BalitreasurepropertiesService extends ParserService {
     const propertyLocationSelector = 'span.area strong';
     const location = parsedContent.querySelectorAll(propertyLocationSelector)[1]?.text.trim();
 
-    // const itemUrlId =  itemUrl.slice(0, -1).split('/').pop();
+    const itemUrlId =  itemUrl.slice(0, -1).split('/').pop();
     //
     // const imgArr = parsedContent.querySelectorAll('.slides img')
     //   .map(item => item.getAttribute('src'));
@@ -106,7 +106,7 @@ export class BalitreasurepropertiesService extends ParserService {
     const propertyObj = {};
 
     propertyObj['id'] = v4();
-    // propertyObj['externalId'] = itemUrlId;
+    propertyObj['externalId'] = itemUrlId;
     propertyObj['name'] = listingName;
     propertyObj['location'] = this.normalizeLocation(location);
     propertyObj['ownership'] = leaseHoldText ? 'leasehold' : 'freehold';

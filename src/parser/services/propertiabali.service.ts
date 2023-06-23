@@ -92,8 +92,8 @@ export class PropertiabaliService extends ParserService {
       propertyObj['leaseExpiryYear'] = getYear(new Date()) + parseInt(leaseYearsLeft);
     }
     propertyObj['propertyType'] = this.parsePropertyTypeFromTitle(listingName);
-    propertyObj['bedroomsCount'] = bedrooms;
-    propertyObj['bathroomsCount'] = bathrooms;
+    propertyObj['bedroomsCount'] = parseInt(bedrooms);
+    propertyObj['bathroomsCount'] = parseInt(bathrooms);
     propertyObj['pool'] = details['POOL'];
     propertyObj['priceIdr'] = parseNumeric(details['Price']);
     propertyObj['priceUsd'] = this.convertToUsd(propertyObj['priceIdr'], currentRate.amount);

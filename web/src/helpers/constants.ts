@@ -99,7 +99,7 @@ export const sourceOptions: FilterSourceOption[] = [
   'balivillasales.com',
   'balitreasureproperties.com',
   'balirealty.com',
-  'bbalimoves.com',
+  'balimoves.com',
   'bali-home-immo.com',
   'balivillasales.com',
   'balicoconutliving.com',
