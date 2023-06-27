@@ -84,20 +84,22 @@ export const PropertyForm: FC<PropertyFormType> = ({ openId, setOpenId }) => {
           />
 
           <FormControl fullWidth>
-            <InputLabel id="demo-simple-select-label">Property type</InputLabel>
+            <InputLabel id="demo-simple-select-label">Property type {node.propertyType}</InputLabel>
             <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
               value={node.propertyType}
               label="Property type"
-              onChange={(_, elem: any) => updateForm((prev) => {
-                return ({ ...prev, propertyType: elem?.props?.value || '' }) // TODO: fix selected
-              })}
+              onChange={useFieldChange('propertyType')
+              // (ev: any, elem: any) => updateForm((prev) => {
+              //   return ({ ...prev, propertyType: ev.target.value || '' }) // TODO: fix selected
+              // })
+            }
             >
-              <MenuItem selected={node.propertyType === 'villa'} value="villa">Villa</MenuItem>
-              <MenuItem selected={node.propertyType === 'apartment'} value="apartment">Apartment</MenuItem>
-              <MenuItem selected={node.propertyType === 'land'} value="land">Land</MenuItem>
-              <MenuItem selected={node.propertyType === 'hotel/resort'} value="hotel/resort">Hotel/Resort</MenuItem>
+              <MenuItem value="villa">Villa</MenuItem>
+              <MenuItem value="apartment">Apartment</MenuItem>
+              <MenuItem value="land">Land</MenuItem>
+              <MenuItem value="hotel/resort">Hotel/Resort</MenuItem>
             </Select>
           </FormControl>
           <TextField
