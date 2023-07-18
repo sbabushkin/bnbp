@@ -49,9 +49,29 @@ export default function TableToolbar() {
             Property type: {filters.type.join(', ')}
           </Typography>
         }
+        { filters.source.length > 0 &&
+          <Typography variant="subtitle1">
+            Source: {filters.source.join(', ')}
+          </Typography>
+        }
         { filters.locations.length > 0 &&
           <Typography variant="subtitle1">
             Location: {filters.locations.map(item => item.value).join(', ')}
+          </Typography>
+        }
+        { filters.ownership.length > 0 &&
+          <Typography variant="subtitle1">
+            Ownership: {filters.ownership.join(', ')}
+          </Typography>
+        }
+        { filters.bedroomsCount &&
+          <Typography variant="subtitle1">
+            Bedrooms count: {filters.bedroomsCount} and more
+          </Typography>
+        }
+        { filters.bathroomsCount &&
+          <Typography variant="subtitle1">
+            Bathrooms count: {filters.bathroomsCount} and more
           </Typography>
         }
 

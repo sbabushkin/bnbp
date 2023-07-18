@@ -34,7 +34,7 @@ type PropertyFormType = {
 
 export const PropertyForm: FC<PropertyFormType> = ({ openId, setOpenId }) => {
   const node = usePropertyStore((store) => store.nodes.find((node) => node.id === openId) || {} as NodeType)
-  const [form, updateForm] = useState<UpdatePropertyInput>({id: ''})
+  const [form, updateForm] = useState<UpdatePropertyInput>({id: '', propertyType: node.propertyType})
   const { updateProperty } = usePropertyStore((store) => store.actions)
 
   const handleApply = useCallback(() => {
@@ -88,7 +88,7 @@ export const PropertyForm: FC<PropertyFormType> = ({ openId, setOpenId }) => {
             <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
-              value={node.propertyType}
+              value={form.propertyType}
               label="Property type"
               onChange={useFieldChange('propertyType')
               // (ev: any, elem: any) => updateForm((prev) => {

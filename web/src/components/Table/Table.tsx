@@ -89,8 +89,8 @@ export default function PropertyTable() {
                   <TableCell>{row.bedroomsCount}</TableCell>
                   <TableCell>{row.landSize}</TableCell>
                   <TableCell>{row.buildingSize}</TableCell>
-                  <TableCell>{row.leaseExpiryYear}</TableCell>
-                  <TableCell>{row.leaseYearsLeft}</TableCell>
+                  <TableCell>{row.ownership === 'leasehold' ? row.leaseExpiryYear : 'N/A'}</TableCell>
+                  <TableCell>{row.ownership === 'leasehold' ? row.leaseYearsLeft : 'N/A'}</TableCell>
                   <TableCell>{chunkNumberByClass((rates[0] && row.priceUsd ? rates[0].amount * parseFloat(row.priceUsd.toString()) : 0).toString())}</TableCell>
                   <TableCell>{row.priceUsd ? chunkNumberByClass(row.priceUsd.toString()) : ''}</TableCell>
                 </TableRow>

@@ -157,6 +157,7 @@ export class ParserService {
           propertyId: existedRowsMap[item.externalId].id,
           priceIdr: item.priceIdr,
           priceUsd: item.priceUsd,
+          created: (new Date()).toISOString(),
         }))
     );
   }

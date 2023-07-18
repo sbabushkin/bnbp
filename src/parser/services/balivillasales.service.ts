@@ -33,9 +33,11 @@ export class BalivillasalesService extends ParserService {
       for (const url of propertiesUrlArr) {
         const item = await this.parseItem(url, currentRate);
         data.push(item);
+        break;
       }
       await this.loadToDb(data);
       page += 1;
+      break;
     }
     return 'ok';
   }
@@ -74,6 +76,10 @@ export class BalivillasalesService extends ParserService {
     // get pool
     const poolSelector = 'span.swim-icon';
     const poolExists = parsedContent.querySelector(poolSelector);
+
+    // get Lease Exp Year
+    const leaseSelector = 'div.the_content';
+    const leaseContent = parsedContent.querySelector(leaseSelector);
 
     // get bathrooms
     const bathroomsSelector = 'span.bath-icon';

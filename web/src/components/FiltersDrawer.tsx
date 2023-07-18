@@ -126,17 +126,17 @@ export const FiltersDrawer: React.FC = () => {
               <Autocomplete
                 disableClearable
                 fullWidth
-                options={[1,2,3,4,5,'6+']}
-                defaultValue={filters.bedroomsCount || '6+'}
-                onChange={(_, value) => propAct.upRoomCount(value === '6+' ? null : Number(value), 'bedroomsCount')}
+                options={[1,2,3,4,5,'All']}
+                defaultValue={filters.bedroomsCount || 'All'}
+                onChange={(_, value) => propAct.upRoomCount(value === 'All' ? null : Number(value), 'bedroomsCount')}
                 renderInput={(params) => <TextField {...params} label="Bedrooms" />}
               />
               <Autocomplete
                 disableClearable
-                options={[1,2,3,4,5,'6+']}
-                defaultValue={filters.bathroomsCount || '6+'}
+                options={[1,2,3,4,5,'All']}
+                defaultValue={filters.bathroomsCount || 'All'}
                 fullWidth
-                onChange={(_, value) => propAct.upRoomCount(value === '6+' ? null : Number(value), 'bathroomsCount')}
+                onChange={(_, value) => propAct.upRoomCount(value === 'All' ? null : Number(value), 'bathroomsCount')}
                 renderInput={(params) => <TextField {...params} label="Bathrooms" />}
               />
             </ListItem>

@@ -58,6 +58,13 @@ export default function RangeSlide({ max, value, setValue }: RangeSlideProps) {
   return (
     <>
       <ListItem>
+        <Slider
+          value={value}
+          onChange={handleChangeRange}
+          max={max}
+        />
+      </ListItem>
+      <ListItem>
         <ListItemText>Price USD from:</ListItemText>
         <Input
           value={value[0]}
@@ -65,13 +72,6 @@ export default function RangeSlide({ max, value, setValue }: RangeSlideProps) {
           onBlur={handleBlurMin}
           sx={{width: 160}}
           inputProps={{ step: 1, min: 1, max, type: 'number', 'aria-labelledby': 'input-slider-rooms'}}
-        />
-      </ListItem>
-      <ListItem>
-        <Slider
-          value={value}
-          onChange={handleChangeRange}
-          max={max}
         />
       </ListItem>
       <ListItem>
