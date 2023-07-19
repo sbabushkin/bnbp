@@ -76,7 +76,6 @@ export class BalicoconutlivingService extends ParserService {
     // get priceIdr
     const priceIdrSelector = '.pills-price-content p';
     const priceIdr = parsedContent.querySelector(priceIdrSelector)?.text;
-    console.log(priceIdr);
     const infoValues = parsedContent
       .querySelectorAll('ul.list-detail li span')
       .map(item => item.text);

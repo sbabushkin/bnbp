@@ -126,7 +126,6 @@ export class BaliexceptionService extends ParserService {
     propertyObj['url'] = itemUrl;
     propertyObj['source'] = 'baliexception.com';
     // propertyObj['photos'] = imgArr[0];
-    console.log(propertyObj);
     return propertyObj;
   }
 

@@ -5,6 +5,7 @@ import { v4 } from 'uuid';
 import { parseNumeric } from "../../helpers/common.helper";
 import { ParserService } from "../parser.service";
 import { CurrencyRate } from "../../currency/entities/currency.entity";
+import {getYear} from "date-fns";
 const FormData = require('form-data');
 
 
@@ -94,6 +95,16 @@ export class BalirealtyService extends ParserService {
       .map(value => value.text)
       .find(value => value === 'Pool');
 
+    const descElemsArr = parsedContent.querySelectorAll('.property-description > p');
+    let yearsLeftOrExpYear;
+    descElemsArr.forEach(el => {
+      if(el.text.indexOf('Ownership') !== -1) {
+        const matchesArr = el.text.split(':')[1].trim().match(/[0-9]+/);
+        if (propertyObj['status'].indexOf('Freehold') >= 0 || !matchesArr?.length) yearsLeftOrExpYear = undefined
+        else yearsLeftOrExpYear = matchesArr[0];
+      }
+    })
+
     // const convertUrl = 'https://www.balirealty.com/wp-content/plugins/currency_converter_shortcode/convertit.php'
     // const bodyFormData = new FormData();
     // bodyFormData.append('currency_b', currency === 'IDR' ? 'USD' : currency);
@@ -111,12 +122,15 @@ export class BalirealtyService extends ParserService {
     const priceUsd = currency === 'USD' ? propertyObj['price'] : null;
     propertyObj['priceUsd'] = priceUsd || this.convertToUsd(priceUsd, currentRate.amount);
     propertyObj['url'] = itemUrl;
-    // propertyObj['leaseYearsLeft'] = ''; // TODO: doesnt work
+    if (yearsLeftOrExpYear) {
+      propertyObj['leaseExpiryYear'] = yearsLeftOrExpYear.length < 4 ? getYear(new Date()) + parseInt(yearsLeftOrExpYear) : yearsLeftOrExpYear;
+    }
     propertyObj['source'] = 'balirealty.com';
     // propertyObj['photos'] = imgArr[0];
 
     delete propertyObj['price'];
     delete propertyObj['status'];
+    console.log(propertyObj);
     return propertyObj;
   }
 
