@@ -56,8 +56,7 @@ export const PropertyForm: FC<PropertyFormType> = ({ openId, setOpenId }) => {
     updateForm({id: ''})
   }, [setOpenId, updateProperty, node, form])
 
-  const useFieldChange = (fieldName: keyof NodeType) => useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.value);
+  const useFieldChange = (fieldName: keyof NodeType) => useCallback((e: any) => { // TODO: React.ChangeEvent<HTMLInputElement>
     updateForm((prev) => ({ ...prev, [fieldName]: e.target.value }))
   }, [fieldName])
 
@@ -84,17 +83,13 @@ export const PropertyForm: FC<PropertyFormType> = ({ openId, setOpenId }) => {
           />
 
           <FormControl fullWidth>
-            <InputLabel id="demo-simple-select-label">Property type {node.propertyType}</InputLabel>
+            <InputLabel id="demo-simple-select-label">Property type </InputLabel>
             <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
               value={form.propertyType}
               label="Property type"
-              onChange={useFieldChange('propertyType')
-              // (ev: any, elem: any) => updateForm((prev) => {
-              //   return ({ ...prev, propertyType: ev.target.value || '' }) // TODO: fix selected
-              // })
-            }
+              onChange={useFieldChange('propertyType')}
             >
               <MenuItem value="villa">Villa</MenuItem>
               <MenuItem value="apartment">Apartment</MenuItem>

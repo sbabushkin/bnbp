@@ -70,10 +70,12 @@ type FilterQuery = {
   bedroomsCount?:  { greaterThanOrEqualTo: number };
   bathroomsCount?:  { greaterThanOrEqualTo: number };
   priceUsd?: { lessThanOrEqualTo: number; greaterThanOrEqualTo: number; };
+  isValid?: { equalTo: boolean; };
 }
 
 export const fetchDataApi = async (filterStore: FilterType) => {
   const queryFilter: FilterQuery = {
+    isValid: { equalTo: true },
     ...(filterStore.type.length ? { propertyType: { in: filterStore.type } } : {}),
     ...(filterStore.ownership.length ? { ownership: { in: filterStore.ownership } } : {}),
     ...(filterStore.source.length ? { source: { in: filterStore.source } } : {}),

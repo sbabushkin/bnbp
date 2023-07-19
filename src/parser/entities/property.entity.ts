@@ -38,38 +38,38 @@ export class Property extends BaseModel {
   @Field()
   propertyType: string;
 
-  @Field(() => Float)
-  landSize: number;
+  @Field(() => Float, { nullable: true})
+  landSize?: number;
 
-  @Field(() => Float)
-  buildingSize: number;
+  @Field(() => Float, { nullable: true})
+  buildingSize?: number;
 
-  @Field(() => Int)
-  bedroomsCount: number;
+  @Field(() => Int, { nullable: true})
+  bedroomsCount?: number;
 
-  @Field(() => Int)
-  bathroomsCount: number;
+  @Field(() => Int, { nullable: true})
+  bathroomsCount?: number;
 
-  @Field(() => Float)
-  priceIdr: number;
+  @Field(() => Float, { nullable: true})
+  priceIdr?: number;
 
-  @Field(() => Float)
-  priceUsd: number;
+  @Field(() => Float, { nullable: true})
+  priceUsd?: number;
 
-  @Field(() => Int)
-  leaseExpiryYear: number;
+  @Field(() => Int, { nullable: true})
+  leaseExpiryYear?: number;
 
-  @Field(() => Int)
-  leaseYearsLeft: number;
+  @Field(() => Int, { nullable: true})
+  leaseYearsLeft?: number;
 
-  @Field(() => Float)
-  pricePerBuildingSqm: number;
+  @Field(() => Float, { nullable: true})
+  pricePerBuildingSqm?: number;
 
-  @Field(() => Float)
-  pricePerBuildingSqmPerYear: number;
+  @Field(() => Float, { nullable: true})
+  pricePerBuildingSqmPerYear?: number;
 
   @Field()
-  pool: string;
+  pool?: string;
 
   @Field()
   notes: string;
