@@ -33,4 +33,7 @@ export class UpdatePropertyInput {
 
   @Field(() => Float,{ nullable: true })
   priceUsd?: number;
+
+  @Field(() => Int,{ nullable: true })
+  leaseExpiryYear?: number;
 }
