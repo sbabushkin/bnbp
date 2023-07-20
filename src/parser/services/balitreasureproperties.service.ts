@@ -12,7 +12,7 @@ export class BalitreasurepropertiesService extends ParserService {
 
   public async parse() {
 
-    let page = 1;
+    let page = 20;
 
     // TODO: move to service
     const currentRate = await CurrencyRate.query().where({ from: 'USD'}).orderBy('created', 'desc').first();
@@ -65,6 +65,12 @@ export class BalitreasurepropertiesService extends ParserService {
 
     const pricePartHtml = parsedContent.querySelector('div.price_part');
     const leaseHoldText = pricePartHtml.querySelectorAll('span.show_type_Lease')[2]?.text;
+    let yearsLeft;
+    leaseHoldText.split(' ').forEach((el, index, arr) => {
+      if(el.toUpperCase().includes('YEARS')) {
+        yearsLeft = parseInt(arr[index - 1]);
+      }
+    });
 
     // get bedrooms
     const bedroomsSelector = 'img[src*="icon-bedroom.png"]';
@@ -112,10 +118,8 @@ export class BalitreasurepropertiesService extends ParserService {
     propertyObj['ownership'] = leaseHoldText ? 'leasehold' : 'freehold';
     propertyObj['buildingSize'] = parseNumeric(info['Building size']); // TODO: // hard to parse
     propertyObj['landSize'] = parseNumeric(landSize);
-    const leaseYearsLeft = leaseHoldText && parseNumeric(leaseHoldText);
-
-    if (leaseYearsLeft) {
-      propertyObj['leaseExpiryYear'] = getYear(new Date()) + parseInt(leaseYearsLeft);
+    if (yearsLeft) {
+      propertyObj['leaseExpiryYear'] = getYear(new Date()) + parseInt(yearsLeft);
     }
     propertyObj['propertyType'] = this.parsePropertyTypeFromTitle(listingName);
     propertyObj['bedroomsCount'] = parseNumeric(bedrooms);
@@ -126,6 +130,7 @@ export class BalitreasurepropertiesService extends ParserService {
     propertyObj['url'] = itemUrl;
     propertyObj['source'] = 'balitreasureproperties.com';
     // propertyObj['photos'] = imgArr[0];
+    console.log(propertyObj);
     return propertyObj;
   }
 
