@@ -4,6 +4,7 @@ import { v4 } from 'uuid';
 import { parseNumeric } from "../../helpers/common.helper";
 import { ParserService } from "../parser.service";
 import { CurrencyRate } from "../../currency/entities/currency.entity";
+import {getYear} from "date-fns";
 
 export class BalivillasalesService extends ParserService {
 
@@ -33,11 +34,9 @@ export class BalivillasalesService extends ParserService {
       for (const url of propertiesUrlArr) {
         const item = await this.parseItem(url, currentRate);
         data.push(item);
-        break;
       }
       await this.loadToDb(data);
       page += 1;
-      break;
     }
     return 'ok';
   }
@@ -71,15 +70,11 @@ export class BalivillasalesService extends ParserService {
     const priceYears = parsedContent.querySelector(priceYearsSelector)?.text.split('/');
     const priceIdr = priceYears[0].indexOf('IDR') >= 0 ? parseNumeric(priceYears[0]) : null;
     const priceUsd = priceYears[0].indexOf('USD') >= 0 ? parseNumeric(priceYears[0]) : null;
-    const leaseYearsLeft = parseNumeric(priceYears[1]);
+    const leaseYearsLeft = parseNumeric(priceYears[1]); 
 
     // get pool
     const poolSelector = 'span.swim-icon';
     const poolExists = parsedContent.querySelector(poolSelector);
-
-    // get Lease Exp Year
-    const leaseSelector = 'div.the_content';
-    const leaseContent = parsedContent.querySelector(leaseSelector);
 
     // get bathrooms
     const bathroomsSelector = 'span.bath-icon';
@@ -102,7 +97,9 @@ export class BalivillasalesService extends ParserService {
     propertyObj['ownership'] = ownership;
     propertyObj['buildingSize'] = parseNumeric(buildingSize);
     propertyObj['landSize'] = parseNumeric(landSize);
-    // propertyObj['leaseYearsLeft'] = leaseYearsLeft;
+    if (leaseYearsLeft) {
+      propertyObj['leaseExpiryYear'] = getYear(new Date()) + parseInt(leaseYearsLeft);
+    }
     propertyObj['propertyType'] = this.parsePropertyTypeFromTitle(listingName);
     propertyObj['bedroomsCount'] = parseNumeric(bedrooms);
     propertyObj['bathroomsCount'] = parseNumeric(bathrooms);
