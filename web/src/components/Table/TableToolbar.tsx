@@ -9,7 +9,7 @@ import styles from './Table.module.scss'
 export default function TableToolbar() {
   const { average, nodes, rates, filters } = usePropertyStore((state) => state);
 
-  const priceIdr = average.priceUsd && rates[0]?.amount ? average.priceUsd * rates[0]?.amount : 0;
+  // const priceIdr = average.priceUsd && rates[0]?.amount ? average.priceUsd * rates[0]?.amount : 0;
 
   // TODO: do it on server side
   const freeholdNodes = nodes.filter((node: any) => node.landSize && (node.ownership == 'freehold'));
@@ -21,7 +21,7 @@ export default function TableToolbar() {
   const freeholdAvarageLandPrice = freeholdNodes.length ? freeholdNodesLandPriceSum /  freeholdNodes.length : 0;
 
   const currencyRate: any = rates[0]?.amount || 0;
-  const pricePerSqm: any = (average.pricePerSqm || 0) * currencyRate;
+  // const pricePerSqm: any = (average.pricePerSqm || 0) * currencyRate;
   const leaseHoldLandPricePerAre: any = average.landSize ? ((average.priceUsd || 0 ) / average.landSize * 100).toString() : 0;
   const leaseHoldLandPricePerAreIdr: any = average.landSize ? ((average.priceUsd || 0) / average.landSize * 100 * currencyRate).toString() : 0;
   const leaseHoldLandPricePerArePerYear: any = average.landSize && average.leaseYearsLeft ? (average.priceUsd || 0 / average.leaseYearsLeft / average.landSize * 100).toString() : 0;
@@ -30,7 +30,7 @@ export default function TableToolbar() {
   const freeholdLandPricePerAreIdr: any = freeholdAvarageLandPrice && average.landSize ? (freeholdAvarageLandPrice * 100 * currencyRate).toString() : 0;
 
 
-  const leaseholdBuildingPricePerSqmPerYear: any = average.leaseYearsLeft && average.pricePerSqm ? (average.pricePerSqm / average.leaseYearsLeft) : 0;
+  // const leaseholdBuildingPricePerSqmPerYear: any = average.leaseYearsLeft && average.pricePerSqm ? (average.pricePerSqm / average.leaseYearsLeft) : 0;
   // const filteredBuildingPricePerSqm = nodes
   //   .filter((node: any) => node.buildingSize && node.priceIdr)
   //   .map((node: any) => node.priceIdr / node.buildingSize)
@@ -64,7 +64,7 @@ export default function TableToolbar() {
           }
           { filters.ownership.length > 0 &&
             <Typography variant="caption">
-            <strong>Ownership:</strong> {filters.ownership.join(', ')}
+            <strong>Ownership:</strong> {filters.ownership.map((val: string) => val.charAt(0).toUpperCase() + val.slice(1)).join(', ')}
             </Typography>
           }
           { filters.bedroomsCount &&
@@ -81,7 +81,7 @@ export default function TableToolbar() {
             <strong>No. of listings:</strong> {chunkNumberByClass(nodes.length.toString())}
           </Typography>
           <Typography variant="caption">
-            <strong>Currency rate (USD/IDR):</strong> {currencyRate.toString()}
+            <strong>Currency rate (USD/IDR):</strong> {chunkNumberByClass(currencyRate).toString()}
           </Typography>
           <Typography variant="caption">
             <strong>Average land size:</strong> {chunkNumberByClass((average.landSize || 0).toString())}
@@ -90,7 +90,8 @@ export default function TableToolbar() {
             <strong>Average building size:</strong> {chunkNumberByClass((average.buildingSize || 0).toString())}
           </Typography>
           <Typography variant="caption">
-            <strong>Average price:</strong> ${chunkNumberByClass((average.priceUsd || 0).toString())} / {chunkNumberByClass(priceIdr.toString())}
+            <strong>Average price:</strong> ${chunkNumberByClass((average.priceUsd || 0).toString())}
+            {/*/ {chunkNumberByClass(priceIdr.toString())}*/}
           </Typography>
           <Typography variant="caption">
             <strong>Average no. of Bedrooms:</strong> {chunkNumberByClass((average.bedroomsCount || 0).toString())}
@@ -99,43 +100,45 @@ export default function TableToolbar() {
             <strong>Average no. of Bathrooms:</strong> {chunkNumberByClass((average.bathroomsCount || 0).toString())}
           </Typography>
 
-          <Typography variant="caption">
-            <strong>Average building price per sqm:</strong>
-              &nbsp;${chunkNumberByClass((average.pricePerSqm || 0).toString())} / {chunkNumberByClass(pricePerSqm.toString())}
-          </Typography>
+          {!filters.ownership.includes('freehold') &&
+              <Typography variant="caption" >
+                <strong>Average Lease Years:</strong> {chunkNumberByClass((average.leaseYearsLeft || 0).toString())}
+              </Typography>
+          }
 
+          {average.priceUsd && average.buildingSize &&
+            <Typography variant="caption">
+              <strong>Average building price per sqm:</strong>
+              &nbsp;${chunkNumberByClass((average.priceUsd / average.buildingSize).toString())}
+              {/*/ {chunkNumberByClass(pricePerSqm.toString())}*/}
+            </Typography>
+          }
 
-
-          <Typography variant="caption" >
-            <strong>Average Lease Years:</strong> {chunkNumberByClass((average.leaseYearsLeft || 0).toString())}
-          </Typography>
-          <Typography variant="caption">
-            <strong>Average Leasehold Building price per sqm per year:</strong>
-              &nbsp;${chunkNumberByClass(leaseholdBuildingPricePerSqmPerYear.toString())}
-          </Typography>
+          {average.priceUsd && average.buildingSize && average.leaseYearsLeft &&
+              <Typography variant="caption">
+                <strong>Average Leasehold Building price per sqm per year:</strong>
+                &nbsp;${chunkNumberByClass((average.priceUsd / average.buildingSize / average.leaseYearsLeft).toString())}
+              </Typography>
+          }
 
           {filters.type.includes('land') &&
-            <Typography variant="caption">
-              <strong>Average Leasehold Land price per are (100sqm):</strong>
+            <>
+              <Typography variant="caption">
+                <strong>Average Leasehold Land price per are (100sqm):</strong>
                 &nbsp;${chunkNumberByClass(leaseHoldLandPricePerAre.toString())}
                 &nbsp;/ {chunkNumberByClass(leaseHoldLandPricePerAreIdr.toString())}
-            </Typography>
-          }
-
-          { filters.type.includes('land') &&
-            <Typography variant="caption">
-              <strong>Average Leasehold Land price per are per year(100sqm):</strong>
+              </Typography>
+              <Typography variant="caption">
+                <strong>Average Leasehold Land price per are per year(100sqm):</strong>
                 &nbsp;${chunkNumberByClass(leaseHoldLandPricePerArePerYear.toString())}
                 &nbsp;/ {chunkNumberByClass(leaseHoldLandPricePerArePerYearIdr.toString())}
-            </Typography>
-          }
-
-          { filters.type.includes('land') &&
-            <Typography variant="caption">
-              <strong>Average Freehold Land price per are (100sqm):</strong>
+              </Typography>
+              <Typography variant="caption">
+                <strong>Average Freehold Land price per are (100sqm):</strong>
                 &nbsp;${chunkNumberByClass(freeholdLandPricePerAre.toString())}
                 &nbsp;/ {chunkNumberByClass(freeholdLandPricePerAreIdr.toString())}
-            </Typography>
+              </Typography>
+            </>
           }
 
         </div>
