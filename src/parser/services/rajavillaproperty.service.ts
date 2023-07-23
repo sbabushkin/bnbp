@@ -4,20 +4,19 @@ import { v4 } from 'uuid';
 import { parseNumeric } from "../../helpers/common.helper";
 import { ParserService } from "../parser.service";
 import { getYear } from "date-fns";
-import { CurrencyRate } from "../../currency/entities/currency.entity";
 
 
 export class RajavillapropertyService extends ParserService {
 
   public async parse() {
 
-    let page = 1;
+    let page = 75;
 
-    // TODO: move to service
-    const currentRate = await CurrencyRate.query().where({ from: 'USD'}).orderBy('created', 'desc').first();
+    // // TODO: move to service
+    // const currentRate = await CurrencyRate.query().where({ from: 'USD'}).orderBy('created', 'desc').first();
 
     while (true) {
-      const listUrl = `https://www.rajavillaproperty.com/villa-for-sale/page/${page}`;
+      const listUrl = `https://www.rajavillaproperty.com/properties/page/${page}/?filter-contract=SALE&filter-property-type=55`;
       const listResp = await axios.get(listUrl);
       const parsedContentList = parse(listResp.data);
       const propertiesClass = 'h3.entry-title a';
@@ -33,7 +32,7 @@ export class RajavillapropertyService extends ParserService {
       const data = [];
 
       for (const url of propertiesUrlArr) {
-        const item = await this.parseItem(url, currentRate);
+        const item = await this.parseItem(url);
         data.push(item);
       }
       await this.loadToDb(data);
@@ -42,51 +41,49 @@ export class RajavillapropertyService extends ParserService {
     return 'ok';
   }
 
-  private async parseItem(itemUrl, currentRate) {
+  private async parseItem(itemUrl) {
     const respItem = await axios.get(itemUrl);
     const parsedContent = parse(respItem.data);
 
-    // get name
-    const propertyNameSelector = '#stitle';
-    const listingName = parsedContent.querySelector(propertyNameSelector)?.text;
+    // get name and ownership
+    const propertyNameSelector = 'h1.property-title';
+    const titleText = parsedContent.querySelector(propertyNameSelector)?.text;
+    const listingName = titleText;
+    const splitTitle = titleText.split('-');
+    const ownership = splitTitle[splitTitle.length - 1].trim().toLowerCase();
 
-    // get ownership
-    const ownershipSelector = 'span.key-icon';
-    const ownership = parsedContent.querySelector(ownershipSelector)?.text.toLowerCase();
-
-    // get land size
-    const landSizeSelector = 'span.ruler-icon';
-    const landSize = parsedContent.querySelector(landSizeSelector)?.text;
-
-    // get building size
-    const buildingSizeSelector = 'span.buildingsize';
-    const buildingSize = parsedContent.querySelector(buildingSizeSelector)?.text;
-
-    // get bedrooms
-    const bedroomsSelector = 'span.bed-icon';
-    const bedrooms = parsedContent.querySelector(bedroomsSelector)?.text;
+    // get details list
+    const detailsSelector = 'ul.columns-gap > li';
+    const details = parsedContent.querySelectorAll(detailsSelector)
+      .reduce((aggr, item) => {
+        const pair = item.text.split(':');
+        if (pair.length > 1) {
+          const key = pair[0]?.trim();
+          const value = pair[1]?.trim();
+          if (key && value) aggr[key] = value;
+        }
+        return aggr;
+      }, {});
 
     // get price / years
-    const priceYearsSelector = '.single-price';
-    const priceYears = parsedContent.querySelector(priceYearsSelector)?.text.split('/');
-    const priceIdr = priceYears[0].indexOf('IDR') >= 0 ? parseNumeric(priceYears[0]) : 0;
-    const priceUsd = priceYears[0].indexOf('USD') >= 0 ? parseNumeric(priceYears[0]) : 0;
-    const leaseYearsLeft = parseNumeric(priceYears[1]);
+    const priceYearsSelector = 'div.price';
+    const priceUsd = parsedContent.querySelector(priceYearsSelector)?.text.trim();
 
     // get pool
-    const poolSelector = 'span.swim-icon';
-    const poolExists = parsedContent.querySelector(poolSelector);
-
-    // get bathrooms
-    const bathroomsSelector = 'span.bath-icon';
-    const bathrooms = parsedContent.querySelector(bathroomsSelector)?.text;
+    const amenitiesSelector = 'ul.list-check > li.yes';
+    const amenitiesList = parsedContent.querySelectorAll(amenitiesSelector);
+    const poolExists = details['Pool Size'] || amenitiesList.find((value) => value.text.toUpperCase().includes('POOL'));
 
     // get location
-    const propertyLocationSelector = '.code-location span span';
+    const propertyLocationSelector = 'div.address > a';
     const location = parsedContent.querySelector(propertyLocationSelector).text.trim();
-    const itemUrlId =  itemUrl.slice(0, -1).split('/').pop();
 
-    const imgArr = parsedContent.querySelectorAll('.slides img')
+    // get external id
+    const urlSplit = itemUrl.split('/');
+    const itemUrlId = urlSplit[urlSplit.length - 2];
+
+    // get images
+    const imgArr = parsedContent.querySelectorAll('img')
       .map(item => item.getAttribute('src'));
 
     const propertyObj = {};
@@ -96,23 +93,21 @@ export class RajavillapropertyService extends ParserService {
     propertyObj['name'] = listingName;
     propertyObj['location'] = this.normalizeLocation(location);
     propertyObj['ownership'] = ownership;
-    propertyObj['buildingSize'] = parseNumeric(buildingSize);
-    propertyObj['landSize'] = parseNumeric(landSize);
-
-    if (leaseYearsLeft) {
-      propertyObj['leaseExpiryYear'] = getYear(new Date()) + parseInt(leaseYearsLeft);
+    propertyObj['buildingSize'] = parseNumeric(details['Home area']);
+    propertyObj['landSize'] = parseNumeric(details['Lot area']);
+    if (details['Lease Period']) {
+      const yearsLeft = parseNumeric(details['Lease Period']);
+      propertyObj['leaseExpiryYear'] = getYear(new Date()) + Number(yearsLeft);
     }
-
     propertyObj['propertyType'] = this.parsePropertyTypeFromTitle(listingName);
-    propertyObj['bedroomsCount'] = parseNumeric(bedrooms);
-    propertyObj['bathroomsCount'] = parseNumeric(bathrooms);
+    propertyObj['bedroomsCount'] = details['Bedrooms'] ? parseInt(details['Bedrooms']) : undefined;
+    propertyObj['bathroomsCount'] = details['Baths'] ? parseInt(details['Baths']) : undefined;
     propertyObj['pool'] = poolExists ? 'Yes' : 'No';
-    propertyObj['priceIdr'] = priceIdr;
-    propertyObj['priceUsd'] = priceUsd || this.convertToUsd(propertyObj['priceIdr'], currentRate.amount);
+    // propertyObj['priceIdr'] = priceIdr;
+    propertyObj['priceUsd'] = parseNumeric(priceUsd) ? parseNumeric(priceUsd) : undefined;
     propertyObj['url'] = itemUrl;
     propertyObj['source'] = 'rajavillaproperty.com';
-    propertyObj['photos'] = imgArr[0];
+    propertyObj['photos'] = imgArr[3];
     return propertyObj;
   }
-
 }
