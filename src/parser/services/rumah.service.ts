@@ -9,6 +9,8 @@ import { CurrencyRate } from "../../currency/entities/currency.entity";
 
 export class RumahService extends ParserService {
 
+  private sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
   public async parse() {
 
     let page = 1;
@@ -30,20 +32,26 @@ export class RumahService extends ParserService {
       if (!propertiesUrlArr.length) break;
 
       const data = [];
-
       for (const url of propertiesUrlArr) {
         const item = await this.parseItem(url, currentRate);
-        data.push(item);
+        if (item) data.push(item);
       }
-
       await this.loadToDb(data);
       page += 1;
     }
+    await this.sleep(10000);
     return 'ok';
   }
 
   private async parseItem(itemUrl, currentRate) {
-    const respItem = await axios.get(itemUrl);
+    let respItem;
+    try {
+      respItem = await axios.get(itemUrl);
+    } catch (err) {
+      console.error(err.message);
+      console.log('Captcha on item with url >>> ', itemUrl);
+      return;
+    }
     const parsedContent = parse(respItem.data);
 
     // get name
@@ -96,6 +104,7 @@ export class RumahService extends ParserService {
     propertyObj['url'] = itemUrl;
     propertyObj['source'] = 'rumah123.com';
     // propertyObj['photos'] = imgArr[0];
+    await this.sleep(1000);
     return propertyObj;
   }
 
