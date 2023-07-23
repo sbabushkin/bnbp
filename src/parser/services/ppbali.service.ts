@@ -16,7 +16,7 @@ export class PpbaliService extends ParserService {
     const currentRate = await CurrencyRate.query().where({ from: 'USD'}).orderBy('created', 'desc').first();
 
     while (true) {
-      const listUrl = `https://ppbali.com/bali-villa-sale/page/${page}`;
+      const listUrl = `https://ppbali.com/search-result/page/${page}/?property_type=villa`;
       const listResp = await axios.get(listUrl);
       const parsedContentList = parse(listResp.data);
       const propertiesClass = 'a.more-details';
@@ -33,7 +33,7 @@ export class PpbaliService extends ParserService {
 
       for (const url of propertiesUrlArr) {
         const item = await this.parseItem(url, currentRate);
-        data.push(item);
+        if (item) data.push(item);
       }
       await this.loadToDb(data);
       page += 1;
