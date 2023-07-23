@@ -11,7 +11,7 @@ export class FazwazService extends ParserService {
 
   public async parse() {
 
-    let page = 1;
+    let page = 6;
 
     // TODO: move to service
     const currentRate = await CurrencyRate.query().where({ from: 'USD'}).orderBy('created', 'desc').first();
@@ -82,7 +82,8 @@ export class FazwazService extends ParserService {
 
     // get priceIdr
     const priceIdrSelector = '.gallery-unit-sale-price__price';
-    const priceIdr = parsedContent.querySelector(priceIdrSelector).text;
+    const matches = parsedContent.querySelector(priceIdrSelector)?.text.match(/[0-9]+(,[0-9]+)+/);
+    const priceIdr = matches[0];
 
     // get location
     const propertyLocationSelector = 'span.project-location';
