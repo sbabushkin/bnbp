@@ -130,7 +130,6 @@ export class BalirealtyService extends ParserService {
 
     delete propertyObj['price'];
     delete propertyObj['status'];
-    console.log(propertyObj);
     return propertyObj;
   }
 
