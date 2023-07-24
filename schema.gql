@@ -3794,6 +3794,8 @@ enum PropertiesOrderBy {
   EXTERNAL_ID_DESC
   ID_ASC
   ID_DESC
+  IS_VALID_ASC
+  IS_VALID_DESC
   LAND_SIZE_ASC
   LAND_SIZE_DESC
   LEASE_EXPIRY_YEAR_ASC
@@ -3932,6 +3934,7 @@ type Property implements Node {
   externalId: String!
   freeholdLandPrice: Float
   id: UUID!
+  isValid: Boolean!
   landSize: Float
   leaseExpiryYear: Int
   leaseYearsLeft: Float
@@ -4122,6 +4125,9 @@ input PropertyCondition {
   """Checks for equality with the object’s `id` field."""
   id: UUID
 
+  """Checks for equality with the object’s `isValid` field."""
+  isValid: Boolean
+
   """Checks for equality with the object’s `landSize` field."""
   landSize: Float
 
@@ -4197,6 +4203,9 @@ type PropertyDistinctCountAggregates {
 
   """Distinct count of id across the matching connection"""
   id: BigInt
+
+  """Distinct count of isValid across the matching connection"""
+  isValid: BigInt
 
   """Distinct count of landSize across the matching connection"""
   landSize: BigInt
@@ -4286,6 +4295,9 @@ input PropertyFilter {
   """Filter by the object’s `id` field."""
   id: UUIDFilter
 
+  """Filter by the object’s `isValid` field."""
+  isValid: BooleanFilter
+
   """Filter by the object’s `landSize` field."""
   landSize: FloatFilter
 
@@ -4363,6 +4375,7 @@ enum PropertyGroupBy {
   CREATED_TRUNCATED_TO_DAY
   CREATED_TRUNCATED_TO_HOUR
   EXTERNAL_ID
+  IS_VALID
   LAND_SIZE
   LEASE_EXPIRY_YEAR
   LOCATION
