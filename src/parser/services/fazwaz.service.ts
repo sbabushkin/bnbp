@@ -5,19 +5,20 @@ import { v4 } from 'uuid';
 import { parseNumeric, parseSquare } from "../../helpers/common.helper";
 import { ParserService } from "../parser.service";
 import { CurrencyRate } from "../../currency/entities/currency.entity";
+import {getYear} from "date-fns";
 
 
 export class FazwazService extends ParserService {
 
   public async parse() {
 
-    let page = 6;
+    let page = 1;
 
     // TODO: move to service
     const currentRate = await CurrencyRate.query().where({ from: 'USD'}).orderBy('created', 'desc').first();
 
     while (true) {
-      const listUrl = `https://www.fazwaz.id/villa-for-sale/indonesia/bali?order_by=rank|asc&page=${page}`;
+      const listUrl = `https://www.fazwaz.id/villa-for-sale/indonesia/bali?order_by=rank%7Casc&page=${page}&type=villa`;
       const listResp = await axios.get(listUrl);
       const parsedContentList = parse(listResp.data);
       const propertiesClass = '.loaded a.link-unit';
@@ -90,9 +91,29 @@ export class FazwazService extends ParserService {
     const location = parsedContent.querySelector(propertyLocationSelector).text.trim();
 
     // get ownership
-    // const ownershipSelector = '.fa-copy';
-    // const ownership = parsedContent.querySelector(ownershipSelector)
-    //   .parentNode.parentNode.querySelector('p').text.toLowerCase();
+    const descTextSelector = '#unit-description';
+    let ownership;
+    let leaseYearsLeft;
+    const descText = parsedContent.querySelector(descTextSelector)?.text;
+    if (descText) {
+      const upperDesc = descText.toUpperCase();
+      const ownershipCondition = upperDesc.includes('LEASEHOLD') || upperDesc.includes('LEASE');
+      ownership = ownershipCondition ? 'leasehold' : 'freehold';
+      const sentences = descText.split('.');
+
+      for (let sentence of sentences) {
+        const upperSentence = sentence.toUpperCase();
+        const condition = (upperSentence.includes('LEASEHOLD') || upperSentence.includes('LEASE'));
+
+        if (condition && upperSentence.includes('YEARS')) {
+          const numbers = sentence.split(/[^0-9]+/);
+          const yearsLeftIndex = numbers.findIndex((value) => value.length === 2);
+          leaseYearsLeft = yearsLeftIndex > 0 ? numbers[yearsLeftIndex] : undefined;
+          break;
+        }
+      }
+    }
+
 
     // get pool
     const poolSelector = 'img[src*="relax.png"]';
@@ -110,11 +131,12 @@ export class FazwazService extends ParserService {
     propertyObj['externalId'] = itemUrlId;
     propertyObj['name'] = listingName;
     propertyObj['location'] = this.normalizeLocation(location);
-    // propertyObj['ownership'] = ownership.indexOf('leasehold') >= 0 ? 'leasehold' : 'freehold';
+    propertyObj['ownership'] = ownership ? ownership : 'freehold';
     propertyObj['buildingSize'] = parseNumeric(info['Indoor Area']) || null;
     propertyObj['landSize'] = parseNumeric(basicInfo['Plot Size']) || null;
-    // propertyObj['leaseYearsLeft'] = leaseYearsLeft;
-    // propertyObj['leaseExpiryYear'] = leaseExpiryYear;
+    if (leaseYearsLeft) {
+      propertyObj['leaseExpiryYear'] = getYear(new Date()) + parseInt(leaseYearsLeft);
+    }
     propertyObj['propertyType'] = this.parsePropertyTypeFromTitle(listingName);
     propertyObj['bedroomsCount'] = parseInt(parseSquare(info['Bedrooms'] || info['Bedroom']).toString())  || null;
     propertyObj['bathroomsCount'] = parseInt(parseSquare(info['Bathrooms'] || info['Bathroom']).toString()) || null;
