@@ -22,6 +22,19 @@ export const propertiesQuery = gql`
       created
     }
     
+    stats: propertiesConnection(filter: {
+      isValid: {
+        equalTo: true
+      }
+    }) {
+      sources: groupedAggregates(groupBy: SOURCE) {
+        keys
+        distinctCount {
+          id
+        }
+      }
+    }
+    
     propertiesConnection(filter: $filter) {
       aggregates {
         max {
