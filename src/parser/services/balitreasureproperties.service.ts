@@ -12,7 +12,7 @@ export class BalitreasurepropertiesService extends ParserService {
 
   public async parse() {
 
-    let page = 11;
+    let page = 1;
 
     // TODO: move to service
     const currentRate = await CurrencyRate.query().where({ from: 'USD'}).orderBy('created', 'desc').first();
@@ -146,5 +146,4 @@ export class BalitreasurepropertiesService extends ParserService {
     // propertyObj['photos'] = imgArr[0];
     return propertyObj;
   }
-
 }
