@@ -15,6 +15,7 @@ interface PropertyStore {
   filters: FilterType;
   nodes: NodeType[];
   rates: RateType[];
+  sources: FilterSourceOption[];
   maxValues: MaxValuesType;
   average: AveragesType;
 
@@ -48,6 +49,7 @@ export const usePropertyStore = create<PropertyStore>()(
       rates: [],
       maxValues: {},
       average: {},
+      sources:[],
       filters: initialFilters,
       actions: {
         upType: (newTypeList) => set((state) => ({ filters: {...state.filters, type: newTypeList} })),
@@ -61,9 +63,8 @@ export const usePropertyStore = create<PropertyStore>()(
         reset: () => set({ filters: initialFilters }),
         fetchData: async () => {
           const { filters } = get()
-          const { nodes, aggregates, rates } = await fetchDataApi(filters)
-          console.log('data in fetch data func', aggregates)
-          set({ nodes, rates,  maxValues: aggregates.max || {}, average: aggregates.average || {} })
+          const { nodes, aggregates, rates, sources } = await fetchDataApi(filters)
+          set({ nodes, rates, sources: sources, maxValues: aggregates.max || {}, average: aggregates.average || {}})
         },
         updateProperty: async (input) => {
           const data = await updatePropertyApi(input)

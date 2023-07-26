@@ -54,7 +54,7 @@ export default function TableToolbar() {
           }
           { filters.source.length > 0 &&
             <Typography variant="caption">
-              <strong>Source:</strong> {filters.source.join(', ')}
+              <strong>Source:</strong> {filters.source.map(item => item.keys[0]).join(', ')}
             </Typography>
           }
           { filters.locations.length > 0 &&

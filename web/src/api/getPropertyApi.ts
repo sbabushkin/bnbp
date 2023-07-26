@@ -91,7 +91,7 @@ export const fetchDataApi = async (filterStore: FilterType) => {
     isValid: { equalTo: true },
     ...(filterStore.type.length ? { propertyType: { in: filterStore.type } } : {}),
     ...(filterStore.ownership.length ? { ownership: { in: filterStore.ownership } } : {}),
-    ...(filterStore.source.length ? { source: { in: filterStore.source } } : {}),
+    ...(filterStore.source.length ? { source: { in: filterStore.source.map((item)=> item.keys[0]) } } : {}),
     ...(filterStore.locations.length ? { location: { in: filterStore.locations.map(({value}) => value) } } : {}),
     ...(filterStore.bedroomsCount?.length ? { bedroomsCount: { in: filterStore.bedroomsCount } } : {}),
     ...(filterStore.bathroomsCount?.length ? { bathroomsCount: { in: filterStore.bathroomsCount } } : {}),
@@ -108,6 +108,7 @@ export const fetchDataApi = async (filterStore: FilterType) => {
   return {
     aggregates: data?.propertiesConnection?.aggregates ?? {},
     nodes: data?.propertiesConnection?.nodes ?? [],
-    rates: data?.currencyRates ?? []
+    rates: data?.currencyRates ?? [],
+    sources: data?.stats?.sources ?? []
   }
 }

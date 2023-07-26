@@ -11,8 +11,8 @@ import RangeSlide from './RangeSlide';
 import Stack from '@mui/material/Stack';
 import { Autocomplete, Chip, ListSubheader } from '@mui/material';
 import { usePropertyStore } from '../store/propertyStore';
-import { locationOptions, propertyTypeOptions, sourceOptions } from '../helpers/constants';
-import { FilterOwnershipOption, FilterSourceOption } from '../store/filterTypes';
+import { locationOptions, propertyTypeOptions } from '../helpers/constants';
+import { FilterOwnershipOption } from '../store/filterTypes';
 
 const boxStyles = {
   width: 320,
@@ -29,6 +29,7 @@ export const FiltersDrawer: React.FC = () => {
   const filters = usePropertyStore((state) => state.filters);
   const propAct = usePropertyStore((state) => state.actions);
   const max = usePropertyStore((state) => state.maxValues);
+  const sources = usePropertyStore((state)=> state.sources);
 
   const toggleDrawer = (event: React.KeyboardEvent | React.MouseEvent) => {
     if ('key' in event && (event.type === 'keydown' && event.key === 'Tab' || event.key === 'Shift')) {
@@ -46,7 +47,6 @@ export const FiltersDrawer: React.FC = () => {
 
     setSelectedOptions([...selectedOptions, ...newValue])
     propAct.upLocation([...selectedOptions, ...newValue])
-    console.log(selectedOptions)
 
   };
 
@@ -92,13 +92,13 @@ export const FiltersDrawer: React.FC = () => {
             <ListItem>
               <Autocomplete
                 multiple
-                options={sourceOptions}
+                options={sources}
                 // groupBy={(opt) => opt.groupBy}
-                // getOptionLabel={(option) => option.value}
+                getOptionLabel={(option) => option.keys[0] + " (" +option.distinctCount.id+")"}
                 defaultValue={filters.source}
                 filterSelectedOptions
                 fullWidth
-                onChange={(_, value) => propAct.upSource(value as FilterSourceOption[])}
+                onChange={(_, value) => propAct.upSource(value)}
                 size="small"
                 renderInput={(params) => (<TextField {...params} label="Source" placeholder="search" />)}
               />
