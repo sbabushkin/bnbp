@@ -9,7 +9,7 @@ import TextField from '@mui/material/TextField';
 import Divider from '@mui/material/Divider';
 import RangeSlide from './RangeSlide';
 import Stack from '@mui/material/Stack';
-import { Autocomplete, Checkbox, Chip, ListSubheader } from '@mui/material';
+import { Autocomplete, Chip, ListSubheader } from '@mui/material';
 import { usePropertyStore } from '../store/propertyStore';
 import { locationOptions, propertyTypeOptions, sourceOptions } from '../helpers/constants';
 import { FilterOwnershipOption, FilterSourceOption } from '../store/filterTypes';
@@ -166,17 +166,19 @@ export const FiltersDrawer: React.FC = () => {
               <Autocomplete
                 disableClearable
                 fullWidth
-                options={[1,2,3,4,5,'All']}
-                defaultValue={filters.bedroomsCount || 'All'}
-                onChange={(_, value) => propAct.upRoomCount(value === 'All' ? null : Number(value), 'bedroomsCount')}
+                multiple
+                defaultValue={filters.bedroomsCount}
+                options={[1,2,3,4,5]}
+                onChange={(_, value) => propAct.upRoomCount(value, 'bedroomsCount')}
                 renderInput={(params) => <TextField {...params} label="Bedrooms" />}
               />
               <Autocomplete
                 disableClearable
-                options={[1,2,3,4,5,'All']}
-                defaultValue={filters.bathroomsCount || 'All'}
+                multiple
+                options={[1,2,3,4,5]}
+                defaultValue={filters.bathroomsCount}
                 fullWidth
-                onChange={(_, value) => propAct.upRoomCount(value === 'All' ? null : Number(value), 'bathroomsCount')}
+                onChange={(_, value) => propAct.upRoomCount(value, 'bathroomsCount')}
                 renderInput={(params) => <TextField {...params} label="Bathrooms" />}
               />
             </ListItem>
