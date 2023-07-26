@@ -80,8 +80,8 @@ export const fetchDataApi = async (filterStore: FilterType) => {
     ...(filterStore.ownership.length ? { ownership: { in: filterStore.ownership } } : {}),
     ...(filterStore.source.length ? { source: { in: filterStore.source } } : {}),
     ...(filterStore.locations.length ? { location: { in: filterStore.locations.map(({value}) => value) } } : {}),
-    ...(filterStore.bedroomsCount ? { bedroomsCount: { greaterThanOrEqualTo: filterStore.bedroomsCount } } : {}),
-    ...(filterStore.bathroomsCount ? { bathroomsCount: { greaterThanOrEqualTo: filterStore.bathroomsCount } } : {}),
+    ...(filterStore.bedroomsCount.length ? { bedroomsCount: { in: filterStore.bedroomsCount } } : {}),
+    ...(filterStore.bathroomsCount.length ? { bathroomsCount: { in: filterStore.bathroomsCount } } : {}),
     ...(filterStore.priceUsd ? {
       priceUsd: { lessThanOrEqualTo: filterStore.priceUsd[0], greaterThanOrEqualTo: filterStore.priceUsd[1] }
     } : {}),
