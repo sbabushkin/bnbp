@@ -78,7 +78,7 @@ export const propertiesQuery = gql`
 type FilterQuery = {
   propertyType?: { in: FilterTypeOption[] };
   ownership?: { in: FilterOwnershipOption[] };
-  source?: { in: FilterSourceOption[] };
+  source?: { in: FilterSourceOption[] | string[] };
   locations?: { in: string[] };
   bedroomsCount?:  { in: number[] };
   bathroomsCount?:  { in: number[] };
