@@ -1,4 +1,4 @@
-import { FilterSourceOption, FilterTypeOption } from "../store/filterTypes";
+import { FilterTypeOption } from "../store/filterTypes";
 
 export interface IData {
   id: string;
@@ -80,31 +80,6 @@ export const headCells: readonly IHeadCell[] = [
 
 export const propertyTypeOptions: FilterTypeOption[] = ['villa', 'apartment', 'hotel/resort', 'land', 'commercial']
 
-export const sourceOptions: FilterSourceOption[] = [
-  'villabalisale.com',
-  'balivillasales.com',
-  'suasarealestate.com',
-  'rumah123.com',
-  'balivillasales.com',
-  'propertiabali.com',
-  'ppbali.com',
-  'powerbali.com',
-  'optimumbali.com',
-  'lazudi.com',
-  'harcourtspurbabali.com',
-  'fazwaz.id',
-  'exotiqproperty.com',
-  'excelbali.com',
-  'dotproperty.id',
-  'balivillasales.com',
-  'balitreasureproperties.com',
-  'balirealty.com',
-  'balimoves.com',
-  'bali-home-immo.com',
-  'balivillasales.com',
-  'balicoconutliving.com',
-  'anniedeanproperties.com',
-]
 
 export const locationOptions = [
 {value: 'Amed', groupBy: ''},

@@ -108,6 +108,7 @@ export const fetchDataApi = async (filterStore: FilterType) => {
   return {
     aggregates: data?.propertiesConnection?.aggregates ?? {},
     nodes: data?.propertiesConnection?.nodes ?? [],
-    rates: data?.currencyRates ?? []
+    rates: data?.currencyRates ?? [],
+    sources: data?.stats?.sources ?? []
   }
 }
