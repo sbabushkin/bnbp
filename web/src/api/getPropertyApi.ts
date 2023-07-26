@@ -67,8 +67,8 @@ type FilterQuery = {
   ownership?: { in: FilterOwnershipOption[] };
   source?: { in: FilterSourceOption[] };
   locations?: { in: string[] };
-  bedroomsCount?:  { greaterThanOrEqualTo: number };
-  bathroomsCount?:  { greaterThanOrEqualTo: number };
+  bedroomsCount?:  { in: number[] };
+  bathroomsCount?:  { in: number[] };
   priceUsd?: { lessThanOrEqualTo: number; greaterThanOrEqualTo: number; };
   isValid?: { equalTo: boolean; };
 }
@@ -80,8 +80,8 @@ export const fetchDataApi = async (filterStore: FilterType) => {
     ...(filterStore.ownership.length ? { ownership: { in: filterStore.ownership } } : {}),
     ...(filterStore.source.length ? { source: { in: filterStore.source } } : {}),
     ...(filterStore.locations.length ? { location: { in: filterStore.locations.map(({value}) => value) } } : {}),
-    ...(filterStore.bedroomsCount.length ? { bedroomsCount: { in: filterStore.bedroomsCount } } : {}),
-    ...(filterStore.bathroomsCount.length ? { bathroomsCount: { in: filterStore.bathroomsCount } } : {}),
+    ...(filterStore.bedroomsCount?.length ? { bedroomsCount: { in: filterStore.bedroomsCount } } : {}),
+    ...(filterStore.bathroomsCount?.length ? { bathroomsCount: { in: filterStore.bathroomsCount } } : {}),
     ...(filterStore.priceUsd ? {
       priceUsd: { lessThanOrEqualTo: filterStore.priceUsd[0], greaterThanOrEqualTo: filterStore.priceUsd[1] }
     } : {}),

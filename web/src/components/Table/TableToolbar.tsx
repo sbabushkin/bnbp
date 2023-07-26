@@ -67,12 +67,12 @@ export default function TableToolbar() {
             <strong>Ownership:</strong> {filters.ownership.map((val: string) => val.charAt(0).toUpperCase() + val.slice(1)).join(', ')}
             </Typography>
           }
-          { filters.bedroomsCount &&
+          { filters.bedroomsCount.length > 0 &&
             <Typography variant="caption">
             <strong>Bedrooms count:</strong> {filters.bedroomsCount.map(item => item).join(', ')}
             </Typography>
           }
-          { filters.bathroomsCount &&
+          { filters.bathroomsCount.length > 0 &&
             <Typography variant="caption">
             <strong>Bathrooms count:</strong> {filters.bathroomsCount.map(item => item).join(', ')}
             </Typography>

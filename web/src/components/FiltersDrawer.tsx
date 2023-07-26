@@ -39,7 +39,7 @@ export const FiltersDrawer: React.FC = () => {
   };
 
   const handleSelectGroup = (group: any) => {
-    
+
     let newValue = group.children.map((item: any) => {
       return {value: item.key, groupBy: group.group}
     })
@@ -47,7 +47,7 @@ export const FiltersDrawer: React.FC = () => {
     setSelectedOptions([...selectedOptions, ...newValue])
     propAct.upLocation([...selectedOptions, ...newValue])
     console.log(selectedOptions)
-    
+
   };
 
   const handleApply = React.useCallback(() => {
@@ -113,16 +113,16 @@ export const FiltersDrawer: React.FC = () => {
                 getOptionLabel={(option) => option.value}
                 defaultValue={filters.locations}
                 fullWidth
-                onChange={(event, newValue) => {
+                onChange={(_, newValue) => {
                   propAct.upLocation(newValue)
                   setSelectedOptions(newValue)
                 }}
-                filterSelectedOptions     
+                filterSelectedOptions
                 size="small"
                 renderGroup={(params) => [
                   <ListSubheader
                     component="div"
-                    onClick={(e) => {
+                    onClick={() => {
                       handleSelectGroup(params)
                     }}
                     style={{ cursor: 'pointer' }}
@@ -131,8 +131,8 @@ export const FiltersDrawer: React.FC = () => {
                   </ListSubheader>,
                   params.children,
                 ]}
-                
-                renderTags={(value: string[], getTagProps) =>
+
+                renderTags={(_, getTagProps) =>
                   selectedOptions.map((option: any, index: number) => (
                     <Chip
                       variant="outlined"
@@ -184,9 +184,9 @@ export const FiltersDrawer: React.FC = () => {
             </ListItem>
 
             <RangeSlide
-              max={max.priceUsd || 99999999}
+              max={Math.ceil(max.priceUsd) || 99999999}
               setValue={propAct.upPrice}
-              value={filters.priceUsd ?? [100, max.priceUsd || 99999999]}
+              value={filters.priceUsd ?? [100, Math.ceil(max.priceUsd) || 99999999]}
             />
 
           </List>

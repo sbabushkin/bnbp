@@ -77,8 +77,8 @@ export interface FilterType {
     value: string;
     groupBy: string;
   }[];
-  bedroomsCount: number[] | null;
-  bathroomsCount: number[] | null;
+  bedroomsCount?: number[];
+  bathroomsCount?: number[];
   priceUsd: [number, number] | null;
   ownership: FilterOwnershipOption[];
   source: FilterSourceOption[];
