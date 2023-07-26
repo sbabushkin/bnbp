@@ -184,9 +184,9 @@ export const FiltersDrawer: React.FC = () => {
             </ListItem>
 
             <RangeSlide
-              max={Math.ceil(max.priceUsd) || 99999999}
+              max={Math.ceil(max.priceUsd || 0) || 99999999}
               setValue={propAct.upPrice}
-              value={filters.priceUsd ?? [100, Math.ceil(max.priceUsd) || 99999999]}
+              value={filters.priceUsd ?? [100, Math.ceil(max.priceUsd || 0) || 99999999]}
             />
 
           </List>
