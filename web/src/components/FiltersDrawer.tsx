@@ -9,7 +9,7 @@ import TextField from '@mui/material/TextField';
 import Divider from '@mui/material/Divider';
 import RangeSlide from './RangeSlide';
 import Stack from '@mui/material/Stack';
-import { Autocomplete } from '@mui/material';
+import { Autocomplete, Checkbox, Chip, ListSubheader } from '@mui/material';
 import { usePropertyStore } from '../store/propertyStore';
 import { locationOptions, propertyTypeOptions, sourceOptions } from '../helpers/constants';
 import { FilterOwnershipOption, FilterSourceOption } from '../store/filterTypes';
@@ -24,6 +24,8 @@ const boxStyles = {
 
 export const FiltersDrawer: React.FC = () => {
   const [state, setState] = React.useState(false);
+  const [selectedOptions, setSelectedOptions] = React.useState<any[]>([]);
+
   const filters = usePropertyStore((state) => state.filters);
   const propAct = usePropertyStore((state) => state.actions);
   const max = usePropertyStore((state) => state.maxValues);
@@ -34,6 +36,18 @@ export const FiltersDrawer: React.FC = () => {
     }
 
     setState((prev) => !prev);
+  };
+
+  const handleSelectGroup = (group: any) => {
+    
+    let newValue = group.children.map((item: any) => {
+      return {value: item.key, groupBy: group.group}
+    })
+
+    setSelectedOptions([...selectedOptions, ...newValue])
+    propAct.upLocation([...selectedOptions, ...newValue])
+    console.log(selectedOptions)
+    
   };
 
   const handleApply = React.useCallback(() => {
@@ -94,13 +108,39 @@ export const FiltersDrawer: React.FC = () => {
               <Autocomplete
                 multiple
                 options={locationOptions}
+                value={selectedOptions}
                 groupBy={(opt) => opt.groupBy}
                 getOptionLabel={(option) => option.value}
                 defaultValue={filters.locations}
-                filterSelectedOptions
                 fullWidth
-                onChange={(_, value) => propAct.upLocation(value)}
+                onChange={(event, newValue) => {
+                  propAct.upLocation(newValue)
+                  setSelectedOptions(newValue)
+                }}
+                filterSelectedOptions     
                 size="small"
+                renderGroup={(params) => [
+                  <ListSubheader
+                    component="div"
+                    onClick={(e) => {
+                      handleSelectGroup(params)
+                    }}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    {params.group}
+                  </ListSubheader>,
+                  params.children,
+                ]}
+                
+                renderTags={(value: string[], getTagProps) =>
+                  selectedOptions.map((option: any, index: number) => (
+                    <Chip
+                      variant="outlined"
+                      label={option.value}
+                      {...getTagProps({ index })}
+                    />
+                  ))
+                }
                 renderInput={(params) => (<TextField {...params} label="Location" placeholder="search" />)}
               />
             </ListItem>
