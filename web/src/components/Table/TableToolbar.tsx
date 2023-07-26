@@ -69,12 +69,12 @@ export default function TableToolbar() {
           }
           { filters.bedroomsCount &&
             <Typography variant="caption">
-            <strong>Bedrooms count:</strong> {filters.bedroomsCount.map(item => item).join(', ')} and more
+            <strong>Bedrooms count:</strong> {filters.bedroomsCount.map(item => item).join(', ')}
             </Typography>
           }
           { filters.bathroomsCount &&
             <Typography variant="caption">
-            <strong>Bathrooms count:</strong> {filters.bathroomsCount.map(item => item).join(', ')} and more
+            <strong>Bathrooms count:</strong> {filters.bathroomsCount.map(item => item).join(', ')}
             </Typography>
           }
           <Typography variant="caption">
