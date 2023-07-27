@@ -13,7 +13,7 @@ export class RumahService extends ParserService {
 
   public async parse() {
 
-    let page = 1;
+    let page = 17;
 
     // TODO: move to service
     const currentRate = await CurrencyRate.query().where({ from: 'USD'}).orderBy('created', 'desc').first();
@@ -86,25 +86,36 @@ export class RumahService extends ParserService {
     // const imgArr = parsedContent.querySelectorAll('.slides img')
     //   .map(item => item.getAttribute('src'));
 
+    console.log((infoObj['Certificate'] || '').toLowerCase());
+
+
+    const isFreehold  = (infoObj['Certificate'] || '').toLowerCase().indexOf('hak milik') > 0
+      || (infoObj['Certificate'] || '').toLowerCase().indexOf('freehold') > 0;
+
+    const isLeasehold  = (infoObj['Certificate'] || '').toLowerCase().indexOf('hak sewa') > 0
+      || (infoObj['Certificate'] || '').toLowerCase().indexOf('leasehold') > 0;
+
     const propertyObj = {};
     propertyObj['id'] = v4();
     propertyObj['externalId'] = itemUrlId;
     propertyObj['name'] = listingName;
     propertyObj['location'] = this.normalizeLocation(location);
-    // propertyObj['ownership'] = ownership;
+    propertyObj['ownership'] = isLeasehold ? 'leasehold' : (isFreehold ? 'freehold' : null);
     propertyObj['landSize'] = parseNumeric(infoObj['Land Size'] || infoObj['L. Tanah']);
     propertyObj['buildingSize'] = parseNumeric(infoObj['Building Size'] || infoObj['L. Bangunan']);
     // propertyObj['leaseYearsLeft'] = leaseYearsLeft;
-    propertyObj['propertyType'] = infoObj['Property Type'] || this.parsePropertyTypeFromTitle(listingName);
+    propertyObj['propertyType'] = this.parsePropertyTypeFromTitle(listingName);
     propertyObj['bedroomsCount'] = parseNumeric(infoObj['Bedrooms'] || infoObj['Bedroom'] || infoObj['K. Tidur']);
     propertyObj['bathroomsCount'] = parseNumeric(infoObj['Bathrooms'] || infoObj['Bathroom'] || infoObj['K. Mandi']);
     // propertyObj['pool'] = poolExists ? 'Yes' : 'No';
     propertyObj['priceIdr'] = parseSquare(priceIdr) * multi;
-    propertyObj['priceUSD'] = this.convertToUsd(propertyObj['priceIdr'], currentRate.amount);
+    propertyObj['priceUsd'] = this.convertToUsd(propertyObj['priceIdr'], currentRate.amount);
     propertyObj['url'] = itemUrl;
     propertyObj['source'] = 'rumah123.com';
     // propertyObj['photos'] = imgArr[0];
-    await this.sleep(1000);
+
+    propertyObj['isValid'] = this.checkIsValid(propertyObj);
+    await this.sleep(1000 + Math.random() * 500);
     return propertyObj;
   }
 
