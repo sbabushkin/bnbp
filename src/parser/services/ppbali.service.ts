@@ -107,6 +107,8 @@ export class PpbaliService extends ParserService {
     propertyObj['priceUsd'] = parseNumeric(priceUsd) || this.convertToUsd(propertyObj['priceIdr'], currentRate.amount);
     propertyObj['url'] = itemUrl;
     propertyObj['source'] = 'ppbali.com';
+    propertyObj['isValid'] = this.checkIsValid(propertyObj);
+
     // propertyObj['photos'] = imgArr[0];
     return propertyObj;
   }
