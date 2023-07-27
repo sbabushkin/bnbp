@@ -24,6 +24,29 @@ export class ParserService {
     return Property.query().patchAndFetchById(input.id, input);
   }
 
+  checkIsValid(item: any) { // TODO: types
+    let isValid = true;
+
+    if (!item.ownership) isValid = false;
+
+    if (item.ownership && item.ownership === 'leasehold' && !item.leaseExpiryYear) {
+      console.log('leaseExpiryYear does not exists');
+      isValid = false;
+    }
+
+    if (item.propertyType !== 'land' && !item.buildingSize) {
+      console.log('buildingSize does not exists');
+      isValid = false;
+    }
+
+    if (!item.priceUsd) {
+      console.log('priceUsd does not exists');
+      isValid = false;
+    }
+
+    return isValid;
+  }
+
   normalizeLocation(location: string) { // TODO: area id instead of string
     const locations = [
       {value: 'Amed', groupBy: '', match: false},
