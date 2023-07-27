@@ -1,4 +1,4 @@
-import { ParserService } from "../parser.service";
+import { ParserBaseService } from "../parser.base.service";
 import axios from "axios";
 import { parseNumeric } from "../../helpers/common.helper";
 import parse from "node-html-parser";
@@ -7,7 +7,7 @@ import {Property} from "../entities/property.entity";
 import {PropertyPrice} from "../entities/property_price.entity";
 import { CurrencyRate } from "../../currency/entities/currency.entity";
 
-export class AnniedeanpropertiesService extends ParserService { // TODO: resourse doesnt work properly
+export class AnniedeanpropertiesService extends ParserBaseService { // TODO: resourse doesnt work properly
 
 	public async parse() {
 		const categories = ['leasehold', 'freehold', 'rental'];

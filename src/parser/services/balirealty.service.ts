@@ -3,12 +3,12 @@ import axios from 'axios';
 import { Property } from "../entities/property.entity";
 import { v4 } from 'uuid';
 import { parseNumeric } from "../../helpers/common.helper";
-import { ParserService } from "../parser.service";
+import { ParserBaseService } from "../parser.base.service";
 import { CurrencyRate } from "../../currency/entities/currency.entity";
 const FormData = require('form-data');
 
 
-export class BalirealtyService extends ParserService {
+export class BalirealtyService extends ParserBaseService {
 
   public async parse() {
 

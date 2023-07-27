@@ -4,12 +4,12 @@ import { Property } from "../entities/property.entity";
 import { PropertyPrice } from "../entities/property_price.entity";
 import { v4 } from 'uuid';
 import { parseNumeric } from "../../helpers/common.helper";
-import { ParserService } from "../parser.service";
+import { ParserBaseService } from "../parser.base.service";
 import { getYear } from "date-fns";
 import { CurrencyRate } from "../../currency/entities/currency.entity";
 
 
-export class BaliHomeImmoService extends ParserService {
+export class BaliHomeImmoService extends ParserBaseService {
 
   public async parse() {
 

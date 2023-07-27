@@ -1,4 +1,4 @@
-import { ParserService } from "../parser.service";
+import { ParserBaseService } from "../parser.base.service";
 import axios from "axios";
 import { parseNumeric } from "../../helpers/common.helper";
 import parse from "node-html-parser";
@@ -6,7 +6,7 @@ import { v4 } from 'uuid';
 import { getYear } from "date-fns";
 import { CurrencyRate } from "../../currency/entities/currency.entity";
 
-export class OptimumbaliService extends ParserService {
+export class OptimumbaliService extends ParserBaseService {
 
 	public async parse() {
 

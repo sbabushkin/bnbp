@@ -1,4 +1,4 @@
-import { ParserService } from "../parser.service";
+import { ParserBaseService } from "../parser.base.service";
 import axios from "axios";
 import { parseNumeric } from "../../helpers/common.helper";
 import parse from "node-html-parser";
@@ -7,7 +7,7 @@ import {PropertyPrice} from "../entities/property_price.entity";
 import { getYear } from "date-fns";
 import { CurrencyRate } from "../../currency/entities/currency.entity";
 
-export class ExotiqpropertyService extends ParserService {
+export class ExotiqpropertyService extends ParserBaseService {
 
 	public async parse() {
 		// TODO: move to service

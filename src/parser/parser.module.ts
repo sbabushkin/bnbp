@@ -23,14 +23,15 @@ import { ExotiqpropertyService } from "./services/exotiqproperty.service";
 import { OptimumbaliService } from "./services/optimumbali.service";
 import { VillabalisaleService } from "./services/villabalisale.service";
 import { PropertyResolver } from "./property.resolver";
-import { ParserService } from "./parser.service";
+import { ParserBaseService } from "./parser.base.service";
 import { SuasarealestateService } from "./services/suasarealestate.service";
 import { PowerbaliService } from "./services/powerbali.service";
+import { ParserService } from "./parser.service";
 
 @Module({
   providers: [
     PropertyResolver,
-    ParserService,
+    ParserBaseService,
     BalirealtyService,
     BaliHomeImmoService,
     BaliexceptionService,
@@ -54,6 +55,7 @@ import { PowerbaliService } from "./services/powerbali.service";
     PowerbaliService,
     SuasarealestateService,
     VillabalisaleService,
+    ParserService,
   ],
   imports: [
     DatabaseModule,

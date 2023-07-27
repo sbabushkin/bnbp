@@ -2,11 +2,11 @@ import { parse } from 'node-html-parser';
 import axios from 'axios';
 import { v4 } from 'uuid';
 import { parseNumeric, parseSquare, parseText } from "../../helpers/common.helper";
-import { ParserService } from "../parser.service";
+import { ParserBaseService } from "../parser.base.service";
 import { CurrencyRate } from "../../currency/entities/currency.entity";
 
 
-export class PowerbaliService extends ParserService {
+export class PowerbaliService extends ParserBaseService {
 
 	public async parse() {
 		let page = 1;

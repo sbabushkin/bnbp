@@ -3,11 +3,11 @@ import axios from 'axios';
 import { Property } from "../entities/property.entity";
 import { v4 } from 'uuid';
 import { parseNumeric, parseSquare } from "../../helpers/common.helper";
-import { ParserService } from "../parser.service";
+import { ParserBaseService } from "../parser.base.service";
 import { CurrencyRate } from "../../currency/entities/currency.entity";
 
 
-export class RumahService extends ParserService {
+export class RumahService extends ParserBaseService {
 
   private sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 

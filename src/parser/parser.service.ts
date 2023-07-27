@@ -1,233 +1,177 @@
-import { parse } from 'node-html-parser';
-import axios from 'axios';
-import { Property } from "./entities/property.entity";
-import { v4 } from 'uuid';
-import { authenticate } from '@google-cloud/local-auth';
-import { google } from 'googleapis';
-import { readFileSync } from 'fs';
-import { join } from 'path';
-import { PropertyPrice } from "./entities/property_price.entity";
-import { UpdatePropertyInput } from "./dto/update-property.input";
-import { CacheService } from "../cache/cache.service";
-import { CurrencyService } from "../currency/currency.service";
+import { Injectable } from "@nestjs/common";
+import { BaliHomeImmoService } from "./services/balihomeimmo.service";
+import { BaliexceptionService } from "./services/baliexception.service";
+import { BalivillasalesService } from "./services/balivillasales.service";
+import { BalirealtyService } from "./services/balirealty.service";
+import { BalimovesService } from "./services/balimoves.service";
+import { ExcelbaliService } from "./services/excelbali.service";
+import { PpbaliService } from "./services/ppbali.service";
+import { HarcourtspurbabaliService } from "./services/harcourtspurbabali.service";
+import { DotpropertyService } from "./services/dotproperty.service";
+import { PropertiabaliService } from "./services/propertiabali.service";
+import { BalitreasurepropertiesService } from "./services/balitreasureproperties.service";
+import { FazwazService } from "./services/fazwaz.service";
+import { UnikbalivillaService } from "./services/unikbalivilla.service";
+import { RajavillapropertyService } from "./services/rajavillaproperty.service";
+import { LazudiService } from "./services/lazudi.service";
+import { BalicoconutlivingService } from "./services/balicoconutliving.service";
+import { RumahService } from "./services/rumah.service";
+import { AnniedeanpropertiesService } from "./services/anniedeanproperties.service";
+import { ExotiqpropertyService } from "./services/exotiqproperty.service";
+import { VillabalisaleService } from "./services/villabalisale.service";
+import { SuasarealestateService } from "./services/suasarealestate.service";
+import { PowerbaliService } from "./services/powerbali.service";
+import { OptimumbaliService } from "./services/optimumbali.service";
+import { Cron, CronExpression } from "@nestjs/schedule";
+import {Property} from "./entities/property.entity";
 
-// TODO: move to config
-const spreadsheetId = '1VdNUg64ef3HFnsy4A9q_RimC75L6AjCSBdLEZMeQJxE';
-const sheetName = 'Dataset';
-const TOKEN_PATH = join(process.cwd(), 'token.json');
+const everySundayCronExp = '0 0 * * 0';
 
+@Injectable()
 export class ParserService {
 
-  private sheets;
+	constructor(
+		private readonly baliHomeImmoService: BaliHomeImmoService,
+		private readonly baliexceptionService: BaliexceptionService,
+		private readonly balivillasalesService: BalivillasalesService,
+		private readonly balirealtyService: BalirealtyService,
+		private readonly balimovesService: BalimovesService,
+		private readonly excelbaliService: ExcelbaliService,
+		private readonly ppbaliService: PpbaliService,
+		private readonly harcourtspurbabaliService: HarcourtspurbabaliService,
+		private readonly dotpropertyService: DotpropertyService,
+		private readonly propertiabaliService: PropertiabaliService,
+		private readonly balitreasurepropertiesService: BalitreasurepropertiesService,
+		private readonly fazwazService: FazwazService,
+		private readonly unikbalivillaService: UnikbalivillaService,
+		private readonly rajavillapropertyService: RajavillapropertyService,
+		private readonly lazudiService: LazudiService,
+		private readonly balicoconutlivingService: BalicoconutlivingService,
+		private readonly rumahService: RumahService,
+		private readonly anniedeanpropertiesService: AnniedeanpropertiesService,
+		private readonly exotiqpropertyService: ExotiqpropertyService,
+		private readonly villabalisaleService: VillabalisaleService,
+		private readonly suasarealestateService: SuasarealestateService,
+		private readonly powerbaliService: PowerbaliService,
+		private readonly optimumbaliService: OptimumbaliService,
+	) {}
 
-  async update(input: any) {
-    return Property.query().patchAndFetchById(input.id, input);
-  }
+	async parseInner(source: string) {
+		let data = 'not found';
 
-  checkIsValid(item: any) { // TODO: types
-    let isValid = true;
+		switch(source) {
+			case 'balihomeimmo':
+				data = await this.baliHomeImmoService.parse();
+				break;
+			case 'baliexception':
+				data = await this.baliexceptionService.parse();
+				break;
+			case 'balivillasales':
+				data = await this.balivillasalesService.parse();
+				break;
+			case 'balirealty':
+				data = await this.balirealtyService.parse();
+				break;
+			case 'balimoves':
+				data = await this.balimovesService.parse();
+				break;
+			case 'excelbali':
+				data = await this.excelbaliService.parse();
+				break;
+			case 'ppbali':
+				data = await this.ppbaliService.parse();
+				break;
+			case 'harcourtspurbabali':
+				data = await this.harcourtspurbabaliService.parse();
+				break;
+			case 'dotproperty':
+				data = await this.dotpropertyService.parse();
+				break;
+			case 'propertiabali':
+				data = await this.propertiabaliService.parse();
+				break;
+			case 'balitreasureproperties':
+				data = await this.balitreasurepropertiesService.parse();
+				break;
+			case 'fazwaz':
+				data = await this.fazwazService.parse();
+				break;
+			case 'unikbalivilla':
+				data = await this.unikbalivillaService.parse();
+				break;
+			case 'rajavillaproperty':
+				data = await this.rajavillapropertyService.parse();
+				break;
+			case 'lazudi':
+				data = await this.lazudiService.parse();
+				break;
+			case 'balicoconutliving':
+				data = await this.balicoconutlivingService.parse();
+				break;
+			case 'rumah':
+				data = await this.rumahService.parse();
+				break;
+			case 'anniedeanproperties':
+				data = await this.anniedeanpropertiesService.parse();
+				break;
+			case 'exotiqproperty':
+				data = await this.exotiqpropertyService.parse();
+				break;
+			case 'optimumbali':
+				data = await this.optimumbaliService.parse();
+				break;
+			case 'villabalisale':
+				data = await this.villabalisaleService.parse();
+				break;
+			case 'suasarealestate':
+				data = await this.suasarealestateService.parse();
+				break;
+			case 'powerbali':
+				data = await this.powerbaliService.parse();
+				break;
+		}
+	}
 
-    if (!item.ownership) isValid = false;
+	@Cron(everySundayCronExp)
+	async parseAll() {
+		const sources = [
+			'balihomeimmo',
+			'baliexception',
+			'balivillasales',
+			'balirealty',
+			'balimoves',
+			'excelbali',
+			'ppbali',
+			'harcourtspurbabali',
+			'dotproperty',
+			'propertiabali',
+			'balitreasureproperties',
+			'fazwaz',
+			'unikbalivilla',
+			'rajavillaproperty',
+			'lazudi',
+			'balicoconutliving',
+			'rumah',
+			'anniedeanproperties',
+			'exotiqproperty',
+			'optimumbali',
+			'villabalisale',
+			'suasarealestate',
+			'powerbali',
+		];
 
-    if (item.ownership && item.ownership === 'leasehold' && !item.leaseExpiryYear) {
-      console.log('leaseExpiryYear does not exists');
-      isValid = false;
-    }
+		for (const source of sources) {
+			try {
+				await this.parseInner(source);
+			} catch (e) {
+				console.error(source, e.message);
+			}
+		}
 
-    if (item.propertyType !== 'land' && !item.buildingSize) {
-      console.log('buildingSize does not exists');
-      isValid = false;
-    }
+		return 'ok';
+	}
 
-    if (!item.priceUsd) {
-      console.log('priceUsd does not exists');
-      isValid = false;
-    }
-
-    return isValid;
-  }
-
-  normalizeLocation(location: string) { // TODO: area id instead of string
-    const locations = [
-      {value: 'Amed', groupBy: '', match: false},
-      {value: 'Balian', groupBy: '', match: false},
-      {value: 'Batu Belig', groupBy: '', match: false},
-      {value: 'Karangasem', groupBy: '', match: false},
-      {value: 'Kedungu', groupBy: '', match: false},
-      {value: 'Kerobokan', groupBy: '', match: false},
-      {value: 'Ketewel', groupBy: '', match: false},
-      {value: 'Kuta', groupBy: '', match: false},
-      {value: 'Lovina', groupBy: '', match: false},
-      {value: 'Medewi', groupBy: '', match: false},
-      {value: 'Megwi', groupBy: '', match: false},
-      {value: 'North Bali', groupBy: '', match: false},
-      {value: 'Pecatu', groupBy: '', match: false},
-      {value: 'Saba', groupBy: '', match: false},
-      {value: 'Sanur', groupBy: '', match: false},
-      {value: 'Sukawati', groupBy: '', match: false},
-      {value: 'Umalas', groupBy: '', match: false},
-      {value: 'Bukit', groupBy: 'Bukit', match: false},
-      {value: 'Balangan', groupBy: 'Bukit', match: false},
-      {value: 'Bingin', groupBy: 'Bukit', match: false},
-      {value: 'Jimbaran', groupBy: 'Bukit', match: false},
-      {value: 'Nusa Dua', groupBy: 'Bukit', match: false},
-      {value: 'Padang Padang', groupBy: 'Bukit', match: false},
-      {value: 'Pecatu', groupBy: 'Bukit', match: false},
-      {value: 'Uluwatu', groupBy: 'Bukit', match: false},
-      {value: 'Ungasan', groupBy: 'Bukit', match: false},
-      {value: 'Buwit', groupBy: 'Buwit', match: false},
-      {value: 'Tabanan', groupBy: 'Buwit', match: false},
-      {value: 'Canggu', groupBy: 'Canggu', match: false},
-      {value: 'Babakan', groupBy: 'Canggu', match: false},
-      {value: 'Batu Bolong', groupBy: 'Canggu', match: false},
-      {value: 'Berawa', groupBy: 'Canggu', match: false},
-      {value: 'Cemagi', groupBy: 'Canggu', match: false},
-      {value: 'Echo Beach', groupBy: 'Canggu', match: false},
-      {value: 'Kayu Tulang', groupBy: 'Canggu', match: false},
-      {value: 'Nelayan', groupBy: 'Canggu', match: false},
-      {value: 'North', groupBy: 'Canggu', match: false},
-      {value: 'Nyanyi', groupBy: 'Canggu', match: false},
-      {value: 'Padonan', groupBy: 'Canggu', match: false},
-      {value: 'Pantai Lima', groupBy: 'Canggu', match: false},
-      {value: 'Pererenan', groupBy: 'Canggu', match: false},
-      {value: 'Seseh', groupBy: 'Canggu', match: false},
-      {value: 'Tiying Tutul', groupBy: 'Canggu', match: false},
-      {value: 'Tumbak Bayuh', groupBy: 'Canggu', match: false},
-      {value: 'Other Islands', groupBy: 'Other Islands', match: false},
-      {value: 'Lombok', groupBy: 'Other Islands', match: false},
-      {value: 'Sumba', groupBy: 'Other Islands', match: false},
-      {value: 'Seminyak', groupBy: 'Seminyak', match: false},
-      {value: 'Batu Belig', groupBy: 'Seminyak', match: false},
-      {value: 'Drupadi', groupBy: 'Seminyak', match: false},
-      {value: 'Legian', groupBy: 'Seminyak', match: false},
-      {value: 'Oberoi', groupBy: 'Seminyak', match: false},
-      {value: 'Petitenget', groupBy: 'Seminyak', match: false},
-      {value: 'Tabanan', groupBy: 'Tabanan', match: false},
-      {value: 'Kedungu', groupBy: 'Tabanan', match: false},
-      {value: 'Tanah Lot', groupBy: 'Tabanan', match: false},
-      {value: 'Ubud', groupBy: 'Ubud', match: false},
-      {value: 'Central', groupBy: 'Ubud', match: false},
-      {value: 'Other', groupBy: 'Ubud', match: false},
-      {value: 'Sayan', groupBy: 'Ubud', match: false},
-      {value: 'Tegalalang', groupBy: 'Ubud', match: false},
-      {value: 'Tegallalang', groupBy: 'Ubud', match: false},
-    ];
-
-    const matchedLocations = locations.map((loc) => {
-      return {
-        ...loc,
-        match: location.toLowerCase().includes(loc.value.toLowerCase())
-      }
-    }).filter(loc => loc.match);
-
-    return matchedLocations[0]?.value || location;
-  }
-
-  convertToUsd(idrValue: number, rate: number) {
-    console.log(idrValue, rate);
-    if (idrValue && rate) {
-      return idrValue/rate;
-    }
-    return null;
-  }
-
-  parsePropertyTypeFromTitle(title: string) { // TODO: move to helper
-    const types = {
-      villa: 'villa',
-      apartment: 'apartment',
-      hotel: 'hotel/resort',
-      resort: 'hotel/resort',
-      land: 'land',
-      commercial: 'commercial',
-    }
-
-    const includes = Object.keys(types)
-      .map((type) => ({ includes: title.toLowerCase().includes(type), type }))
-      .filter((value) => value.includes);
-
-    const result = types[includes[0]?.type] || types.villa; // villa by default
-    return result;
-  }
-
-  protected async loadToDb(data: Property[]) {
-    const bindings = data.map(item => ([item.source, item.externalId]));
-
-    const existedRows = await Property.query().whereIn(
-      ['source', 'external_id'],
-      bindings
-    );
-
-    const existedRowsMap = existedRows.reduce((map, item) => {
-      map[item.externalId] = item;
-      return map;
-    }, {});
-
-    const insertData = data
-      .filter(item => !existedRowsMap[item.externalId])
-      .map(item => {
-        item.prices = [{
-          priceIdr: item.priceIdr,
-          priceUsd: item.priceUsd,
-        }]
-        return item;
-      });
-
-    await Property.query().insertGraph(insertData);
-    await PropertyPrice.query().insert(
-      data
-        .filter(item => existedRowsMap[item.externalId])
-        .map(item => ({
-          propertyId: existedRowsMap[item.externalId].id,
-          priceIdr: item.priceIdr,
-          priceUsd: item.priceUsd,
-          created: (new Date()).toISOString(),
-        }))
-    );
-  }
-
-  protected async loadToSheets(items: Property[]) {
-    const resource = {
-      values: items.filter(item => !!item).map(item => ([
-        item.name,
-        item.url,
-        item.location,
-        null, // Ownership+Property type
-        item.ownership,
-        item.propertyType,
-        item.landSize && item.landSize.toString().replace('.',','), // sqm
-        item.landSize / 10, // are TODO: need formula
-        item.buildingSize && item.buildingSize.toString().replace('.',','),
-        item.bedroomsCount,
-        item.bathroomsCount,
-        item.priceIdr,
-        item.priceUsd,
-        null, // Villa Price per sqm
-        null, // Price per sqm per year, Leasehold
-        null, // Land price per are Freehold, USD
-        null, // Land price per are Freehold, IDR
-        item.leaseExpiryYear,
-        item.leaseYearsLeft,
-        null, // price per year
-        null, // Land price per are per year Leasehold, $
-        null, // Land price per are per year Leasehold, IDR
-        null, // usd/idr
-        null, // LIVING
-        item.pool,
-        'notes'
-      ])),
-    };
-    try {
-      const result = await this.sheets.spreadsheets.values.append({
-        spreadsheetId,
-        range: `${sheetName}!A5`,
-        valueInputOption: 'USER_ENTERED',
-        resource,
-      });
-      console.log(`${result.data.updates.updatedCells} cells appended.`);
-      return result;
-    } catch (err) {
-      // TODO (developer) - Handle exception
-      throw err;
-    }
-  }
+	async update(input: any) {
+		return Property.query().patchAndFetchById(input.id, input);
+	}
 }
