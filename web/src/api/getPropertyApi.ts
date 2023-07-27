@@ -22,6 +22,19 @@ export const propertiesQuery = gql`
       created
     }
     
+    stats: propertiesConnection(filter: {
+      isValid: {
+        equalTo: true
+      }
+    }) {
+      sources: groupedAggregates(groupBy: SOURCE) {
+        keys
+        distinctCount {
+          id
+        }
+      }
+    }
+    
     propertiesConnection(filter: $filter) {
       aggregates {
         max {
@@ -65,10 +78,10 @@ export const propertiesQuery = gql`
 type FilterQuery = {
   propertyType?: { in: FilterTypeOption[] };
   ownership?: { in: FilterOwnershipOption[] };
-  source?: { in: FilterSourceOption[] };
+  source?: { in: FilterSourceOption[] | string[] };
   locations?: { in: string[] };
-  bedroomsCount?:  { greaterThanOrEqualTo: number };
-  bathroomsCount?:  { greaterThanOrEqualTo: number };
+  bedroomsCount?:  { in: number[] };
+  bathroomsCount?:  { in: number[] };
   priceUsd?: { lessThanOrEqualTo: number; greaterThanOrEqualTo: number; };
   isValid?: { equalTo: boolean; };
 }
@@ -78,10 +91,10 @@ export const fetchDataApi = async (filterStore: FilterType) => {
     isValid: { equalTo: true },
     ...(filterStore.type.length ? { propertyType: { in: filterStore.type } } : {}),
     ...(filterStore.ownership.length ? { ownership: { in: filterStore.ownership } } : {}),
-    ...(filterStore.source.length ? { source: { in: filterStore.source } } : {}),
+    ...(filterStore.source.length ? { source: { in: filterStore.source.map((item)=> item.keys[0]) } } : {}),
     ...(filterStore.locations.length ? { location: { in: filterStore.locations.map(({value}) => value) } } : {}),
-    ...(filterStore.bedroomsCount ? { bedroomsCount: { greaterThanOrEqualTo: filterStore.bedroomsCount } } : {}),
-    ...(filterStore.bathroomsCount ? { bathroomsCount: { greaterThanOrEqualTo: filterStore.bathroomsCount } } : {}),
+    ...(filterStore.bedroomsCount?.length ? { bedroomsCount: { in: filterStore.bedroomsCount } } : {}),
+    ...(filterStore.bathroomsCount?.length ? { bathroomsCount: { in: filterStore.bathroomsCount } } : {}),
     ...(filterStore.priceUsd ? {
       priceUsd: { lessThanOrEqualTo: filterStore.priceUsd[0], greaterThanOrEqualTo: filterStore.priceUsd[1] }
     } : {}),
@@ -95,6 +108,7 @@ export const fetchDataApi = async (filterStore: FilterType) => {
   return {
     aggregates: data?.propertiesConnection?.aggregates ?? {},
     nodes: data?.propertiesConnection?.nodes ?? [],
-    rates: data?.currencyRates ?? []
+    rates: data?.currencyRates ?? [],
+    sources: data?.stats?.sources ?? []
   }
 }

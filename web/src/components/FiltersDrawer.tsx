@@ -9,10 +9,10 @@ import TextField from '@mui/material/TextField';
 import Divider from '@mui/material/Divider';
 import RangeSlide from './RangeSlide';
 import Stack from '@mui/material/Stack';
-import { Autocomplete } from '@mui/material';
+import { Autocomplete, Chip, ListSubheader } from '@mui/material';
 import { usePropertyStore } from '../store/propertyStore';
-import { locationOptions, propertyTypeOptions, sourceOptions } from '../helpers/constants';
-import { FilterOwnershipOption, FilterSourceOption } from '../store/filterTypes';
+import { locationOptions, propertyTypeOptions } from '../helpers/constants';
+import { FilterOwnershipOption } from '../store/filterTypes';
 
 const boxStyles = {
   width: 320,
@@ -24,9 +24,12 @@ const boxStyles = {
 
 export const FiltersDrawer: React.FC = () => {
   const [state, setState] = React.useState(false);
+  const [selectedOptions, setSelectedOptions] = React.useState<any[]>([]);
+
   const filters = usePropertyStore((state) => state.filters);
   const propAct = usePropertyStore((state) => state.actions);
   const max = usePropertyStore((state) => state.maxValues);
+  const sources = usePropertyStore((state)=> state.sources);
 
   const toggleDrawer = (event: React.KeyboardEvent | React.MouseEvent) => {
     if ('key' in event && (event.type === 'keydown' && event.key === 'Tab' || event.key === 'Shift')) {
@@ -34,6 +37,17 @@ export const FiltersDrawer: React.FC = () => {
     }
 
     setState((prev) => !prev);
+  };
+
+  const handleSelectGroup = (group: any) => {
+
+    let newValue = group.children.map((item: any) => {
+      return {value: item.key, groupBy: group.group}
+    })
+
+    setSelectedOptions([...selectedOptions, ...newValue])
+    propAct.upLocation([...selectedOptions, ...newValue])
+
   };
 
   const handleApply = React.useCallback(() => {
@@ -78,13 +92,13 @@ export const FiltersDrawer: React.FC = () => {
             <ListItem>
               <Autocomplete
                 multiple
-                options={sourceOptions}
+                options={sources}
                 // groupBy={(opt) => opt.groupBy}
-                // getOptionLabel={(option) => option.value}
+                getOptionLabel={(option) => option.keys[0] + " (" +option.distinctCount.id+")"}
                 defaultValue={filters.source}
                 filterSelectedOptions
                 fullWidth
-                onChange={(_, value) => propAct.upSource(value as FilterSourceOption[])}
+                onChange={(_, value) => propAct.upSource(value)}
                 size="small"
                 renderInput={(params) => (<TextField {...params} label="Source" placeholder="search" />)}
               />
@@ -94,13 +108,39 @@ export const FiltersDrawer: React.FC = () => {
               <Autocomplete
                 multiple
                 options={locationOptions}
+                value={selectedOptions}
                 groupBy={(opt) => opt.groupBy}
                 getOptionLabel={(option) => option.value}
                 defaultValue={filters.locations}
-                filterSelectedOptions
                 fullWidth
-                onChange={(_, value) => propAct.upLocation(value)}
+                onChange={(_, newValue) => {
+                  propAct.upLocation(newValue)
+                  setSelectedOptions(newValue)
+                }}
+                filterSelectedOptions
                 size="small"
+                renderGroup={(params) => [
+                  <ListSubheader
+                    component="div"
+                    onClick={() => {
+                      handleSelectGroup(params)
+                    }}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    {params.group}
+                  </ListSubheader>,
+                  params.children,
+                ]}
+
+                renderTags={(_, getTagProps) =>
+                  selectedOptions.map((option: any, index: number) => (
+                    <Chip
+                      variant="outlined"
+                      label={option.value}
+                      {...getTagProps({ index })}
+                    />
+                  ))
+                }
                 renderInput={(params) => (<TextField {...params} label="Location" placeholder="search" />)}
               />
             </ListItem>
@@ -126,25 +166,27 @@ export const FiltersDrawer: React.FC = () => {
               <Autocomplete
                 disableClearable
                 fullWidth
-                options={[1,2,3,4,5,'All']}
-                defaultValue={filters.bedroomsCount || 'All'}
-                onChange={(_, value) => propAct.upRoomCount(value === 'All' ? null : Number(value), 'bedroomsCount')}
+                multiple
+                defaultValue={filters.bedroomsCount}
+                options={[1,2,3,4,5]}
+                onChange={(_, value) => propAct.upRoomCount(value, 'bedroomsCount')}
                 renderInput={(params) => <TextField {...params} label="Bedrooms" />}
               />
               <Autocomplete
                 disableClearable
-                options={[1,2,3,4,5,'All']}
-                defaultValue={filters.bathroomsCount || 'All'}
+                multiple
+                options={[1,2,3,4,5]}
+                defaultValue={filters.bathroomsCount}
                 fullWidth
-                onChange={(_, value) => propAct.upRoomCount(value === 'All' ? null : Number(value), 'bathroomsCount')}
+                onChange={(_, value) => propAct.upRoomCount(value, 'bathroomsCount')}
                 renderInput={(params) => <TextField {...params} label="Bathrooms" />}
               />
             </ListItem>
 
             <RangeSlide
-              max={max.priceUsd || 99999999}
+              max={Math.ceil(max.priceUsd || 0) || 99999999}
               setValue={propAct.upPrice}
-              value={filters.priceUsd ?? [100, max.priceUsd || 99999999]}
+              value={filters.priceUsd ?? [100, Math.ceil(max.priceUsd || 0) || 99999999]}
             />
 
           </List>
