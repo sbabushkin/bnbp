@@ -7,7 +7,7 @@ import { JwtAuthGuard, NoAuth } from '../auth/auth-jwt.guard';
 import { ParserBaseService } from './parser.base.service';
 import { Property } from './entities/property.entity';
 import { UpdatePropertyInput } from './dto/update-property.input';
-import {ParserService} from "./parser.service";
+import { ParserService } from "./parser.service";
 
 @Resolver(() => Property)
 // @UseGuards(JwtAuthGuard, PermissionsGuard)

@@ -30,7 +30,7 @@ import { ApplicationStatusModule } from './applicationStatus/applicationStatus.m
 import { PG_AUTH_ERROR_CODE } from './postgraphile/error-codes';
 import { ParserModule } from "./parser/parser.module";
 import { CurrencyModule } from "./currency/currency.module";
-import {ScheduleModule} from "@nestjs/schedule";
+import { ScheduleModule } from "@nestjs/schedule";
 
 @Module({
 

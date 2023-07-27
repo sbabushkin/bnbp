@@ -22,8 +22,8 @@ import { VillabalisaleService } from "./services/villabalisale.service";
 import { SuasarealestateService } from "./services/suasarealestate.service";
 import { PowerbaliService } from "./services/powerbali.service";
 import { OptimumbaliService } from "./services/optimumbali.service";
-import { Cron, CronExpression } from "@nestjs/schedule";
-import {Property} from "./entities/property.entity";
+import { Cron } from "@nestjs/schedule";
+import { Property } from "./entities/property.entity";
 
 const everySundayCronExp = '0 0 * * 0';
 
