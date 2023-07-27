@@ -114,14 +114,9 @@ export class FazwazService extends ParserService {
       }
     }
 
-
     // get pool
     const poolSelector = 'img[src*="relax.png"]';
     const poolExists = parsedContent.querySelector(poolSelector);
-
-    // get bathrooms
-    const bathroomsSelector = '.property-detail-baths';
-    const bathrooms = parsedContent.querySelector(bathroomsSelector)?.text;
 
     const itemUrlId =  itemUrl.slice(0, -1).split('/').pop();
 
@@ -148,5 +143,4 @@ export class FazwazService extends ParserService {
     // propertyObj['photos'] = imgArr[0];
     return propertyObj;
   }
-
 }
