@@ -77,6 +77,18 @@ export const FiltersDrawer: React.FC = () => {
             <ListItem>
               <ListItemText><strong>Filters</strong></ListItemText>
             </ListItem>
+
+            <ListItem>
+              <div>
+                <span>Invalid/Valid <br/></span>
+                <Switch
+                  value={filters.isValid}
+                  defaultChecked={filters.isValid}
+                  onChange={(event)=>propAct.upValid(event.target.checked)}
+                />
+              </div>
+            </ListItem>
+
             <ListItem>
               <Autocomplete
                 multiple
@@ -88,17 +100,6 @@ export const FiltersDrawer: React.FC = () => {
                 onChange={(_, value) => propAct.upType(value)}
                 renderInput={(params) => (<TextField {...params} label="Property type" placeholder="type" />)}
               />
-            </ListItem>
-
-            <ListItem>
-            <div>
-              <span>Invalid/Valid <br/></span>
-              <Switch 
-                value={filters.isValid} 
-                defaultChecked={filters.isValid}
-                onChange={(event)=>propAct.upValid(event.target.checked)}
-              />
-            </div>
             </ListItem>
 
             <ListItem>
