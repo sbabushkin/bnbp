@@ -26,6 +26,7 @@ interface PropertyStore {
     upPrice: (value: [number, number]) => void;
     upOwnership: (newOptions: FilterOwnershipOption[]) => void;
     upSource: (newSourceOptions: FilterSourceOption[]) => void;
+    upValid: (value: boolean) => void;
     reset: () => void;
     fetchData: () => void;
     updateProperty: (input: UpdatePropertyInput) => void;
@@ -40,6 +41,7 @@ const initialFilters: FilterType = {
   bathroomsCount: [],
   priceUsd: null,
   ownership: [],
+  isValid: true
 }
 
 export const usePropertyStore = create<PropertyStore>()(
@@ -57,6 +59,7 @@ export const usePropertyStore = create<PropertyStore>()(
         upRoomCount: (num, type) => set((state) => ({
            filters: {...state.filters, [type]: num} 
         })),
+        upValid: (value) => set((state)=> ({filters: {...state.filters, isValid: value}})),
         upPrice: (value) => set((state) => ({ filters: {...state.filters, priceUsd: value} })),
         upOwnership: (newOptions) => set((state) => ({ filters: {...state.filters, ownership: newOptions} })),
         upSource: (sourceOptions) => set((state) => ({ filters: {...state.filters, source: sourceOptions} })),

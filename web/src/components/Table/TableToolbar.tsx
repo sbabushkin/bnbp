@@ -47,6 +47,11 @@ export default function TableToolbar() {
 
 
         <div className={styles.avg_wrapper}>
+          
+          <Typography variant="caption">
+              <strong>Data:</strong> {filters.isValid ? "Valid" : "Invalid"}
+          </Typography>
+
           { filters.type.length > 0 &&
             <Typography variant="caption">
               <strong>Property type:</strong> {filters.type.join(', ')}

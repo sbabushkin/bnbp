@@ -9,10 +9,11 @@ import TextField from '@mui/material/TextField';
 import Divider from '@mui/material/Divider';
 import RangeSlide from './RangeSlide';
 import Stack from '@mui/material/Stack';
-import { Autocomplete, Chip, ListSubheader } from '@mui/material';
+import { Autocomplete, Chip, ListSubheader, Switch } from '@mui/material';
 import { usePropertyStore } from '../store/propertyStore';
 import { locationOptions, propertyTypeOptions } from '../helpers/constants';
 import { FilterOwnershipOption } from '../store/filterTypes';
+
 
 const boxStyles = {
   width: 320,
@@ -76,6 +77,18 @@ export const FiltersDrawer: React.FC = () => {
             <ListItem>
               <ListItemText><strong>Filters</strong></ListItemText>
             </ListItem>
+
+            <ListItem>
+              <div>
+                <span>Invalid/Valid <br/></span>
+                <Switch
+                  value={filters.isValid}
+                  defaultChecked={filters.isValid}
+                  onChange={(event)=>propAct.upValid(event.target.checked)}
+                />
+              </div>
+            </ListItem>
+
             <ListItem>
               <Autocomplete
                 multiple

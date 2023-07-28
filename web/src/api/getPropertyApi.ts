@@ -9,7 +9,7 @@ export interface MaxValues {
 }
 
 export const propertiesQuery = gql`
-  query GetProperties($filter: PropertyFilter) {
+  query GetProperties($filter: PropertyFilter, $isValid: Boolean) {
     
     currencyRates(first:1, orderBy: CREATED_DESC, filter: {
       from: {
@@ -24,7 +24,7 @@ export const propertiesQuery = gql`
     
     stats: propertiesConnection(filter: {
       isValid: {
-        equalTo: true
+        equalTo: $isValid
       }
     }) {
       sources: groupedAggregates(groupBy: SOURCE) {
@@ -83,26 +83,26 @@ type FilterQuery = {
   bedroomsCount?:  { in: number[] };
   bathroomsCount?:  { in: number[] };
   priceUsd?: { lessThanOrEqualTo: number; greaterThanOrEqualTo: number; };
-  isValid?: { equalTo: boolean; };
+  isValid: { equalTo: boolean; };
 }
 
 export const fetchDataApi = async (filterStore: FilterType) => {
   const queryFilter: FilterQuery = {
-    isValid: { equalTo: true },
     ...(filterStore.type.length ? { propertyType: { in: filterStore.type } } : {}),
     ...(filterStore.ownership.length ? { ownership: { in: filterStore.ownership } } : {}),
     ...(filterStore.source.length ? { source: { in: filterStore.source.map((item)=> item.keys[0]) } } : {}),
     ...(filterStore.locations.length ? { location: { in: filterStore.locations.map(({value}) => value) } } : {}),
     ...(filterStore.bedroomsCount?.length ? { bedroomsCount: { in: filterStore.bedroomsCount } } : {}),
     ...(filterStore.bathroomsCount?.length ? { bathroomsCount: { in: filterStore.bathroomsCount } } : {}),
+    ...({isValid: {equalTo: filterStore.isValid}}),
     ...(filterStore.priceUsd ? {
       priceUsd: { lessThanOrEqualTo: filterStore.priceUsd[0], greaterThanOrEqualTo: filterStore.priceUsd[1] }
     } : {}),
   }
 
-  const data = await apolloQuery<any, { filter?: FilterQuery }>({
+  const data = await apolloQuery<any, { filter?: FilterQuery, isValid?: boolean }>({
     query: propertiesQuery,
-    variables: Object.keys(queryFilter).length ? { filter: queryFilter } : {},
+    variables: Object.keys(queryFilter).length ? { filter: queryFilter, isValid: queryFilter.isValid.equalTo } : { isValid: queryFilter.isValid.equalTo },
   });
 
   return {
