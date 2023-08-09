@@ -17,6 +17,7 @@ export const propertyMutation = gql`
       buildingSize
       priceIdr
       priceUsd
+      leaseExpiryYear
     }
   }
 `;
@@ -31,6 +32,7 @@ export type UpdatePropertyInput = {
   buildingSize?: number;
   priceIdr?: number;
   priceUsd?: number;
+  leaseExpiryYear?: number;
 }
 
 export const updatePropertyApi = async (input: UpdatePropertyInput) => {

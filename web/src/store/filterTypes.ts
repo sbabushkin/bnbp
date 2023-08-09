@@ -59,6 +59,7 @@ export interface FilterType {
     value: string;
     groupBy: string;
   }[];
+  isValid: boolean;
   bedroomsCount?: number[];
   bathroomsCount?: number[];
   priceUsd: [number, number] | null;
