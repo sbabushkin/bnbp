@@ -7565,6 +7565,7 @@ input UpdatePropertyInput {
   buildingSize: Float
   id: String!
   landSize: Float
+  leaseExpiryYear: Int
   location: String
   ownership: String
   priceIdr: Float

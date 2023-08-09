@@ -48,6 +48,7 @@ export const PropertyForm: FC<PropertyFormType> = ({ openId, setOpenId }) => {
       ...(form.buildingSize ? { buildingSize: Number(form.buildingSize) } : {}),
       ...(form.priceIdr ? { priceIdr: Number(form.priceIdr) } : {}),
       ...(form.priceUsd ? { priceUsd: Number(form.priceUsd) } : {}),
+      ...(form.leaseExpiryYear ? { leaseExpiryYear: Number(form.leaseExpiryYear) } : {}),
     }
     if(Object.values(input).length > 1) {
       updateProperty(input)
