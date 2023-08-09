@@ -2,12 +2,12 @@ import { parse } from 'node-html-parser';
 import axios from 'axios';
 import { v4 } from 'uuid';
 import { parseNumeric, parsePrice, parseSquare } from "../../helpers/common.helper";
-import { ParserService } from "../parser.service";
+import { ParserBaseService } from "../parser.base.service";
 import { getYear } from 'date-fns';
 import { CurrencyRate } from "../../currency/entities/currency.entity";
 
 
-export class VillabalisaleService extends ParserService {
+export class VillabalisaleService extends ParserBaseService {
 
 	public async parse() {
 

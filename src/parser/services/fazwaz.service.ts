@@ -3,12 +3,12 @@ import axios from 'axios';
 import { Property } from "../entities/property.entity";
 import { v4 } from 'uuid';
 import { parseNumeric, parseSquare } from "../../helpers/common.helper";
-import { ParserService } from "../parser.service";
+import { ParserBaseService } from "../parser.base.service";
 import { CurrencyRate } from "../../currency/entities/currency.entity";
 import {getYear} from "date-fns";
 
 
-export class FazwazService extends ParserService {
+export class FazwazService extends ParserBaseService {
 
   public async parse() {
 

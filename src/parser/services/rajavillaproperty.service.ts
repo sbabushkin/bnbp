@@ -2,11 +2,11 @@ import { parse } from 'node-html-parser';
 import axios from 'axios';
 import { v4 } from 'uuid';
 import { parseNumeric } from "../../helpers/common.helper";
-import { ParserService } from "../parser.service";
+import { ParserBaseService } from "../parser.base.service";
 import { getYear } from "date-fns";
 
 
-export class RajavillapropertyService extends ParserService {
+export class RajavillapropertyService extends ParserBaseService {
 
   public async parse() {
 

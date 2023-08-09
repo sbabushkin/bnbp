@@ -3,11 +3,11 @@ import axios from 'axios';
 import { Property } from "../entities/property.entity";
 import { v4 } from 'uuid';
 import { parseNumeric } from "../../helpers/common.helper";
-import { ParserService } from "../parser.service";
+import { ParserBaseService } from "../parser.base.service";
 import { CurrencyRate } from "../../currency/entities/currency.entity";
 
 
-export class BalicoconutlivingService extends ParserService {
+export class BalicoconutlivingService extends ParserBaseService {
 
   public async parse() {
     let page = 1;
