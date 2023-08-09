@@ -12,23 +12,51 @@ export class BaliexceptionService extends ParserService {
 
   public async parse() {
 
-    let page = 1;
+    let page = 2;
 
     // TODO: move to service
     const currentRate = await CurrencyRate.query().where({ from: 'USD'}).orderBy('created', 'desc').first();
 
+    // Первая страница парсится только отдельно
+    const listUrl = `https://baliexception.com/buy/`;
+    const listResp = await axios.get(listUrl);
+    const parsedContentList = parse(listResp.data);
+    const propertiesClass = '.item-title > a';
+    const propertiesUrlArr = parsedContentList
+      .querySelectorAll(propertiesClass)
+      .map(item => item.getAttribute('href'));
+
+    console.log(listUrl, propertiesUrlArr.length);
+    const data = [];
+
+    for (const url of propertiesUrlArr) {
+      const item = await this.parseItem(url, currentRate);
+      data.push(item);
+    }
+
+    await this.loadToDb(data);
+
+    let counter = 0;
+
     while (true) {
-      const listUrl = `https://baliexception.com/page/${page}`;
+      let listUrl = `https://baliexception.com/buy/page/${page}/`;
       const listResp = await axios.get(listUrl);
       const parsedContentList = parse(listResp.data);
-      const propertiesClass = '.item-title a';
+      const propertiesClass = '.item-title > a';
       const propertiesUrlArr = parsedContentList
         .querySelectorAll(propertiesClass)
         .map(item => item.getAttribute('href'));
 
       console.log(listUrl, propertiesUrlArr.length);
 
-      if (!propertiesUrlArr.length) break;
+      if (counter > 15) break;
+
+      if (!propertiesUrlArr.length) {
+        counter += 1;
+        continue;
+      }
+
+
 
       const data = [];
 
@@ -47,76 +75,57 @@ export class BaliexceptionService extends ParserService {
     const respItem = await axios.get(itemUrl);
     const parsedContent = parse(respItem.data);
 
-    // get name
-    const propertyNameSelector = '#stitle';
-    const listingName = parsedContent.querySelector(propertyNameSelector)?.text;
+    const ownership = itemUrl.split('/')[4];
 
-    // get ownership
-    const ownershipSelector = 'span.key-icon';
-    const ownership = parsedContent.querySelector(ownershipSelector)?.text.toLowerCase();
+    const mainInfoSelector = '.detail-wrap > ul > li';
+    const infoTable = parsedContent.querySelectorAll(mainInfoSelector);
 
-    // get land size
-    const landSizeSelector = 'span.ruler-icon';
-    const landSize = parsedContent.querySelector(landSizeSelector)?.text;
+    const infoObj = {};
+    let yearsLeft;
+    let poolExists: boolean;
+    infoTable.forEach(el => {
+      const keys = el.text.trim().split('\n');
+      if (keys.length > 1) {
+        const key = keys[0].replace('\r', '').trim();
+        infoObj[key] = keys[1].replace('\r', '').trim();
+      }
+      if(keys[0].includes('Pool Size')) poolExists = true;
+      if(keys[0].includes('Leasehold')) yearsLeft = parseInt(keys[0].split(' ')[1]);
+    });
 
-    // get building size
-    const buildingSizeSelector = 'span.buildingsize';
-    const buildingSize = parsedContent.querySelector(buildingSizeSelector)?.text;
 
-    // get bedrooms
-    const bedroomsSelector = 'span.bed-icon';
-    const bedrooms = parsedContent.querySelector(bedroomsSelector)?.text;
+    const propertyLocationSelector = '.elementor-heading-title';
+    const mainTitle = parsedContent.querySelector(propertyLocationSelector)?.text;
+    const location = mainTitle?.split('|')[1].trim();
+    const name = mainTitle?.split('|')[0].trim();
 
-    // get price / years
-    const priceYearsSelector = '.single-price';
-    const priceYears = parsedContent.querySelector(priceYearsSelector)?.text.split('/');
-    let priceIdr = null;
-    let priceUsd = null;
-    let leaseYearsLeft = null;
 
-    if (priceYears) {
-      priceIdr = priceYears[0].indexOf('IDR') >= 0 ? parseNumeric(priceYears[0]) : null;
-      priceUsd = priceYears[0].indexOf('USD') >= 0 ? parseNumeric(priceYears[0]) : null;
-      leaseYearsLeft = parseNumeric(priceYears[1]);
-    }
-
-    // get pool
-    const poolSelector = 'span.swim-icon';
-    const poolExists = parsedContent.querySelector(poolSelector);
-
-    // get bathrooms
-    const bathroomsSelector = 'span.bath-icon';
-    const bathrooms = parsedContent.querySelector(bathroomsSelector)?.text;
-
-    // get location
-    const propertyLocationSelector = '.code-location span span';
-    const location = parsedContent.querySelector(propertyLocationSelector)?.text.trim();
-    const itemUrlId =  itemUrl.slice(0, -1).split('/').pop();
-
-    const imgArr = parsedContent.querySelectorAll('.slides img')
-      .map(item => item.getAttribute('src'));
+    // const imgArr = parsedContent.querySelectorAll('a.test1');
+    // imgArr.forEach(el => {
+    //   console.log(el.attrs);
+    // })
 
     const propertyObj = {};
 
     propertyObj['id'] = v4();
-    propertyObj['externalId'] = itemUrlId;
-    propertyObj['name'] = listingName;
+    propertyObj['externalId'] = infoObj['Property ID'];
+    propertyObj['name'] = name;
     propertyObj['location'] = this.normalizeLocation(location);
     propertyObj['ownership'] = ownership;
-    propertyObj['buildingSize'] = parseNumeric(buildingSize);
-    propertyObj['landSize'] = parseNumeric(landSize);
-    if (leaseYearsLeft) {
-      propertyObj['leaseExpiryYear'] = getYear(new Date()) + parseInt(leaseYearsLeft);
+    propertyObj['buildingSize'] = parseNumeric(infoObj['Property Size']);
+    propertyObj['landSize'] = parseNumeric(infoObj['Land Area']);
+    if (yearsLeft) {
+      propertyObj['leaseExpiryYear'] = getYear(new Date()) + parseInt(yearsLeft);
     }
-    propertyObj['propertyType'] = this.parsePropertyTypeFromTitle(listingName);
-    propertyObj['bedroomsCount'] = parseNumeric(bedrooms);
-    propertyObj['bathroomsCount'] = parseNumeric(bathrooms);
+    propertyObj['propertyType'] = 'villa';
+    propertyObj['bedroomsCount'] = parseNumeric(infoObj['Bedrooms']) || parseNumeric(infoObj['Bedroom']);
+    propertyObj['bathroomsCount'] = parseNumeric(infoObj['Bathrooms']) || parseNumeric(infoObj['Bathroom']);
     propertyObj['pool'] = poolExists ? 'Yes' : 'No';
-    propertyObj['priceIdr'] = priceIdr;
-    propertyObj['priceUsd'] = priceUsd || this.convertToUsd(propertyObj['priceIdr'], currentRate.amount);
+    // propertyObj['priceIdr'] = this.convertToIdr() // TODO: convert to IDR
+    propertyObj['priceUsd'] = parseNumeric(infoObj['Price']);
     propertyObj['url'] = itemUrl;
     propertyObj['source'] = 'baliexception.com';
-    propertyObj['photos'] = imgArr[0];
+    // propertyObj['photos'] = imgArr[0];
     return propertyObj;
   }
 

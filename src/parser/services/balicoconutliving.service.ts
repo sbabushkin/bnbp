@@ -10,52 +10,62 @@ import { CurrencyRate } from "../../currency/entities/currency.entity";
 export class BalicoconutlivingService extends ParserService {
 
   public async parse() {
-
     let page = 1;
 
     // TODO: move to service
     const currentRate = await CurrencyRate.query().where({ from: 'USD'}).orderBy('created', 'desc').first();
+    const categories = ['leasehold', 'freehold'];
 
-    while (true) {
-      const listUrl = `https://balicoconutliving.com/bali-property-sale-freehold-and-leasehold/?page=${page}`;
-      const listResp = await axios.get(listUrl);
-      const parsedContentList = parse(listResp.data);
-      const propertiesClass = '.property-thumb-button a';
-      const propertiesUrlArr = parsedContentList
-        .querySelectorAll(propertiesClass)
-        .map(item =>  {
-          const onclick = item.getAttribute('onclick');
-          const urlPart = onclick
-            .replace('openDetail("', '')
-            .replace('")', '');
-          return `https://balicoconutliving.com${urlPart}`;
-        });
+    for (let category of categories) {
+      while (true) {
+        const listUrl = `https://balicoconutliving.com/bali-villa-sale-${category}/?page=${page}&?type=villa`;
+          const listResp = await axios.get(listUrl, {
+            headers: {
+              'User-Agent': 'Chrome/59.0.3071.115',
+            }
+          });
+          const parsedContentList = parse(listResp.data);
+          const propertiesClass = '.property-thumb-button a';
+          const propertiesUrlArr = parsedContentList
+            .querySelectorAll(propertiesClass)
+            .map(item =>  {
+              const onclick = item.getAttribute('onclick');
+              const urlPart = onclick
+                .replace('openDetail("', '')
+                .replace('")', '');
+              return `https://balicoconutliving.com${urlPart}`;
+            });
 
-      console.log(listUrl, propertiesUrlArr.length);
-      // console.log(listUrl, propertiesUrlArr);
+          console.log(listUrl, propertiesUrlArr.length);
 
-      if (!propertiesUrlArr.length) break; // TODO: think about break;
+          if (!propertiesUrlArr.length) break; // TODO: think about break;
 
-      // const url = 'https://bali-home-immo.com/realestate-property/for-rent/villa/monthly/seminyak/5-bedroom-villa-for-rent-and-sale-in-bali-seminyak-ff039'
-      // const url = propertiesUrlArr[1]
-      // const data: any = await this.parseItem(url);
+          // const url = 'https://bali-home-immo.com/realestate-property/for-rent/villa/monthly/seminyak/5-bedroom-villa-for-rent-and-sale-in-bali-seminyak-ff039'
+          // const url = propertiesUrlArr[1]
+          // const data: any = await this.parseItem(url);
 
-      // const data: any = await Promise.all(propertiesUrlArr.map(url => this.parseItem(url)));
-      const data = [];
+          // const data: any = await Promise.all(propertiesUrlArr.map(url => this.parseItem(url)));
+          const data = [];
 
-      for (const url of propertiesUrlArr) {
-        const item = await this.parseItem(url, currentRate);
-        data.push(item);
+          for (const url of propertiesUrlArr) {
+            const item = await this.parseItem(url, currentRate);
+            data.push(item);
+          }
+
+          await this.loadToDb(data);
+          page += 1;
       }
-
-      await this.loadToDb(data);
-      page += 1;
     }
     return 'ok';
   }
 
+
   private async parseItem(itemUrl, currentRate) {
-    const respItem = await axios.get(itemUrl);
+    const respItem = await axios.get(itemUrl, {
+      headers: {
+        'User-Agent': 'Chrome/59.0.3071.115',
+      }
+    });
     const parsedContent = parse(respItem.data);
 
     // get name
@@ -65,7 +75,6 @@ export class BalicoconutlivingService extends ParserService {
     // get priceIdr
     const priceIdrSelector = '.pills-price-content p';
     const priceIdr = parsedContent.querySelector(priceIdrSelector)?.text;
-
     const infoValues = parsedContent
       .querySelectorAll('ul.list-detail li span')
       .map(item => item.text);

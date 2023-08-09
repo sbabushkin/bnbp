@@ -7,10 +7,11 @@ import {Property} from "../entities/property.entity";
 import {PropertyPrice} from "../entities/property_price.entity";
 import { CurrencyRate } from "../../currency/entities/currency.entity";
 
+// Сайт выкидывает 500 на странице виллы 
 export class AnniedeanpropertiesService extends ParserService { // TODO: resourse doesnt work properly
 
 	public async parse() {
-		const categories = ['leasehold', 'freehold', 'rental'];
+		const categories = ['leasehold', 'freehold'];
 		let listUrl = '';
 		const propertiesUrlArr = [];
 
@@ -18,12 +19,12 @@ export class AnniedeanpropertiesService extends ParserService { // TODO: resours
 		const currentRate = await CurrencyRate.query().where({ from: 'USD'}).orderBy('created', 'desc').first();
 
 		for (let category of categories) {
-			listUrl = `https://anniedeanproperties.com/filters?type=villa&category=${category}&roomrange1=1&roomrange2=10&range1=1&range2=999`
+			listUrl = `https://anniedeanproperties.com/filters?type=villa&category=${category}&location_area=all&roomrange1=1&roomrange2=10&range1=1000&range2=100000`
 			const listResp = await axios.get(listUrl);
 			const parsedContentList = parse(listResp.data);
-			const propertiesClass = '.search-list';
+			const propertiesClass = 'ul > li';
 			parsedContentList.querySelectorAll(propertiesClass).forEach(el => {
-				propertiesUrlArr.push(el.querySelector('.listing').attrs.href);
+				propertiesUrlArr.push(el.querySelector('a').attrs.href);
 			});
 			console.log(listUrl, propertiesUrlArr.length);
 		}
