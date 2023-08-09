@@ -42,7 +42,8 @@ export class LazudiService extends ParserService {
   }
 
   private async parseItem(itemUrl, currentRate) {
-    const respItem = await axios.get(itemUrl);
+    const correctUrl = encodeURI(itemUrl);
+    const respItem = await axios.get(correctUrl);
     const parsedContent = parse(respItem.data);
 
     // get name
