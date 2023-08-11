@@ -22,7 +22,6 @@ export class ParserBaseService {
   private sheets;
 
   checkIsValid(item: any) { // TODO: types
-    console.log(item);
     let isValid = true;
 
     if (!item.ownership) isValid = false;

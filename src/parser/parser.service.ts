@@ -132,7 +132,7 @@ export class ParserService {
 		}
 	}
 
-	// @Cron(CronExpression.EVERY_10_SECONDS)
+
 	@Cron(everySundayCronExp)
 	async parseAll() {
 		const sources = [
