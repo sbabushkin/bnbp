@@ -86,10 +86,10 @@ export class PropertiabaliService extends ParserBaseService {
     propertyObj['buildingSize'] = parseSquare(details['Building size']);
     propertyObj['landSize'] = parseSquare(details['Land size']) * 100;
 
-    const leaseYearsLeft = parseNumeric(details['Years']);
+    const leaseYearsLeft = parseInt(details['Years']?.replace(',', ' ')?.replace('.', ' '));
 
     if (leaseYearsLeft) {
-      propertyObj['leaseExpiryYear'] = getYear(new Date()) + parseInt(leaseYearsLeft);
+      propertyObj['leaseExpiryYear'] = getYear(new Date()) + leaseYearsLeft;
     }
     propertyObj['propertyType'] = this.parsePropertyTypeFromTitle(listingName);
     propertyObj['bedroomsCount'] = parseInt(bedrooms) ? parseInt(bedrooms) : undefined;

@@ -62,12 +62,14 @@ export class VillabalisaleService extends ParserBaseService {
 					const landSizeStr = el.querySelector('p > span').text.trim();
 					const landSizeInAres = Number(parseFloat(landSizeStr));
 					infoObj['landSize'] = landSizeInAres * 100;
-					infoObj['buildingSize'] = parseNumeric(el.querySelectorAll('p')[1].text.trim());
+					const buildingSizeStr = el.querySelectorAll('p')[1].text.trim();
+					const matches = buildingSizeStr.match(/[+-]?([0-9]*[.])?[0-9]+/);
+					infoObj['buildingSize'] = matches?.length ? matches[0] : undefined;
 					break;
 				case 'info_outline':
 					const paragraphs = el.querySelectorAll('p');
 					infoObj['ownership'] = paragraphs[0].text.trim().replace(' ', '');
-					infoObj['leaseYearsLeft'] = parseNumeric(paragraphs[1].text.trim());
+					infoObj['leaseYearsLeft'] = parseInt(paragraphs[1].text.trim().slice(1))
 					break;
 				case '':
 					infoObj['bathroomsCount'] = parseNumeric(el.querySelector('p').text.trim());
@@ -84,7 +86,7 @@ export class VillabalisaleService extends ParserBaseService {
 			return el.querySelector('img').getAttribute('src');
 		});
 
-		const leaseYearsLeft = parseInt(infoObj['leaseYearsLeft']) || 0;
+		const leaseYearsLeft = infoObj['leaseYearsLeft'];
 
 		const propertyObj = {};
 		propertyObj['id'] = v4();
@@ -98,7 +100,7 @@ export class VillabalisaleService extends ParserBaseService {
 		if (leaseYearsLeft) {
 			propertyObj['leaseExpiryYear'] = getYear(new Date()) + leaseYearsLeft;
 		}
-		// propertyObj['leaseYearsLeft'] = infoObj['leaseYearsLeft'] ? infoObj['leaseYearsLeft'] : undefined;
+
 		propertyObj['propertyType'] = this.parsePropertyTypeFromTitle(name);
 		propertyObj['bedroomsCount'] = infoObj['bedroomsCount'];
 		propertyObj['bathroomsCount'] = infoObj['bathroomsCount'];
@@ -109,7 +111,6 @@ export class VillabalisaleService extends ParserBaseService {
 		propertyObj['source'] = 'villabalisale.com';
 		propertyObj['photos'] = imgArr[0];
 		propertyObj['isValid'] = this.checkIsValid(propertyObj);
-		console.log(propertyObj);
 		return propertyObj;
 	}
 }

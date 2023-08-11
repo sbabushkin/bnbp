@@ -10,7 +10,7 @@ export class RajavillapropertyService extends ParserBaseService {
 
   public async parse() {
 
-    let page = 9;
+    let page = 1;
 
     // // TODO: move to service
     // const currentRate = await CurrencyRate.query().where({ from: 'USD'}).orderBy('created', 'desc').first();

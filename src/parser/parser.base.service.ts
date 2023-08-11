@@ -159,7 +159,7 @@ export class ParserBaseService {
     const existedRows = await Property.query().whereIn(
       ['source', 'external_id'],
       bindings
-    );    
+    );
 
     const existedRowsMap = existedRows.reduce((map, item) => {
       map[item.externalId] = item;

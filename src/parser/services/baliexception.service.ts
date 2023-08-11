@@ -132,7 +132,6 @@ export class BaliexceptionService extends ParserBaseService {
     propertyObj['source'] = 'baliexception.com';
     // propertyObj['photos'] = imgArr[0];
     propertyObj['isValid'] = this.checkIsValid(propertyObj);
-    console.log(propertyObj);
     return propertyObj;
   }
 
