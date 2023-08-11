@@ -22,6 +22,7 @@ export class ParserBaseService {
   private sheets;
 
   checkIsValid(item: any) { // TODO: types
+    console.log(item);
     let isValid = true;
 
     if (!item.ownership) isValid = false;
@@ -29,6 +30,13 @@ export class ParserBaseService {
     if (item.ownership && item.ownership === 'leasehold' && !item.leaseExpiryYear) {
       console.log('leaseExpiryYear does not exists');
       isValid = false;
+    }
+
+    if (item.leaseExpiryYear && item.ownership === 'leasehold') {
+      if (String(item.leaseExpiryYear).length > 4) {
+        isValid = false;
+        console.log('invalid leaseExpiryYear');
+      }
     }
 
     if (item.propertyType !== 'land' && !item.buildingSize) {
@@ -152,7 +160,7 @@ export class ParserBaseService {
     const existedRows = await Property.query().whereIn(
       ['source', 'external_id'],
       bindings
-    );
+    );    
 
     const existedRowsMap = existedRows.reduce((map, item) => {
       map[item.externalId] = item;

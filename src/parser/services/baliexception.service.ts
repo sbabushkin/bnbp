@@ -84,10 +84,10 @@ export class BaliexceptionService extends ParserBaseService {
     let yearsLeft;
     let poolExists: boolean;
     infoTable.forEach(el => {
-      const keys = el.text.trim().split('\n');
+      const keys = el.text?.trim().split('\n');
       if (keys.length > 1) {
-        const key = keys[0].replace('\r', '').trim();
-        infoObj[key] = keys[1].replace('\r', '').trim();
+        const key = keys[0].replace('\r', '')?.trim();
+        infoObj[key] = keys[1].replace('\r', '')?.trim();
       }
       if(keys[0].includes('Pool Size')) poolExists = true;
       if(keys[0].includes('Leasehold')) yearsLeft = parseInt(keys[0].split(' ')[1]);
@@ -96,21 +96,26 @@ export class BaliexceptionService extends ParserBaseService {
 
     const propertyLocationSelector = '.elementor-heading-title';
     const mainTitle = parsedContent.querySelector(propertyLocationSelector)?.text;
-    const location = mainTitle?.split('|')[1].trim();
-    const name = mainTitle?.split('|')[0].trim();
+    const location = mainTitle?.split('|')[1]?.trim();
+    const name = mainTitle?.split('|')[0]?.trim();
 
 
     // const imgArr = parsedContent.querySelectorAll('a.test1');
     // imgArr.forEach(el => {
     //   console.log(el.attrs);
     // })
+    const bathrooms = infoObj['Bathrooms'] || infoObj['Bathroom']
+    const bathroomsCount = parseInt(bathrooms.replace('.', ' ').replace(',', ' '));
 
+    const bedrooms = infoObj['Bedrooms'] || infoObj['Bedroom'];
+    const bedroomsCount = parseInt(bedrooms.replace('.', ' ').replace(',', ' '));
+  
     const propertyObj = {};
 
     propertyObj['id'] = v4();
     propertyObj['externalId'] = infoObj['Property ID'];
     propertyObj['name'] = name;
-    propertyObj['location'] = this.normalizeLocation(location);
+    propertyObj['location'] = location ? this.normalizeLocation(location) : undefined;
     propertyObj['ownership'] = ownership;
     propertyObj['buildingSize'] = parseNumeric(infoObj['Property Size']);
     propertyObj['landSize'] = parseNumeric(infoObj['Land Area']);
@@ -118,14 +123,16 @@ export class BaliexceptionService extends ParserBaseService {
       propertyObj['leaseExpiryYear'] = getYear(new Date()) + parseInt(yearsLeft);
     }
     propertyObj['propertyType'] = 'villa';
-    propertyObj['bedroomsCount'] = parseNumeric(infoObj['Bedrooms']) || parseNumeric(infoObj['Bedroom']);
-    propertyObj['bathroomsCount'] = parseNumeric(infoObj['Bathrooms']) || parseNumeric(infoObj['Bathroom']);
+    propertyObj['bedroomsCount'] = bedroomsCount ? bathroomsCount : undefined;
+    propertyObj['bathroomsCount'] = bathroomsCount ? bathroomsCount : undefined;
     propertyObj['pool'] = poolExists ? 'Yes' : 'No';
     // propertyObj['priceIdr'] = this.convertToIdr() // TODO: convert to IDR
     propertyObj['priceUsd'] = parseNumeric(infoObj['Price']);
     propertyObj['url'] = itemUrl;
     propertyObj['source'] = 'baliexception.com';
     // propertyObj['photos'] = imgArr[0];
+    propertyObj['isValid'] = this.checkIsValid(propertyObj);
+    console.log(propertyObj);
     return propertyObj;
   }
 

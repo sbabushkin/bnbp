@@ -141,6 +141,7 @@ export class FazwazService extends ParserBaseService {
     propertyObj['url'] = itemUrl;
     propertyObj['source'] = 'fazwaz.id';
     // propertyObj['photos'] = imgArr[0];
+    propertyObj['isValid'] = this.checkIsValid(propertyObj);
     return propertyObj;
   }
 }

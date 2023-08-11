@@ -100,7 +100,7 @@ export class SuasarealestateService extends ParserBaseService {
 		propertyObj['url'] = itemUrl;
 		propertyObj['source'] = 'suasarealestate.com';
 		propertyObj['photos'] = img;
-		console.log(propertyObj);
+		propertyObj['isValid'] = this.checkIsValid(propertyObj);
 		return propertyObj;
 	}
 

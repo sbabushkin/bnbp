@@ -4,6 +4,7 @@ import { v4 } from 'uuid';
 import { parseNumeric } from "../../helpers/common.helper";
 import { ParserBaseService } from "../parser.base.service";
 import { CurrencyRate } from "../../currency/entities/currency.entity";
+import { getYear } from 'date-fns';
 
 export class BalivillasalesService extends ParserBaseService {
 
@@ -33,11 +34,10 @@ export class BalivillasalesService extends ParserBaseService {
       for (const url of propertiesUrlArr) {
         const item = await this.parseItem(url, currentRate);
         data.push(item);
-        break;
       }
+
       await this.loadToDb(data);
       page += 1;
-      break;
     }
     return 'ok';
   }
@@ -71,7 +71,7 @@ export class BalivillasalesService extends ParserBaseService {
     const priceYears = parsedContent.querySelector(priceYearsSelector)?.text.split('/');
     const priceIdr = priceYears[0].indexOf('IDR') >= 0 ? parseNumeric(priceYears[0]) : null;
     const priceUsd = priceYears[0].indexOf('USD') >= 0 ? parseNumeric(priceYears[0]) : null;
-    const leaseYearsLeft = parseNumeric(priceYears[1]);
+    const leaseYearsLeft = parseInt(priceYears[1]);
 
     // get pool
     const poolSelector = 'span.swim-icon';
@@ -100,8 +100,11 @@ export class BalivillasalesService extends ParserBaseService {
     propertyObj['name'] = listingName;
     propertyObj['location'] = this.normalizeLocation(location);
     propertyObj['ownership'] = ownership;
-    propertyObj['buildingSize'] = parseNumeric(buildingSize);
-    propertyObj['landSize'] = parseNumeric(landSize);
+    propertyObj['buildingSize'] = parseNumeric(buildingSize?.replace('m2', ''));
+    propertyObj['landSize'] = parseNumeric(landSize?.replace('m2', ''));
+    if (leaseYearsLeft) {
+      propertyObj['leaseExpiryYear'] = getYear(new Date()) + leaseYearsLeft;
+    }
     // propertyObj['leaseYearsLeft'] = leaseYearsLeft;
     propertyObj['propertyType'] = this.parsePropertyTypeFromTitle(listingName);
     propertyObj['bedroomsCount'] = parseNumeric(bedrooms);
@@ -112,6 +115,7 @@ export class BalivillasalesService extends ParserBaseService {
     propertyObj['url'] = itemUrl;
     propertyObj['source'] = 'balivillasales.com';
     propertyObj['photos'] = imgArr[0];
+    propertyObj['isValid'] = this.checkIsValid(propertyObj);
     return propertyObj;
   }
 

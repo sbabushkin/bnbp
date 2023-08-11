@@ -4,6 +4,7 @@ import { v4 } from 'uuid';
 import { parseNumeric, parseSquare, parseText } from "../../helpers/common.helper";
 import { ParserBaseService } from "../parser.base.service";
 import { CurrencyRate } from "../../currency/entities/currency.entity";
+import { getYear } from 'date-fns';
 
 
 export class PowerbaliService extends ParserBaseService {
@@ -98,7 +99,8 @@ export class PowerbaliService extends ParserBaseService {
 		})
 
 		const matches = infoObj['Leasehold Period']?.match(/\d{4}/g);
-		if (matches?.length) infoObj['leaseExpiryYear'] = matches[0];
+		const matchesYears = infoObj['Leasehold Period']?.match(/\d{2} years/g);
+		if (matches?.length) infoObj['leaseExpiryYear'] = matches[0] || getYear(new Date()) + parseInt(matchesYears[0]);
 
 		let buildingSize = parseNumeric(infoObj['House size']?.split(' And ')[0]?.split(' - ')[0]);
 		let landSize = parseNumeric(infoObj['Land size']?.split(' And ')[0]?.split(' - ')[0]);
@@ -123,7 +125,7 @@ export class PowerbaliService extends ParserBaseService {
 		propertyObj['url'] = itemUrl;
 		propertyObj['source'] = 'powerbali.com';
 		propertyObj['photos'] = imgArr[0];
-		console.log(propertyObj);
+		propertyObj['isValid'] = this.checkIsValid(propertyObj);
 		return propertyObj;
 	}
 }

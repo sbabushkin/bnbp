@@ -10,7 +10,7 @@ export class RajavillapropertyService extends ParserBaseService {
 
   public async parse() {
 
-    let page = 75;
+    let page = 9;
 
     // // TODO: move to service
     // const currentRate = await CurrencyRate.query().where({ from: 'USD'}).orderBy('created', 'desc').first();
@@ -104,10 +104,12 @@ export class RajavillapropertyService extends ParserBaseService {
     propertyObj['bathroomsCount'] = details['Baths'] ? parseInt(details['Baths']) : undefined;
     propertyObj['pool'] = poolExists ? 'Yes' : 'No';
     // propertyObj['priceIdr'] = priceIdr;
-    propertyObj['priceUsd'] = parseNumeric(priceUsd) ? parseNumeric(priceUsd) : undefined;
+    const priceNum = priceUsd ? parseNumeric(priceUsd.split('/')[0]) : undefined;
+    propertyObj['priceUsd'] = priceNum ? priceNum : undefined;
     propertyObj['url'] = itemUrl;
     propertyObj['source'] = 'rajavillaproperty.com';
     propertyObj['photos'] = imgArr[3];
+    propertyObj['isValid'] = this.checkIsValid(propertyObj);
     return propertyObj;
   }
 }

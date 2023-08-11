@@ -5,6 +5,7 @@ import parse from "node-html-parser";
 import { v4 } from 'uuid';
 import { getYear } from "date-fns";
 import { CurrencyRate } from "../../currency/entities/currency.entity";
+import e from "express";
 
 export class OptimumbaliService extends ParserBaseService {
 
@@ -51,12 +52,15 @@ export class OptimumbaliService extends ParserBaseService {
 
 		const infoObj = {};
 		parsedContent.querySelectorAll('.property_custom_detail_wrapper').forEach(el => {
-			if(el.text.indexOf(':') !== -1) {
+			if (el.text.indexOf('±') >= 0) {
+				infoObj['priceUsd'] = el.text.trim().slice(-3) === 'USD' ? parseNumeric(el.text.trim()) : undefined;
+			}
+			if (el.text.indexOf(':') !== -1) {
 				const pairStr = el.text.trim().replace(/\n/g, '');
 				const elemsArr = pairStr.split(':');
 				infoObj[elemsArr[0].trim()] = elemsArr[1];
 			}
-			if(el.text.indexOf('±') === -1 && el.text.split(' | ').length === 3) {
+			if (el.text.indexOf('±') === -1 && el.text.split(' | ').length === 3) {
 				const [externalId, name, fullLocation] = el.text.split(' | ');
 				infoObj['externalId'] = externalId.trim();
 				infoObj['name'] = name;
@@ -87,13 +91,25 @@ export class OptimumbaliService extends ParserBaseService {
 		propertyObj['bedroomsCount'] = parseNumeric(infoObj['Bedrooms']);
 		propertyObj['bathroomsCount'] = parseNumeric(infoObj['Bathrooms']);
 		// propertyObj['pool'] = isHavePool ? 'Yes' : 'No'; Не указано
-		const priceUsd = infoObj['Price'].slice(-3) === 'USD' ?  parseNumeric(infoObj['Price'].replace('USD')) : null;
-		propertyObj['priceIdr'] = infoObj['Price'].slice(-3) === 'IDR' ?  parseNumeric(infoObj['Price'].replace('IDR')) : null;
-		propertyObj['priceUsd'] = priceUsd || this.convertToUsd(propertyObj['priceIdr'], currentRate.amount);
+
+		switch (infoObj['Price'].slice(-3)) {
+			case 'USD':
+				propertyObj['priceUsd'] = parseNumeric(infoObj['Price'].replace('USD'));
+				break;
+			case 'EUR':
+				propertyObj['priceUsd'] = infoObj['priceUsd'] ? infoObj['priceUsd'] : undefined;
+				break;
+			case 'IDR':
+				propertyObj['priceIdr'] = parseNumeric(infoObj['Price'].replace('IDR'));
+				propertyObj['priceUsd'] = this.convertToUsd(propertyObj['priceIdr'], currentRate.amount);
+				break;
+		}
+		
 		// Рандомная валюта на сайте, иногда в евро может быть
 		propertyObj['url'] = itemUrl;
 		propertyObj['source'] = 'optimumbali.com';
 		propertyObj['photos'] = imgArr[0];
+		propertyObj['isValid'] = this.checkIsValid(propertyObj);
 		return propertyObj;
 	}
 }

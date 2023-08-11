@@ -5,6 +5,7 @@ import { v4 } from 'uuid';
 import { parseNumeric } from "../../helpers/common.helper";
 import { ParserBaseService } from "../parser.base.service";
 import { CurrencyRate } from "../../currency/entities/currency.entity";
+import { getYear } from 'date-fns';
 
 
 export class BalicoconutlivingService extends ParserBaseService {
@@ -38,7 +39,7 @@ export class BalicoconutlivingService extends ParserBaseService {
 
           console.log(listUrl, propertiesUrlArr.length);
 
-          if (!propertiesUrlArr.length) break; // TODO: think about break;
+          if (propertiesUrlArr.length < 10) break; // TODO: think about break;
 
           // const url = 'https://bali-home-immo.com/realestate-property/for-rent/villa/monthly/seminyak/5-bedroom-villa-for-rent-and-sale-in-bali-seminyak-ff039'
           // const url = propertiesUrlArr[1]
@@ -94,6 +95,29 @@ export class BalicoconutlivingService extends ParserBaseService {
     const ownershipSelector = '#dd_price_tag';
     const ownership = parsedContent.querySelector(ownershipSelector)?.text.toLowerCase();
 
+    const descTextSelector = 'section.line-section > p';
+    let leaseYearsLeft;
+    let leaseExpYear;
+    const descText = parsedContent.querySelector(descTextSelector)?.text;
+    if (descText) {
+      const sentences = descText.split('.');
+
+      for (let sentence of sentences) {
+        const upperSentence = sentence.toUpperCase();
+        const condition = (upperSentence.includes('LEASEHOLD') || upperSentence.includes('LEASE'));
+
+        if (condition && (upperSentence.includes(' YEARS ') || upperSentence.includes('-YEAR '))) {
+          const numbers = sentence.split(/[^0-9]+/);
+          const yearsLeftIndex = numbers.findIndex((value) => value.length === 2);
+          leaseYearsLeft = yearsLeftIndex > 0 ? numbers[yearsLeftIndex] : undefined;
+          break;
+        } else if (condition && upperSentence.match(/LEASE UNTIL([^]*?)\s\d{4}/)?.length) {
+          leaseExpYear = parseNumeric(upperSentence.match(/LEASE UNTIL([^]*?)\s\d{4}/)[0].match(/\d{4}/)[0]);
+          break;
+        }
+      }
+    }
+
     // get location
     const propertyLocationSelector = '.fa-map-marker';
     const location = parsedContent.querySelector(propertyLocationSelector).parentNode.text.trim();
@@ -109,10 +133,14 @@ export class BalicoconutlivingService extends ParserBaseService {
     propertyObj['externalId'] = itemUrlId;
     propertyObj['name'] = listingName;
     propertyObj['location'] = this.normalizeLocation(location);
-    propertyObj['ownership'] = ownership;
+    propertyObj['ownership'] = ownership.trim();
     propertyObj['buildingSize'] = parseNumeric(info['Building Size:']?.replace('m2'));
     propertyObj['landSize'] = parseNumeric(info['Land Size:']?.replace('m2'));
-    // propertyObj['leaseYearsLeft'] = leaseYearsLeft;
+    if (leaseYearsLeft) {
+      propertyObj['leaseExpiryYear'] = getYear(new Date()) + parseInt(leaseYearsLeft);
+    } else if (leaseExpYear) {
+      propertyObj['leaseExpiryYear'] = leaseExpYear;
+    }
     propertyObj['propertyType'] = this.parsePropertyTypeFromTitle(listingName);
     propertyObj['bedroomsCount'] = parseNumeric(info['Bedroom(s):']);
     propertyObj['bathroomsCount'] = parseNumeric(info['Bathroom(s):']);
@@ -122,6 +150,7 @@ export class BalicoconutlivingService extends ParserBaseService {
     propertyObj['url'] = itemUrl;
     propertyObj['source'] = 'balicoconutliving.com';
     // propertyObj['photos'] = imgArr[0];
+    propertyObj['isValid'] = this.checkIsValid(propertyObj);
     return propertyObj;
   }
 

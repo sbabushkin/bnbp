@@ -93,6 +93,7 @@ export class AnniedeanpropertiesService extends ParserBaseService { // TODO: res
 		propertyObj['url'] = itemUrl;
 		propertyObj['source'] = 'anniedeanproperties.com';
 		propertyObj['photos'] = imgArr[0];
+		propertyObj['isValid'] = this.checkIsValid(propertyObj);
 		return propertyObj;
 	}
 }

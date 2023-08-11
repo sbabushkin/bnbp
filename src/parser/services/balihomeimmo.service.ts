@@ -129,6 +129,7 @@ export class BaliHomeImmoService extends ParserBaseService {
     propertyObj['url'] = itemUrl;
     propertyObj['source'] = 'bali-home-immo.com';
     propertyObj['photos'] = imgArr[0];
+    propertyObj['isValid'] = this.checkIsValid(propertyObj);
     return propertyObj;
   }
 

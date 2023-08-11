@@ -108,6 +108,7 @@ export class VillabalisaleService extends ParserBaseService {
 		propertyObj['url'] = itemUrl;
 		propertyObj['source'] = 'villabalisale.com';
 		propertyObj['photos'] = imgArr[0];
+		propertyObj['isValid'] = this.checkIsValid(propertyObj);
 		console.log(propertyObj);
 		return propertyObj;
 	}

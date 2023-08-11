@@ -87,6 +87,7 @@ export class HarcourtspurbabaliService extends ParserBaseService {
     propertyObj['url'] = itemUrl;
     propertyObj['source'] = 'harcourtspurbabali.com';
     propertyObj['photos'] = imgArr[0];
+    propertyObj['isValid'] = this.checkIsValid(propertyObj);
     return propertyObj;
   }
 

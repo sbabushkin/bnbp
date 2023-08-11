@@ -72,7 +72,7 @@ export class PropertiabaliService extends ParserBaseService {
     const bathrooms = parsedContent.querySelector(bathroomsSelector)?.text;
 
     const itemUrlId =  itemUrl.slice(0, -1).split('/').pop();
-
+    const ownership = details['Property Type'].toLowerCase().indexOf('leasehold') === -1 ? 'freehold' : 'leasehold';
     // const imgArr = parsedContent.querySelectorAll('.slides img')
     //   .map(item => item.getAttribute('src'));
 
@@ -82,7 +82,7 @@ export class PropertiabaliService extends ParserBaseService {
     propertyObj['externalId'] = itemUrlId;
     propertyObj['name'] = listingName;
     propertyObj['location'] = this.normalizeLocation(details['Area']);
-    propertyObj['ownership'] = details['Property Type']?.toLowerCase();
+    propertyObj['ownership'] = ownership;
     propertyObj['buildingSize'] = parseSquare(details['Building size']);
     propertyObj['landSize'] = parseSquare(details['Land size']) * 100;
 
@@ -92,14 +92,15 @@ export class PropertiabaliService extends ParserBaseService {
       propertyObj['leaseExpiryYear'] = getYear(new Date()) + parseInt(leaseYearsLeft);
     }
     propertyObj['propertyType'] = this.parsePropertyTypeFromTitle(listingName);
-    propertyObj['bedroomsCount'] = parseInt(bedrooms);
-    propertyObj['bathroomsCount'] = parseInt(bathrooms);
+    propertyObj['bedroomsCount'] = parseInt(bedrooms) ? parseInt(bedrooms) : undefined;
+    propertyObj['bathroomsCount'] = parseInt(bathrooms) ? parseInt(bathrooms) : undefined;
     propertyObj['pool'] = details['POOL'];
-    propertyObj['priceIdr'] = parseNumeric(details['Price']);
-    propertyObj['priceUsd'] = this.convertToUsd(propertyObj['priceIdr'], currentRate.amount);
+    propertyObj['priceIdr'] = parseNumeric(details['Price']) ? parseNumeric(details['Price']) : undefined;
+    propertyObj['priceUsd'] = propertyObj['priceIdr'] ? this.convertToUsd(propertyObj['priceIdr'], currentRate.amount) : undefined;
     propertyObj['url'] = itemUrl;
     propertyObj['source'] = 'propertiabali.com';
     // propertyObj['photos'] = imgArr[0];
+    propertyObj['isValid'] = this.checkIsValid(propertyObj);
     return propertyObj;
   }
 

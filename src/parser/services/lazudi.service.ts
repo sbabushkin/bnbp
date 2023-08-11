@@ -4,6 +4,7 @@ import { v4 } from 'uuid';
 import { parseNumeric } from "../../helpers/common.helper";
 import { ParserBaseService } from "../parser.base.service";
 import { CurrencyRate } from "../../currency/entities/currency.entity";
+import { getYear } from 'date-fns';
 
 
 export class LazudiService extends ParserBaseService {
@@ -50,10 +51,22 @@ export class LazudiService extends ParserBaseService {
     const propertyNameSelector = 'h1';
     const listingName = parsedContent.querySelector(propertyNameSelector)?.text.trim();
 
-    const info = parsedContent
-      .querySelectorAll('.prop-spec-detail span.font-detail-lg')
-      .map(item => item.text.trim());
+    const keys = parsedContent
+      .querySelectorAll('.prop-spec-detail span.d-block')
+      .map(item => {
+        return item.text.trim();
+      });
 
+    const infoObj = {};
+
+    parsedContent
+      .querySelectorAll('.prop-spec-detail span.font-detail-lg')
+      .forEach((item, index) => {
+        const key = keys[index];
+        infoObj[key] = item.text.trim();
+      });
+    console.log(infoObj);
+    
     // get price idr
     const priceIdrSelector = '.prop-detail-price div div';
     const priceIdr = parsedContent.querySelector(priceIdrSelector)?.text.trim();
@@ -70,25 +83,51 @@ export class LazudiService extends ParserBaseService {
     // const imgArr = parsedContent.querySelectorAll('.slides img')
     //   .map(item => item.getAttribute('src'));
 
+    const details = parsedContent.querySelector('#property_detail').innerText;
+    const ownership = details.indexOf('Freehold') >= 0 ? 'freehold' : 'leasehold';
+    const descTextSelector = '.description-text';
+    let leaseYearsLeft;
+    const descText = parsedContent.querySelector(descTextSelector)?.text;
+    if (descText) {
+      const sentences = descText.split('.');
+
+      for (let sentence of sentences) {
+        const upperSentence = sentence.toUpperCase();
+        const condition = (upperSentence.includes('LEASEHOLD') || upperSentence.includes('LEASE'));
+
+        if (condition && (upperSentence.includes('YEARS') || upperSentence.includes('-YEAR'))) {
+          const numbers = sentence.split(/[^0-9]+/);
+          const yearsLeftIndex = numbers.findIndex((value) => value.length === 2);
+          leaseYearsLeft = yearsLeftIndex > 0 ? numbers[yearsLeftIndex] : undefined;
+          break;
+        }
+      }
+    }
+
     const propertyObj = {};
 
     propertyObj['id'] = v4();
     propertyObj['externalId'] = itemUrlId;
     propertyObj['name'] = listingName;
     propertyObj['location'] = this.normalizeLocation(location);
-    // propertyObj['ownership'] = ownership; // TODO: parse from text
-    propertyObj['buildingSize'] = parseNumeric(info[0]);
-    propertyObj['landSize'] = parseNumeric(info[1]);
-    // propertyObj['leaseYearsLeft'] = leaseYearsLeft; // TODO: fix
+    propertyObj['ownership'] = ownership;
+    propertyObj['buildingSize'] = parseNumeric(infoObj['Interior']);
+    propertyObj['landSize'] = parseNumeric(infoObj['Land']);
+
+    if (leaseYearsLeft && propertyObj['ownership'] === 'leasehold') {
+			propertyObj['leaseExpiryYear'] = getYear(new Date()) + parseInt(leaseYearsLeft);
+		}
+
     propertyObj['propertyType'] = this.parsePropertyTypeFromTitle(listingName);
-    propertyObj['bedroomsCount'] = parseNumeric(info[2]);
-    propertyObj['bathroomsCount'] = parseNumeric(info[3]);
+    propertyObj['bedroomsCount'] = parseNumeric(infoObj['Bed']) || parseNumeric(infoObj['Beds']);
+    propertyObj['bathroomsCount'] = parseNumeric(infoObj['Bath']) || parseNumeric(infoObj['Baths']);
     propertyObj['pool'] = poolExists ? 'Yes' : 'No';
     propertyObj['priceIdr'] = parseNumeric(priceIdr);
-    propertyObj['priceUSD'] = this.convertToUsd(propertyObj['priceIdr'], currentRate.amount);
+    propertyObj['priceUsd'] = this.convertToUsd(propertyObj['priceIdr'], currentRate.amount);
     propertyObj['url'] = itemUrl;
     propertyObj['source'] = 'lazudi.com';
     // propertyObj['photos'] = imgArr[0];
+    propertyObj['isValid'] = this.checkIsValid(propertyObj);
     return propertyObj;
   }
 

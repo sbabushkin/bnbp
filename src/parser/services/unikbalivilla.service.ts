@@ -18,7 +18,7 @@ export class UnikbalivillaService extends ParserBaseService {
     const currentRate = await CurrencyRate.query().where({ from: 'USD'}).orderBy('created', 'desc').first();
 
     while (true) {
-      const listUrl = `https://unikbalivilla.com/villas-for-sale/page/${page}/?localisation&statut&superficie-du-terrain&chambres&types-of=Villas+for+sale`;
+      const listUrl = `https://unikbalivilla.com/villas-for-sale/page/${page}/`;
       const listResp = await axios.get(listUrl);
       const parsedContentList = parse(listResp.data);
       const propertiesClass = '.property_unit_carousel .active a';
@@ -70,10 +70,10 @@ export class UnikbalivillaService extends ParserBaseService {
     propertyObj['id'] = v4();
     propertyObj['externalId'] = itemUrlId;
     propertyObj['name'] = listingName;
-    propertyObj['location'] = this.normalizeLocation(info['Location']);
-    propertyObj['ownership'] = info['Status'].indexOf('Leasehold') >= 0 ? 'leasehold' : 'freehold';
+    propertyObj['location'] = info['Location'] ? this.normalizeLocation(info['Location']) : undefined;
+    propertyObj['ownership'] = info['Status']?.indexOf('Leasehold') >= 0 ? 'leasehold' : 'freehold';
 
-    const leaseYearsLeft = info['Status'].indexOf('Leasehold') >= 0 ? parseNumeric(info['Status']) : '';;
+    const leaseYearsLeft = info['Status']?.indexOf('Leasehold') >= 0 ? parseNumeric(info['Status']) : '';;
 
     if (leaseYearsLeft) {
       propertyObj['leaseExpiryYear'] = getYear(new Date()) + parseInt(leaseYearsLeft);
@@ -90,6 +90,7 @@ export class UnikbalivillaService extends ParserBaseService {
     propertyObj['url'] = itemUrl;
     propertyObj['source'] = 'unikbalivilla.com';
     // propertyObj['photos'] = imgArr[0];
+    propertyObj['isValid'] = this.checkIsValid(propertyObj);
     return propertyObj;
   }
 

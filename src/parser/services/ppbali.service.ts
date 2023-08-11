@@ -4,6 +4,7 @@ import { v4 } from 'uuid';
 import { parseNumeric, parseSquare, parseText } from "../../helpers/common.helper";
 import { ParserBaseService } from "../parser.base.service";
 import { CurrencyRate } from "../../currency/entities/currency.entity";
+import { getYear } from 'date-fns';
 
 
 export class PpbaliService extends ParserBaseService {
@@ -88,17 +89,22 @@ export class PpbaliService extends ParserBaseService {
     // const imgArr = parsedContent.querySelectorAll('.gallery img')
     //   .map(item => item.getAttribute('src'));
 
-    const ownershipAndYear = info['Status'] ? info['Status'].split('until') : [];
+    const ownershipAndYear = info['Status'];
+    const ownership = ownershipAndYear?.toLowerCase().indexOf('freehold') > 0 ? 'freehold' : 'leasehold';
 
     const propertyObj = {};
     propertyObj['id'] = v4();
     propertyObj['externalId'] = itemUrlId;
     propertyObj['name'] = listingName;
     propertyObj['location'] = this.normalizeLocation(info['Location']);
-    propertyObj['ownership'] = ownershipAndYear[0] && ownershipAndYear[0].trim().toLowerCase();
+    propertyObj['ownership'] = ownership;
     propertyObj['buildingSize'] = info['Build size'] && parseSquare(info['Build size']);
     propertyObj['landSize'] = info['Land size'] && parseSquare(info['Land size']);
-    propertyObj['leaseExpiryYear'] = ownershipAndYear[1] && parseNumeric(ownershipAndYear[1]);
+    if (propertyObj['ownership'] === 'leasehold') {
+      const expiryYear = ownershipAndYear?.match(/\d{4}/)?.shift();
+      const yearsLeft = ownershipAndYear?.match(/\d{2} year/)?.shift();
+      propertyObj['leaseExpiryYear'] = expiryYear || getYear(new Date()) + parseInt(yearsLeft) || undefined;
+    }
     propertyObj['propertyType'] = this.parsePropertyTypeFromTitle(listingName);
     propertyObj['bedroomsCount'] = parseNumeric(bedrooms);
     propertyObj['bathroomsCount'] = parseNumeric(bathrooms);

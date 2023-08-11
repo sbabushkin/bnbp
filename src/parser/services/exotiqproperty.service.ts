@@ -63,7 +63,7 @@ export class ExotiqpropertyService extends ParserBaseService {
 			console.log('Not villa...');
 			return;
 		}
-		const propertyNameSelector = 'body > div.main > div.section-100vh.is--listing-top.wf-section > div.listing-container > h1';
+		const propertyNameSelector = 'div.listing-container > h1.h1-poppins';
 		const listingName = parsedContent.querySelector(propertyNameSelector)?.text;
 
 		const itemUrlId = parsedContent
@@ -71,7 +71,7 @@ export class ExotiqpropertyService extends ParserBaseService {
 			.text;
 
 		const location = parsedContent
-			.querySelectorAll('.listing-location')[0]
+			.querySelectorAll('div.listing-location')[0]
 			.text;
 
 		const imgArr = parsedContent.querySelectorAll('.img_grid').map(el => {
@@ -85,16 +85,16 @@ export class ExotiqpropertyService extends ParserBaseService {
 		propertyObj['id'] = v4();
 		propertyObj['externalId'] = itemUrlId;
 		propertyObj['name'] = listingName;
-		propertyObj['location'] = this.normalizeLocation(location);
+		propertyObj['location'] = location ? this.normalizeLocation(location) : undefined;
 		propertyObj['ownership'] = infoObj['Ownership'] === 'For sale' ? 'freehold' : 'leasehold';
- 		propertyObj['buildingSize'] = parseNumeric(infoObj['Land area']);
-		propertyObj['landSize'] = parseNumeric(infoObj['Building size']);
+ 		propertyObj['buildingSize'] = parseNumeric(infoObj['Building size']);
+		propertyObj['landSize'] = parseNumeric(infoObj['Land area']);
 
 		if (leaseYearsLeft) {
 			propertyObj['leaseExpiryYear'] = getYear(new Date()) + parseInt(leaseYearsLeft);
 		}
 
-		propertyObj['propertyType'] = this.parsePropertyTypeFromTitle(listingName);
+		propertyObj['propertyType'] = listingName ? this.parsePropertyTypeFromTitle(listingName) : undefined;
 		propertyObj['bedroomsCount'] = parseNumeric(infoObj['Bedrooms']);
 		propertyObj['bathroomsCount'] = parseNumeric(infoObj['Bathrooms']);
 		propertyObj['pool'] = infoObj['Pool(s)'] ? 'Yes' : 'No' ;
@@ -103,6 +103,7 @@ export class ExotiqpropertyService extends ParserBaseService {
 		propertyObj['url'] = itemUrl;
 		propertyObj['source'] = 'exotiqproperty.com';
 		propertyObj['photos'] = imgArr[0];
+		propertyObj['isValid'] = this.checkIsValid(propertyObj);
 		return propertyObj;
 	}
 }
