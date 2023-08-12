@@ -31,6 +31,13 @@ export class ParserBaseService {
       isValid = false;
     }
 
+    if (item.leaseExpiryYear && item.ownership === 'leasehold') {
+      if (String(item.leaseExpiryYear).length > 4) {
+        isValid = false;
+        console.log('invalid leaseExpiryYear');
+      }
+    }
+
     if (item.propertyType !== 'land' && !item.buildingSize) {
       console.log('buildingSize does not exists');
       isValid = false;

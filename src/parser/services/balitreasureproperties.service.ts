@@ -91,15 +91,15 @@ export class BalitreasurepropertiesService extends ParserBaseService {
     const landSizeSelector = 'img[src*="icon-building.png"]';
     const landSizeText = parsedContent.querySelector(landSizeSelector)
       ?.parentNode.querySelector('div').text;
-    const landSize = landSizeText.includes('.') ? landSizeText.split('.')[0] : landSizeText;
+    const landSize = landSizeText.includes('.') ? landSizeText?.split('.')[0] : landSizeText;
 
     // get buildingSize
     let buildingSize;
     if (info['building size']?.includes('.')) buildingSize = info['building size']?.replace('.', ' ');
     else if (info['building size']?.includes(',')) {
-      const secondPart = info['building size'].split(',')[1];
+      const secondPart = info['building size']?.split(',')[1];
       const matches = secondPart.match(/\d{3}/);
-      buildingSize = matches[0]?.length ?
+      buildingSize = matches?.shift()?.length ?
         info['building size'].replace(',', '') :
         info['building size'].replace(',', ' ');
     } else {
@@ -144,6 +144,7 @@ export class BalitreasurepropertiesService extends ParserBaseService {
     propertyObj['url'] = itemUrl;
     propertyObj['source'] = 'balitreasureproperties.com';
     // propertyObj['photos'] = imgArr[0];
+    propertyObj['isValid'] = this.checkIsValid(propertyObj);
     return propertyObj;
   }
 }

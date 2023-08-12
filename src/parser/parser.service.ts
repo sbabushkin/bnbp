@@ -22,7 +22,7 @@ import { VillabalisaleService } from "./services/villabalisale.service";
 import { SuasarealestateService } from "./services/suasarealestate.service";
 import { PowerbaliService } from "./services/powerbali.service";
 import { OptimumbaliService } from "./services/optimumbali.service";
-import { Cron } from "@nestjs/schedule";
+import { Cron, CronExpression } from "@nestjs/schedule";
 import { Property } from "./entities/property.entity";
 
 const everySundayCronExp = '0 0 * * 0';
@@ -132,27 +132,28 @@ export class ParserService {
 		}
 	}
 
+
 	@Cron(everySundayCronExp)
 	async parseAll() {
 		const sources = [
+			// 'anniedeanproperties', doesn't work
+			// 'dotproperty', captcha, TODO lease exp
+			// 'rumah', // TODO lease exp year
+			'balivillasales',
+			'balicoconutliving',
 			'balihomeimmo',
 			'baliexception',
-			'balivillasales',
 			'balirealty',
 			'balimoves',
 			'excelbali',
 			'ppbali',
 			'harcourtspurbabali',
-			'dotproperty',
 			'propertiabali',
 			'balitreasureproperties',
 			'fazwaz',
 			'unikbalivilla',
 			'rajavillaproperty',
 			'lazudi',
-			'balicoconutliving',
-			'rumah',
-			'anniedeanproperties',
 			'exotiqproperty',
 			'optimumbali',
 			'villabalisale',

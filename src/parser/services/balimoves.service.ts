@@ -113,7 +113,7 @@ export class BalimovesService extends ParserBaseService {
     propertyObj['name'] = listingName;
     propertyObj['location'] = this.normalizeLocation(location.split(',')[0]);
     propertyObj['ownership'] = ownership.indexOf('leasehold') >= 0 ? 'leasehold' : 'freehold';
-    propertyObj['buildingSize'] = parseNumeric(buildingSize) || null;
+    propertyObj['buildingSize'] = parseFloat(landSize.replace(',', '.')) || null;
     propertyObj['landSize'] = parseFloat(landSize.replace(',', '.')) || null;
     // propertyObj['leaseYearsLeft'] = leaseYearsLeft;
     propertyObj['leaseExpiryYear'] = leaseExpiryYear;
@@ -126,6 +126,7 @@ export class BalimovesService extends ParserBaseService {
     propertyObj['url'] = itemUrl;
     propertyObj['source'] = 'balimoves.com';
     propertyObj['photos'] = imgArr[0];
+    propertyObj['isValid'] = this.checkIsValid(propertyObj);
     return propertyObj;
   }
 

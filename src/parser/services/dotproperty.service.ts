@@ -104,6 +104,7 @@ export class DotpropertyService extends ParserBaseService {
     propertyObj['url'] = itemUrl;
     propertyObj['source'] = 'dotproperty.id';
     // propertyObj['photos'] = imgArr[0];
+    propertyObj['isValid'] = this.checkIsValid(propertyObj);
     return propertyObj;
   }
 

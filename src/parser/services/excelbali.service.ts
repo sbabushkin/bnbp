@@ -4,6 +4,7 @@ import { v4 } from 'uuid';
 import { parseNumeric, parsePrice, parseSquare } from "../../helpers/common.helper";
 import { ParserBaseService } from "../parser.base.service";
 import { CurrencyRate } from "../../currency/entities/currency.entity";
+import { getYear } from 'date-fns';
 
 
 export class ExcelbaliService extends ParserBaseService {
@@ -78,16 +79,20 @@ export class ExcelbaliService extends ParserBaseService {
 
 
     const holdInfo = info['Title']?.toLowerCase().split('until');
+    
     const propertyObj = {};
 
     propertyObj['id'] = v4();
     propertyObj['externalId'] = itemUrlId;
     propertyObj['name'] = listingName;
     propertyObj['location'] = this.normalizeLocation(info['Location']);
+    propertyObj['ownership'] = holdInfo ? holdInfo[0].split(' ')[0].trim() : undefined;
 
-    if (holdInfo) {
-      propertyObj['ownership'] = holdInfo[0].trim();
-      propertyObj['leaseExpiryYear'] = parseNumeric(holdInfo[1]);
+    if (propertyObj['ownership'] === 'leasehold') {
+      const ownershipRow = holdInfo[0] + holdInfo[1];
+      const expiryYear = ownershipRow.match(/\d{4}/)?.shift();
+      const yearsLeft = ownershipRow.match(/\d{2} year/)?.shift();
+      propertyObj['leaseExpiryYear'] = expiryYear || getYear(new Date()) + parseInt(yearsLeft) || undefined;
     }
 
     propertyObj['buildingSize'] = parseSquare(info['Build Size']);
@@ -102,6 +107,7 @@ export class ExcelbaliService extends ParserBaseService {
     propertyObj['url'] = itemUrl;
     propertyObj['source'] = 'excelbali.com';
     propertyObj['photos'] = imgArr.length && imgArr[0];
+    propertyObj['isValid'] = this.checkIsValid(propertyObj);
     return propertyObj;
   }
 

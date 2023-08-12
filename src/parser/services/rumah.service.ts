@@ -13,7 +13,7 @@ export class RumahService extends ParserBaseService {
 
   public async parse() {
 
-    let page = 17;
+    let page = 1;
 
     // TODO: move to service
     const currentRate = await CurrencyRate.query().where({ from: 'USD'}).orderBy('created', 'desc').first();
@@ -113,6 +113,7 @@ export class RumahService extends ParserBaseService {
     propertyObj['url'] = itemUrl;
     propertyObj['source'] = 'rumah123.com';
     // propertyObj['photos'] = imgArr[0];
+    propertyObj['isValid'] = this.checkIsValid(propertyObj);
 
     propertyObj['isValid'] = this.checkIsValid(propertyObj);
     await this.sleep(1000 + Math.random() * 500);

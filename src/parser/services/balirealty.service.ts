@@ -127,7 +127,7 @@ export class BalirealtyService extends ParserBaseService {
     }
     propertyObj['source'] = 'balirealty.com';
     // propertyObj['photos'] = imgArr[0];
-
+    propertyObj['isValid'] = this.checkIsValid(propertyObj);
     delete propertyObj['price'];
     delete propertyObj['status'];
     return propertyObj;
